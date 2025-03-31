@@ -1,0 +1,16 @@
+{
+  "name": "s4s",
+  "version": "1.0.0",
+  "description": "React frontend for Bitrix CMS with Next.js SSR",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest"
+  },
+  "keywords": ["react", "nextjs", "bitrix", "ecommerce"],
+  "author": "",
+  "license": "ISC"
+}
