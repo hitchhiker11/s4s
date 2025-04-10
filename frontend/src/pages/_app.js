@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QueryClientProvider, Hydrate } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { ThemeProvider } from 'styled-components';
@@ -8,6 +8,8 @@ import { COLORS, TYPOGRAPHY, SHADOWS } from '../styles/tokens';
 import GlobalStyles from '../styles/globalStyles';
 import { createQueryClient } from '../lib/react-query-client';
 import Logger from '../components/debug/Logger';
+import '../components/AboutSlider/slider.css'; // Импортируем стили слайдера глобально
+import { USE_MOCKS } from '../lib/api/bitrix';
 
 // Определяем тему для ThemeProvider
 const theme = {
@@ -22,6 +24,15 @@ const theme = {
 function MyApp({ Component, pageProps }) {
   // Создаем QueryClient на стороне клиента
   const [queryClient] = useState(() => createQueryClient());
+
+  // Подключаем инструменты для работы с моками в режиме разработки
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && USE_MOCKS) {
+      import('../lib/mocks/mocks').then((module) => {
+        console.log('[App] Моковый слой инициализирован');
+      });
+    }
+  }, []);
   
   return (
     <QueryClientProvider client={queryClient}>

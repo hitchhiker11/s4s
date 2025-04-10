@@ -1,0 +1,97 @@
+/* Стили для слайдера в секции About */
+
+.about-slider {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.about-slider .swiper-slide {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Анимации для элементов слайдера */
+.about-slider .swiper-slide-active .slide-title,
+.about-slider .swiper-slide-active .brand-logo {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.about-slider .swiper-slide-active .slide-title {
+  animation-delay: 0.3s;
+}
+
+.about-slider .swiper-slide-active .brand-logo {
+  animation-delay: 0.5s;
+}
+
+/* Кастомизация навигационных элементов */
+.about-slider .custom-pagination {
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.about-slider .pagination-dot {
+  background-color: rgba(252, 252, 252, 0.5);
+  transition: all 0.3s ease;
+}
+
+.about-slider .pagination-dot.active {
+  background-color: #FFFFFF;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Обеспечиваем полное растягивание содержимого на весь слайдер */
+.about-slider .swiper-wrapper,
+.about-slider .swiper-slide {
+  height: auto !important; /* Позволяет высоте определяться содержимым */
+}
+
+/* Устанавливаем стиль для изображений, чтобы избежать растягивания */
+.about-slider img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+  .about-slider .slide-title {
+    font-size: 28px;
+  }
+  
+  .about-slider .pagination-dot {
+    width: 36px;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-slider .slide-title {
+    font-size: 24px;
+    max-width: 200px;
+  }
+  
+  .about-slider .brand-logo {
+    bottom: 50px;
+    width: 120px;
+    height: 40px;
+  }
+  
+  .about-slider .pagination-dot {
+    width: 32px;
+    height: 3px;
+  }
+} 
