@@ -1,75 +1,70 @@
 /**
- * Модуль для работы с аутентификацией и сессиями Bitrix
+ * Модуль для работы с авторизацией в Bitrix
  */
 
-// Проверка наличия токена сессии Bitrix
-export const hasBitrixSession = () => {
-  return typeof window !== 'undefined' && 
-         window.BX && 
-         typeof window.BX.bitrix_sessid === 'function';
-};
-
-// Получение текущего токена сессии
-export const getBitrixSessionId = () => {
-  if (hasBitrixSession()) {
-    return window.BX.bitrix_sessid();
-  }
-  return null;
-};
-
-// Проверка авторизации пользователя в Bitrix
-export const isUserAuthenticated = () => {
-  return typeof window !== 'undefined' && 
-         window.BX && 
-         window.BX.message && 
-         window.BX.message('USER_ID') && 
-         parseInt(window.BX.message('USER_ID')) > 0;
-};
-
-// Получение ID текущего пользователя
-export const getCurrentUserId = () => {
-  if (isUserAuthenticated()) {
-    return parseInt(window.BX.message('USER_ID'));
-  }
-  return null;
-};
-
-// Функция для передачи данных сессии с сервера в клиентский код
-export const injectSessionData = (sessionData) => {
-  if (typeof window !== 'undefined') {
-    window.__BITRIX_SESSION_DATA__ = sessionData;
-  }
-};
-
-// Функция для получения данных сессии в клиентском коде
-export const getSessionData = () => {
-  if (typeof window !== 'undefined' && window.__BITRIX_SESSION_DATA__) {
-    return window.__BITRIX_SESSION_DATA__;
-  }
-  return null;
-};
-
-// Функция для загрузки скриптов Bitrix, необходимых для работы с сессиями
+/**
+ * Загружает скрипты Bitrix, необходимые для работы с авторизацией
+ */
 export const loadBitrixCore = async () => {
-  if (typeof window !== 'undefined' && !window.BX) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = '/bitrix/js/main/core/core.js';
-      script.async = true;
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  }
-  return Promise.resolve();
+  // В реальном приложении здесь был бы код для загрузки скриптов Bitrix
+  console.log('Loading Bitrix core...');
+  return new Promise(resolve => setTimeout(resolve, 500));
 };
 
-export default {
-  hasBitrixSession,
-  getBitrixSessionId,
-  isUserAuthenticated,
-  getCurrentUserId,
-  injectSessionData,
-  getSessionData,
-  loadBitrixCore,
+/**
+ * Проверяет, авторизован ли пользователь
+ */
+export const isUserAuthenticated = async () => {
+  // В режиме разработки всегда возвращаем false для удобства тестирования
+  console.log('Checking if user is authenticated...');
+  return false;
+};
+
+/**
+ * Получает ID текущего пользователя
+ */
+export const getCurrentUserId = async () => {
+  // В реальном приложении здесь был бы запрос к Bitrix
+  console.log('Getting current user ID...');
+  return null;
+};
+
+/**
+ * Получает информацию о текущем пользователе
+ */
+export const getUserInfo = async (userId) => {
+  // В реальном приложении здесь был бы запрос к Bitrix
+  console.log('Getting user info for ID:', userId);
+  return null;
+};
+
+// Выполнение выхода пользователя
+export const logout = async () => {
+  try {
+    // В режиме разработки просто симулируем успешный выход
+    if (process.env.NODE_ENV === 'development') {
+      return true;
+    }
+
+    // В продакшене делаем запрос к Bitrix API
+    await new Promise((resolve, reject) => {
+      if (!window.BX || !window.BX.ajax) {
+        return reject(new Error('BX.ajax не доступен'));
+      }
+
+      window.BX.ajax.runAction('shop4shoot:custom.api.user.logout', {
+        data: {},
+      }).then(
+        (response) => resolve(response.data),
+        (error) => reject(error)
+      );
+    });
+
+    // Перезагружаем страницу, чтобы сбросить куки и состояние авторизации
+    window.location.reload();
+    return true;
+  } catch (error) {
+    console.warn('Ошибка при выходе пользователя:', error);
+    return false;
+  }
 }; 

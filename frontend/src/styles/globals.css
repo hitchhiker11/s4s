@@ -1,0 +1,55 @@
+/* Базовые глобальные стили */
+:root {
+  --color-primary: #E7194A;
+  --color-black: #1C1C1C;
+  --color-white: #FCFCFC;
+  --color-gray-100: #F8F8F8;
+  --color-gray-200: #EAEAEA;
+  --color-gray-300: #DDDDDD;
+  --color-gray-400: #B6B6B6;
+  --color-gray-500: #6B6B6B;
+  --header-bg-color: var(--color-white);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+  background-color: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Доступность - outline для клавиатурной навигации */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+} 
