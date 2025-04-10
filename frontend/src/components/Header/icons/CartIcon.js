@@ -1,11 +1,19 @@
 import React from 'react';
 
 const CartIcon = (props) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path fillRule="evenodd" clipRule="evenodd" d="M7.42221 19.8203C7.84397 19.8203 8.18564 20.161 8.18564 20.5836C8.18564 21.0061 7.84397 21.3469 7.42221 21.3469C7.00045 21.3469 6.65878 21.0061 6.65878 20.5836C6.65878 20.161 7.00045 19.8203 7.42221 19.8203Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path fillRule="evenodd" clipRule="evenodd" d="M18.6747 19.8203C19.0965 19.8203 19.4381 20.161 19.4381 20.5836C19.4381 21.0061 19.0965 21.3469 18.6747 21.3469C18.2529 21.3469 17.9113 21.0061 17.9113 20.5836C17.9113 20.161 18.2529 19.8203 18.6747 19.8203Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M2.75 3.25L5.59 3.61L6.63 14.08C6.73 15.31 7.76 16.27 8.99 16.27H18.51C19.67 16.27 20.67 15.4 20.83 14.25L21.73 8.28C21.91 7.01 20.92 5.91 19.65 5.91H5.51" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_642_481)">
+      <path d="M14.0156 32.2129C14.8187 32.2129 15.4697 31.5619 15.4697 30.7588C15.4697 29.9557 14.8187 29.3047 14.0156 29.3047C13.2125 29.3047 12.5615 29.9557 12.5615 30.7588C12.5615 31.5619 13.2125 32.2129 14.0156 32.2129Z" stroke="#1C1C1C" stroke-width="2.9082" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30.0107 32.2129C30.8138 32.2129 31.4648 31.5619 31.4648 30.7588C31.4648 29.9557 30.8138 29.3047 30.0107 29.3047C29.2077 29.3047 28.5566 29.9557 28.5566 30.7588C28.5566 31.5619 29.2077 32.2129 30.0107 32.2129Z" stroke="#1C1C1C" stroke-width="2.9082" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2.38281 1.67676H8.19922L12.0962 21.1472C12.2292 21.8166 12.5934 22.418 13.1251 22.846C13.6567 23.274 14.322 23.5014 15.0044 23.4883H29.1383C29.8207 23.5014 30.486 23.274 31.0176 22.846C31.5493 22.418 31.9135 21.8166 32.0465 21.1472L34.373 8.94727H9.65332" stroke="#1C1C1C" stroke-width="2.9082" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <defs>
+      <clipPath id="clip0_642_481">
+      <rect width="34.8984" height="34.8984" fill="white" transform="translate(0.928711 0.222656)"/>
+      </clipPath>
+    </defs>
   </svg>
+
 );
 
 export default CartIcon; 

@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }) {
             <title>Shop4Shoot</title>
           </Head>
           <GlobalStyles />
-          <Header useMocks={true} mockBasketCount={5} />
+          {/* <Header useMocks={true} mockBasketCount={5} /> */}
           <Component {...pageProps} />
           {process.env.NODE_ENV !== 'production' && <ReactQueryDevtools initialIsOpen={false} />}
           {process.env.NODE_ENV !== 'production' && <Logger />}

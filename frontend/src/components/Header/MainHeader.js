@@ -54,8 +54,8 @@ const LogoWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${COLORS.primary};
-  width: 70px; /* Ширина фрейма из Figma */
-  height: 70px; /* Высота фрейма из Figma */
+  width: 200px;
+  height: 80px;
   flex-shrink: 0;
   cursor: pointer;
   transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
@@ -102,19 +102,39 @@ const HeaderNavItem = styled.span`
   &::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: 5px;
     right: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 0 3px 3px; /* Размер уголка из Figma: 0px 3px 3px 0px */
-    border-color: transparent transparent ${COLORS.primary} ${COLORS.primary};
+    width: 100%; /* Вся ширина родителя */
+    height: 3px; /* Толщина горизонтальной линии */
+    background: ${COLORS.gray400};
     opacity: 0;
     transition: opacity ${ANIMATION.duration} ${ANIMATION.timing};
   }
 
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    right: 0;
+    width: 3px; /* Толщина вертикальной линии */
+    height: 80%; /* Вся высота родителя */
+    background: ${COLORS.gray400};
+    opacity: 0;
+    transition: opacity ${ANIMATION.duration} ${ANIMATION.timing};
+  }
+
+&:hover::before,
+&:hover::after {
+  opacity: 1;
+}
+
+/* При наведении */
+&:hover::after {
+  opacity: 1;
+}
+
   &:hover, &.active {
-    color: ${COLORS.primary};
+
     
     &::after {
       opacity: 1;
@@ -276,7 +296,7 @@ const MainHeader = ({
         <LogoWrapper>
           <Link href="/" passHref legacyBehavior>
             <a aria-label="Shop4Shoot - Перейти на главную">
-              <img src="/images/header/logo-icon.svg" alt="Shop4Shoot" />
+              <img src="/images/header/logo-icon.svg" alt="Shop4Shoot"/>
             </a>
           </Link>
         </LogoWrapper>
