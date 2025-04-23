@@ -55,7 +55,7 @@ const LogoWrapper = styled.div`
   justify-content: center;
   background-color: ${COLORS.primary};
   width: 200px;
-  height: 80px;
+  height: 84px;
   flex-shrink: 0;
   cursor: pointer;
   transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
@@ -87,13 +87,13 @@ const LogoWrapper = styled.div`
 
 const HeaderNavItem = styled.span`
   position: relative;
-  font-size: ${TYPOGRAPHY.size.xl}; /* 24px из Figma */
-  font-weight: ${TYPOGRAPHY.weight.semiBold}; /* 600 из Figma */
+  font-size: ${TYPOGRAPHY.size.xl}; 
+  font-weight: ${TYPOGRAPHY.weight.semiBold}; 
   color: ${COLORS.black};
   cursor: pointer;
   transition: color ${ANIMATION.duration} ${ANIMATION.timing};
-  padding: 17px 10px; /* Паддинг из Figma */
-  height: 70px; /* Высота соответствует Figma */
+  padding: 17px 10px; 
+  height: 70px; 
   display: flex;
   align-items: center;
   justify-content: center;

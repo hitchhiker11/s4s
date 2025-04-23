@@ -42,6 +42,7 @@ const SlideImageContainer = styled.div`
 `;
 
 const SlideImage = styled.img`
+  background-color: ${COLORS.white};
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -125,8 +126,8 @@ const CustomPagination = styled.div`
 `;
 
 const PaginationDot = styled.div`
-  height: 4px;
-  background-color: ${props => props.active ? '#FFFFFF' : 'rgba(252, 252, 252, 0.5)'};
+  height: 12px;
+  background-color: ${props => props.active ? '#000000' : 'rgba(0, 0, 0, 0.5)'};
   width: ${props => props.active ? '48px' : '21px'};
   border-radius: 145px;
   cursor: pointer;

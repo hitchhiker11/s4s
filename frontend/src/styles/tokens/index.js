@@ -71,7 +71,7 @@ export const SPACING = {
 export const SIZES = {
   headerHeight: "84px",
   headerHeightScrolled: "64px",
-  containerMaxWidth: "1494px",
+  containerMaxWidth: "2000px",
   
   // Иконки
   iconSize: "24px",

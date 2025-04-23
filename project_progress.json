@@ -4,7 +4,8 @@
     "Bitrix Ajax Analysis": {"status": "Completed", "dependencies": ["File Structure Parsing"]},
     "React-API Mapping": {"status": "Completed", "dependencies": ["Bitrix Ajax Analysis"]},
     "Header Component Integration": {"status": "Completed", "dependencies": ["React-API Mapping"]},
-    "Basket API Integration": {"status": "Completed", "dependencies": ["Bitrix Ajax Analysis"]}
+    "Basket API Integration": {"status": "Completed", "dependencies": ["Bitrix Ajax Analysis"]},
+    "Core UI Development": {"status": "In Progress", "dependencies": ["React-API Mapping"]}
   },
   "microtasks": [
     {"id": "MT-001", "description": "Analyze Bitrix basket endpoint", "status": "Completed"},
@@ -18,13 +19,19 @@
     {"id": "MT-009", "description": "Create mock implementations for basket CRUD", "status": "Completed"},
     {"id": "MT-010", "description": "Create useBasket hook with mock support", "status": "Completed"},
     {"id": "MT-011", "description": "Fix application errors and warnings", "status": "Completed"},
-    {"id": "MT-012", "description": "Implement user authentication integration", "status": "Pending"},
-    {"id": "MT-013", "description": "Add product catalog browsing", "status": "Pending"},
-    {"id": "MT-014", "description": "Create basket page with useBasket hook", "status": "Pending"},
-    {"id": "MT-015", "description": "Add checkout process", "status": "Pending"},
-    {"id": "MT-016", "description": "Implement search functionality", "status": "Pending"}
+    {"id": "MT-012", "description": "Implement Figma slider component for About section", "status": "Completed"},
+    {"id": "MT-013", "description": "Implement mock layer for API development", "status": "Completed"},
+    {"id": "MT-014", "description": "Improve adaptive font size for Hero section", "status": "Completed"},
+    {"id": "MT-015", "description": "Improve adaptive layout for AboutSlider component", "status": "Completed"},
+    {"id": "MT-016", "description": "Add Montserrat font and enhance global typography styles", "status": "Completed"},
+    {"id": "MT-017", "description": "Implement user authentication integration", "status": "Pending"},
+    {"id": "MT-018", "description": "Add product catalog browsing", "status": "Pending"},
+    {"id": "MT-019", "description": "Create basket page with useBasket hook", "status": "Pending"},
+    {"id": "MT-020", "description": "Add checkout process", "status": "Pending"},
+    {"id": "MT-021", "description": "Implement search functionality", "status": "Pending"},
+    {"id": "MT-022", "description": "Continue UI development according to Figma design and established rules/tokens", "status": "Pending"}
   ],
-  "code_quality_rules": ["Strict TypeScript", "Atomic Design", "ISR Caching", "Transient Props with Styled-Components"],
+  "code_quality_rules": ["Strict TypeScript", "Atomic Design", "ISR Caching", "Transient Props with Styled-Components", "Adaptive UI with Design Tokens", "Semantic HTML"],
   "architecture_decisions": [
     {
       "id": "ADR-001",
@@ -52,11 +59,11 @@
     },
     {
       "id": "ADR-004",
-      "title": "Centralized Constants",
+      "title": "Centralized Design Tokens",
       "status": "Accepted",
-      "context": "Need to maintain consistent configuration across the application",
-      "decision": "Implement a centralized constants file for global configuration",
-      "consequences": "Easier maintenance and consistency across components"
+      "context": "Need to maintain consistent styling and layout across the application",
+      "decision": "Implement a centralized tokens file (colors, typography, spacing, etc.) and use them via styled-components and CSS variables",
+      "consequences": "Easier maintenance, consistent UI, and better themeability"
     },
     {
       "id": "ADR-005",
@@ -65,6 +72,14 @@
       "context": "Components using browser-specific APIs cause warnings in SSR",
       "decision": "Use isomorphic hooks and detection of browser environment",
       "consequences": "Clean server-side rendering without warnings and hydration errors"
+    },
+    {
+      "id": "ADR-006",
+      "title": "Adaptive UI Strategy",
+      "status": "Accepted",
+      "context": "Need components to adapt gracefully to various screen sizes",
+      "decision": "Use CSS clamp() for fluid typography, aspect-ratio for images/containers, media queries from design tokens, and relative units",
+      "consequences": "Highly responsive and fluid UI across all devices"
     }
   ]
 } 
