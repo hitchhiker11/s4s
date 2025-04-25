@@ -5,18 +5,20 @@ import { COLORS, TYPOGRAPHY, SPACING, mediaQueries, SHADOWS } from '../../styles
 const SubscriptionContainer = styled.section`
   width: 100%;
   margin-bottom: ${SPACING["4xl"]};
-  border-top: 4px solid ${COLORS.gray400};
-  border-bottom: 4px solid ${COLORS.gray400};
+  border-top: 2px solid ${COLORS.gray400};
+  border-bottom: 2px solid ${COLORS.gray400};
   padding: ${SPACING.lg};
-  
+
   ${mediaQueries.md} {
+    border-top-width: 4px;
+    border-bottom-width: 4px;
     padding: ${SPACING.xl};
   }
-  
+
   ${mediaQueries.lg} {
     padding: ${SPACING["2xl"]} 40px;
   }
-  
+
   ${mediaQueries.xxl} {
     max-width: 2000px;
     margin-left: auto;
@@ -27,19 +29,18 @@ const SubscriptionContainer = styled.section`
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  
+
   ${mediaQueries.md} {
     flex-direction: row;
   }
 `;
 
 const FormContainer = styled.div`
-  padding-right: ${SPACING.xl};
-  display: flex;
+  display: flex; 
   flex-direction: column;
   background-color: ${COLORS.white};
   width: 100%;
-  
+
   ${mediaQueries.md} {
     width: 50%;
     padding-right: ${SPACING["3xl"]};
@@ -50,62 +51,59 @@ const FormHeading = styled.h2`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-style: normal;
   font-weight: 600;
-  font-size: 34px;
-  line-height: 110%;
+  font-size: clamp(1.5rem, 6vw, 54px);
+  line-height: 1.1;
   color: ${COLORS.black};
   margin-bottom: ${SPACING["3xl"]};
   padding-top: 16px;
   padding-bottom: 16px;
 
   ${mediaQueries.md} {
-    font-size: 42px;
+    font-size: 54px;
     padding-top: 0;
     padding-bottom: 0;
-  }
-
-  ${mediaQueries.lg} {
-    font-size: 54px;
   }
 `;
 
 const InputsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${SPACING.xl};
+  gap: 40px;
   margin-bottom: ${SPACING["2xl"]};
 `;
 
 const InputWrapper = styled.div`
   width: 100%;
-  max-width: 470px;
-  border-bottom: 4px solid ${COLORS.gray400};
+  max-width: 473px;
+  border-bottom: 2px solid ${COLORS.gray400};
   padding-bottom: ${SPACING.xs};
+
+  ${mediaQueries.md} {
+    border-bottom-width: 3px;
+  }
 `;
 
 const Input = styled.input`
   width: 100%;
   font-family: ${TYPOGRAPHY.fontFamily};
-  font-size: 18px;
+  font-size: clamp(1.1rem, 5vw, 27px);
   line-height: 1.5;
   color: ${COLORS.black};
   border: none;
   background: transparent;
   padding: ${SPACING.sm} 0;
-  
+  letter-spacing: 2%;
+
   &::placeholder {
     color: rgba(0, 0, 0, 0.6);
     letter-spacing: 0.02em;
   }
-  
+
   &:focus {
     outline: none;
   }
-  
+
   ${mediaQueries.md} {
-    font-size: 22px;
-  }
-  
-  ${mediaQueries.lg} {
     font-size: 27px;
   }
 `;
@@ -116,7 +114,7 @@ const SubmitButton = styled.button`
   color: ${COLORS.white};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: 500;
-  font-size: 20px;
+  font-size: clamp(1rem, 4vw, 20px);
   text-transform: uppercase;
   border: none;
   padding: 24px 40px;
@@ -124,22 +122,20 @@ const SubmitButton = styled.button`
   box-shadow: ${SHADOWS.md};
   transition: background-color 0.3s ease;
   width: 100%;
-  
-  
+
   &:hover {
     background-color: ${COLORS.primaryHover};
   }
-  
+
   ${mediaQueries.md} {
-    min-width: 100px;
-    width: 50%;
-    width: auto;
+    width: 473px;
+    font-size: 20px;
   }
 `;
 
 const ImageContainer = styled.div`
   display: none;
-  
+
   ${mediaQueries.md} {
     display: block;
     width: 50%;
@@ -150,7 +146,6 @@ const ImageContainer = styled.div`
 const Image = styled.img`
   width: 100%;
   height: 100%;
-  
   object-fit: cover;
 `;
 

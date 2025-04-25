@@ -2,27 +2,33 @@
 export const mockCategories = [
   {
     id: 1,
-    title: 'Оружие',
-    imageUrl: '/images/categories/category-weapons.jpg',
-    link: '/catalog/weapons'
+    title: 'Тюнинг оружия',
+    imageUrl: '/images/categories/tuning.svg',
+    link: '/catalog/tuning'
   },
   {
     id: 2,
-    title: 'Оптика',
-    imageUrl: '/images/categories/category-optics.jpg',
-    link: '/catalog/optics'
+    title: 'Экипировка',
+    imageUrl: '/images/categories/equipment.jpg',
+    link: '/catalog/equipment'
   },
   {
     id: 3,
-    title: 'Тактическое снаряжение',
-    imageUrl: '/images/categories/category-tactical.jpg',
-    link: '/catalog/tactical'
+    title: 'Обслуживание',
+    imageUrl: '/images/categories/maintenance.jpg',
+    link: '/catalog/maintenance'
   },
   {
     id: 4,
-    title: 'Одежда',
-    imageUrl: '/images/categories/category-clothing.jpg',
-    link: '/catalog/clothing'
+    title: 'Релоадинг',
+    imageUrl: '/images/categories/reloading.jpg',
+    link: '/catalog/reloading'
+  },
+  {
+    id: 5,
+    title: 'Прочее',
+    imageUrl: '/images/categories/other.jpg',
+    link: '/catalog/other'
   }
 ];
 

@@ -78,7 +78,7 @@ const NavSections = styled.div`
 const NavSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${SPACING.md};
+  gap: 24px;
   
   ${mediaQueries.md} {
     width: calc(50% - ${SPACING["2xl"]});
@@ -92,10 +92,10 @@ const NavSection = styled.div`
 const SectionTitle = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: ${TYPOGRAPHY.size.lg};
+  font-size: 20px;
   line-height: 1.2;
   color: ${COLORS.black};
-  margin: 0 0 ${SPACING.md} 0;
+  margin: 0;
 `;
 
 const NavLinks = styled.div`
@@ -170,10 +170,6 @@ const BottomFooter = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-  }
-  
-  ${mediaQueries.lg} {
-    padding: 16px 60px;
   }
 `;
 

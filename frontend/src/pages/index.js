@@ -94,32 +94,27 @@ const Highlight = styled.span`
   }
 `;
 
-// Используем clamp для плавного масштабирования размера шрифта
-// min: минимальный размер на маленьких экранах
-// max: максимальный размер на больших экранах
-// preferred: предпочтительный размер, основанный на vw
+// Based on Figma design
 const HeroTitle = styled.h1`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-style: normal;
   font-weight: 700;
-  font-size: clamp(40px, 8vw, 107px);
-  line-height: 1.2;
-  letter-spacing: -0.05em;
+  font-size: 107px; // Exact size from Figma
+  line-height: 1.22; // From Figma
+  letter-spacing: -5%; // From Figma
   color: ${COLORS.black};
   margin: 0;
   padding: 0;
   
   ${mediaQueries.sm} {
-    line-height: 1.25;
+    font-size: clamp(60px, 8vw, 107px);
   }
   
-  ${mediaQueries.md} {
-    letter-spacing: -0.04em;
-    line-height: 1.3;
+  ${mediaQueries.xs} {
+    font-size: clamp(40px, 8vw, 34px);
   }
-  
   ${mediaQueries.lg} {
-    line-height: 1.22;
+    font-size: clamp(40px, 8vw, 107px);
   }
 `;
 

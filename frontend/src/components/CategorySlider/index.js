@@ -1,19 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
 import CategoryCard from '../CategoryCard';
 import { COLORS, SPACING, TYPOGRAPHY, mediaQueries } from '../../styles/tokens';
 
-const GridContainer = styled.div`
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+const SliderContainer = styled.div`
   margin: ${SPACING.lg} 0;
+  position: relative;
   width: 100%;
 `;
 
-const GridHeader = styled.div`
+const SliderHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${SPACING.md};
+  padding: 0 ${SPACING.md};
 `;
 
 const SectionTitle = styled.h2`
@@ -36,54 +45,68 @@ const ViewAllLink = styled.a`
   }
 `;
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${SPACING.md};
+const StyledSwiper = styled(Swiper)`
+  width: 100%;
+  padding: 0 ${SPACING.md};
   
-  ${mediaQueries.sm} {
-    grid-template-columns: repeat(3, 1fr);
+  .swiper-slide {
+    width: 80%;
+    height: auto;
   }
   
-  ${mediaQueries.md} {
-    grid-template-columns: repeat(4, 1fr);
+  .swiper-pagination-bullet {
+    background-color: ${COLORS.primary};
   }
   
-  ${mediaQueries.lg} {
-    grid-template-columns: repeat(5, 1fr);
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: ${COLORS.primary};
+    
+    &:after {
+      font-size: 24px;
+    }
   }
 `;
 
-const CategoryGrid = ({ 
+const CategorySlider = ({ 
   categories, 
   title = "Категории", 
   viewAllLink = "#", 
-  viewAllText = "Смотреть все" 
+  viewAllText = "Смотреть все"
 }) => {
   return (
-    <GridContainer>
-      <GridHeader>
+    <SliderContainer>
+      <SliderHeader>
         <SectionTitle>{title}</SectionTitle>
         <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>
-      </GridHeader>
+      </SliderHeader>
       
-      <Grid>
+      <StyledSwiper
+        modules={[Navigation, Pagination]}
+        spaceBetween={10}
+        slidesPerView={1.5}
+        centeredSlides={false}
+        pagination={{ clickable: true }}
+        navigation
+        autoplay={{ delay: 5000 }}
+      >
         {categories.map((category, index) => (
-          <CategoryCard
-            key={category.id || index}
-            title={category.title}
-            imageUrl={category.imageUrl}
-            link={category.link}
-            showTitle={category.showTitle}
-            rotation={category.rotation}
-          />
+          <SwiperSlide key={category.id || index}>
+            <CategoryCard
+              title={category.title}
+              imageUrl={category.imageUrl}
+              link={category.link}
+              showTitle={category.showTitle}
+              rotation={category.rotation}
+            />
+          </SwiperSlide>
         ))}
-      </Grid>
-    </GridContainer>
+      </StyledSwiper>
+    </SliderContainer>
   );
 };
 
-CategoryGrid.propTypes = {
+CategorySlider.propTypes = {
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -99,4 +122,4 @@ CategoryGrid.propTypes = {
   viewAllText: PropTypes.string
 };
 
-export default CategoryGrid; 
+export default CategorySlider; 

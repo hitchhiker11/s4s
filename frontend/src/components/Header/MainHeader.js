@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { TextLink } from './common';
 import { SearchIcon, CartIcon, MenuBurgerIcon } from './icons';
@@ -24,88 +24,17 @@ import { COLORS, TYPOGRAPHY } from '../../styles/tokens';
 
 // --- Стили ---
 
-const MainHeaderWrapper = styled.div`
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-  height: ${HEADER_SIZES.headerHeight};
-  background-color: ${HEADER_COLORS.light};
-  border-bottom: 1px solid ${HEADER_COLORS.lightGray};
-  box-shadow: ${SHADOWS.sm};
-`;
+// Mixin for bottom/right line hover effect
+const navLinesMixin = css`
+  position: relative; // Needed for absolute positioning of pseudo-elements
 
-const MainHeaderContent = styled(Container)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-
-  ${mediaQuery.min.lg} {
-    justify-content: center;
-    gap: 55px; 
-  }
-`;
-
-// Блок для лого (прямоугольной формы с красным фоном)
-const LogoWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${COLORS.primary};
-  width: 200px;
-  height: 84px;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
-  
-  a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-  }
-  
-  img {
-    width: auto;
-    height: auto;
-    max-width: 44px;
-    max-height: 44px;
-    transition: transform ${ANIMATION.duration} ${ANIMATION.timing};
-  }
-  
-  &:hover {
-    background-color: ${COLORS.primaryHover};
-    
-    img {
-      transform: scale(1.05);
-    }
-  }
-`;
-
-const HeaderNavItem = styled.span`
-  position: relative;
-  font-size: ${TYPOGRAPHY.size.xl}; 
-  font-weight: ${TYPOGRAPHY.weight.semiBold}; 
-  color: ${COLORS.black};
-  cursor: pointer;
-  transition: color ${ANIMATION.duration} ${ANIMATION.timing};
-  padding: 17px 10px; 
-  height: 70px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* Уголок в правом нижнем углу при наведении (по Figma) */
   &::after {
     content: '';
     position: absolute;
     bottom: 5px;
     right: 0;
-    width: 100%; /* Вся ширина родителя */
-    height: 3px; /* Толщина горизонтальной линии */
+    width: 100%;
+    height: 3px;
     background: ${COLORS.gray400};
     opacity: 0;
     transition: opacity ${ANIMATION.duration} ${ANIMATION.timing};
@@ -116,29 +45,151 @@ const HeaderNavItem = styled.span`
     position: absolute;
     bottom: 5px;
     right: 0;
-    width: 3px; /* Толщина вертикальной линии */
-    height: 80%; /* Вся высота родителя */
+    width: 3px;
+    height: 80%; // Adjust height as needed, maybe base on line-height or font-size?
     background: ${COLORS.gray400};
     opacity: 0;
     transition: opacity ${ANIMATION.duration} ${ANIMATION.timing};
   }
 
-&:hover::before,
-&:hover::after {
-  opacity: 1;
-}
+  &:hover::before,
+  &:hover::after,
+  &:focus-visible::before, // Apply on focus too
+  &:focus-visible::after {
+    opacity: 1;
+  }
 
-/* При наведении */
-&:hover::after {
-  opacity: 1;
-}
+  // Ensure hover styles apply when link is active too, if desired
+  // &.active::before,
+  // &.active::after {
+  //   opacity: 1;
+  // }
+`;
 
-  &:hover, &.active {
+const MainHeaderWrapper = styled.div`
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  background-color: ${COLORS.white};
+  border-bottom: 1px solid ${HEADER_COLORS.lightGray};
+  box-shadow: ${SHADOWS.sm};
+  min-height: ${HEADER_SIZES.headerHeight};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
-    
-    &::after {
-      opacity: 1;
+const MainHeaderContent = styled(Container)`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 100%;
+  width: 100%;
+
+  ${mediaQuery.min.lg} {
+    justify-content: center;
+    gap: 55px;
+    padding: 0;
+  }
+`;
+
+const LogoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${COLORS.primary};
+  width: clamp(180px, 32vw, 390px);
+  height: clamp(80px, 16vw, 200px);
+  min-width: 120px;
+  min-height: 60px;
+  max-width: 420px;
+  max-height: 220px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  img, svg {
+    width: 90%;
+    height: 90%;
+    max-width: 350px;
+    max-height: 180px;
+    min-width: 80px;
+    min-height: 40px;
+    transition: transform ${ANIMATION.duration} ${ANIMATION.timing};
+    display: block;
+  }
+
+  &:hover {
+    background-color: ${COLORS.primaryHover};
+
+    img, svg {
+      transform: scale(1.08);
     }
+  }
+
+  @media (max-width: 900px) {
+    width: clamp(120px, 40vw, 220px);
+    height: clamp(48px, 12vw, 90px);
+
+    img, svg {
+      max-width: 180px;
+      max-height: 80px;
+      min-width: 48px;
+      min-height: 24px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    width: 80px;
+    height: 40px;
+
+    img, svg {
+      max-width: 60px;
+      max-height: 30px;
+      min-width: 28px;
+      min-height: 14px;
+    }
+  }
+
+  ${mediaQuery.max.lg} {
+    order: 3; /* Mobile order: [Menu(1)][Search(2)][Logo(3)][Cart(4)] */
+  }
+`;
+
+const HeaderNavItem = styled.span`
+  position: relative;
+  font-size: 24px;
+  font-weight: ${TYPOGRAPHY.weight.semiBold};
+  color: ${COLORS.black};
+  cursor: pointer;
+  transition: color ${ANIMATION.duration} ${ANIMATION.timing};
+  padding: 1.28em 0.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+
+  ${navLinesMixin} // Apply the shared line mixin
+
+  @media (max-width: 900px) {
+    font-size: 18px;
+    padding: 1em 0.5em;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 15px;
+    padding: 0.7em 0.3em;
   }
 
   ${mediaQuery.max.lg} {
@@ -154,17 +205,24 @@ const HeaderActions = styled.div`
   ${mediaQuery.max.sm} {
     gap: ${HEADER_SPACING.medium};
   }
+
+  ${mediaQuery.max.lg} {
+    order: 4; /* Mobile order: [Menu(1)][Search(2)][Logo(3)][Cart(4)] */
+  }
 `;
 
 const ActionButton = styled.button`
   ${ButtonStyles}
   position: relative;
-  padding: 17px 10px; /* Соответствует паддингу из Figma */
+  padding: 1.2em 0.6em;
   margin: 0;
   color: ${HEADER_COLORS.dark};
-  
+  background: none;
+  border: none;
+  outline: none;
+
   ${HeaderIconStyles} {
-    width: 24px; /* Точный размер из Figma */
+    width: 24px;
     height: 24px;
   }
 
@@ -178,9 +236,34 @@ const ActionButton = styled.button`
     color: ${HEADER_COLORS.primary};
     outline-offset: 1px;
   }
+
+  ${navLinesMixin} // Apply the shared line mixin instead of corners
+
+  @media (max-width: 900px) {
+    padding: 12px 7px;
+    ${HeaderIconStyles} {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 8px 4px;
+    ${HeaderIconStyles} {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `;
 
-const CartLink = styled(ActionButton).attrs({ as: 'a' })``;
+// Separate component for Search Button to control its visibility
+const SearchActionButton = styled(ActionButton)`
+  /* Styles specific to search if needed */
+`;
+
+const CartLink = styled(ActionButton).attrs({ as: 'a' })`
+  ${navLinesMixin}
+`;
 
 const CartCounter = styled.span`
   ${badgeStyles}
@@ -198,6 +281,22 @@ const CartCounter = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 900px) {
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    top: -6px;
+    right: -6px;
+  }
+
+  @media (max-width: 600px) {
+    min-width: 12px;
+    height: 12px;
+    font-size: 8px;
+    top: -4px;
+    right: -4px;
+  }
 `;
 
 const MobileMenuButton = styled(ActionButton)`
@@ -205,10 +304,26 @@ const MobileMenuButton = styled(ActionButton)`
 
   ${mediaQuery.max.lg} {
     display: inline-flex;
+    order: 1;
   }
 `;
 
-// Индикатор загрузки для корзины
+const MobileSearchButton = styled(SearchActionButton)`
+  display: none; /* Hidden by default (on desktop) */
+
+  ${mediaQuery.max.lg} {
+    display: none; /* Not needed anymore as search is in HeaderActions */
+  }
+`;
+
+const DesktopSearchButton = styled(SearchActionButton)`
+  display: inline-flex; /* Visible by default (on desktop) */
+
+  ${mediaQuery.max.lg} {
+    display: none; /* Hidden on mobile */
+  }
+`;
+
 const LoadingIndicator = styled.span`
   position: absolute;
   top: -5px;
@@ -224,24 +339,36 @@ const LoadingIndicator = styled.span`
       transform: scale(0.95);
       box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.7);
     }
-    
     70% {
       transform: scale(1);
       box-shadow: 0 0 0 6px rgba(25, 118, 210, 0);
     }
-    
     100% {
       transform: scale(0.95);
       box-shadow: 0 0 0 0 rgba(25, 118, 210, 0);
     }
   }
+
+  @media (max-width: 900px) {
+    width: 6px;
+    height: 6px;
+    top: -4px;
+    right: -6px;
+  }
+
+  @media (max-width: 600px) {
+    width: 4px;
+    height: 4px;
+    top: -2px;
+    right: -4px;
+  }
 `;
 
 // --- Компонент ---
 
-const MainHeader = ({ 
-  basketCount = 0, 
-  isBasketLoading = false, 
+const MainHeader = ({
+  basketCount = 0,
+  isBasketLoading = false,
   toggleMobileMenu
 }) => {
   const router = useRouter();
@@ -273,12 +400,25 @@ const MainHeader = ({
   return (
     <MainHeaderWrapper>
       <MainHeaderContent>
-        <ActionButton onClick={handleSearchClick} aria-label="Открыть поиск" title="Поиск">
+        {/* --- Desktop Search (far left) --- */}
+        <DesktopSearchButton onClick={handleSearchClick} aria-label="Открыть поиск" title="Поиск">
           <HeaderIconStyles>
             <SearchIcon />
           </HeaderIconStyles>
-        </ActionButton>
+        </DesktopSearchButton>
 
+        {/* --- Mobile View Elements (order handled by styled-components) --- */}
+        <MobileMenuButton
+          onClick={toggleMobileMenu}
+          aria-label="Открыть меню навигации"
+          title="Меню"
+        >
+          <HeaderIconStyles>
+            <MenuBurgerIcon />
+          </HeaderIconStyles>
+        </MobileMenuButton>
+
+        {/* --- Desktop Navigation Items (hidden on mobile) --- */}
         <HeaderNavItem
           className={isActive('/catalog') ? 'active' : ''}
           onClick={() => router.push('/catalog')}
@@ -293,6 +433,7 @@ const MainHeader = ({
           Бренды
         </HeaderNavItem>
 
+        {/* --- Logo (order handled by styled-components) --- */}
         <LogoWrapper>
           <Link href="/" passHref legacyBehavior>
             <a aria-label="Shop4Shoot - Перейти на главную">
@@ -301,6 +442,7 @@ const MainHeader = ({
           </Link>
         </LogoWrapper>
 
+        {/* --- Desktop Navigation Items (hidden on mobile) --- */}
         <HeaderNavItem
           className={isActive('/about') ? 'active' : ''}
           onClick={() => router.push('/about')}
@@ -315,30 +457,45 @@ const MainHeader = ({
           Контакты
         </HeaderNavItem>
 
-        <Link href="/cart" passHref legacyBehavior>
-          <CartLink aria-label={getBasketAriaLabel()} title="Корзина">
-            <HeaderIconStyles>
-              <CartIcon />
-            </HeaderIconStyles>
-            {isBasketLoading ? (
-              <LoadingIndicator aria-hidden="true" />
-            ) : basketCount > 0 ? (
-              <CartCounter aria-hidden="true">
-                {basketCount > 99 ? '99+' : basketCount}
-              </CartCounter>
-            ) : null}
-          </CartLink>
-        </Link>
+        {/* --- Action Icons (Search for Desktop + Cart) --- */}
+        {/* HeaderActions container handles order for mobile view */}
+        <HeaderActions>
+          {/* Mobile Search Button - now inside HeaderActions to be next to cart */}
+          {mediaQuery.max.lg && (
+            <SearchActionButton 
+              onClick={handleSearchClick} 
+              aria-label="Открыть поиск" 
+              title="Поиск"
+              css={`
+                display: none;
+                ${mediaQuery.max.lg} {
+                  display: inline-flex;
+                }
+              `}
+            >
+              <HeaderIconStyles>
+                <SearchIcon />
+              </HeaderIconStyles>
+            </SearchActionButton>
+          )}
+          
+          {/* Cart Link - always visible */}
+          <Link href="/cart" passHref legacyBehavior>
+            <CartLink aria-label={getBasketAriaLabel()} title="Корзина">
+              <HeaderIconStyles>
+                <CartIcon />
+              </HeaderIconStyles>
+              {isBasketLoading ? (
+                <LoadingIndicator aria-hidden="true" />
+              ) : basketCount > 0 ? (
+                <CartCounter aria-hidden="true">
+                  {basketCount > 99 ? '99+' : basketCount}
+                </CartCounter>
+              ) : null}
+            </CartLink>
+          </Link>
+        </HeaderActions>
 
-        <MobileMenuButton
-          onClick={toggleMobileMenu}
-          aria-label="Открыть меню навигации"
-          title="Меню"
-        >
-          <HeaderIconStyles>
-            <MenuBurgerIcon />
-          </HeaderIconStyles>
-        </MobileMenuButton>
       </MainHeaderContent>
     </MainHeaderWrapper>
   );

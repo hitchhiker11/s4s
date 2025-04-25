@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import CategoryCard from '../CategoryCard';
+import ProductCard from '../ProductCard';
 import { COLORS, SPACING, TYPOGRAPHY, mediaQueries } from '../../styles/tokens';
 
 const GridContainer = styled.div`
@@ -54,11 +54,32 @@ const Grid = styled.div`
   }
 `;
 
-const CategoryGrid = ({ 
-  categories, 
-  title = "Категории", 
+const PreOrderWrapper = styled.div`
+  position: relative;
+`;
+
+const PreOrderBadge = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  background-color: ${COLORS.primary};
+  color: ${COLORS.white};
+  padding: ${SPACING.xs} 0;
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.bold};
+  text-transform: uppercase;
+  font-size: ${TYPOGRAPHY.size.xs};
+  z-index: 10;
+`;
+
+const ProductGrid = ({ 
+  products, 
+  title = "Товары", 
   viewAllLink = "#", 
-  viewAllText = "Смотреть все" 
+  viewAllText = "Смотреть все",
+  onAddToCart
 }) => {
   return (
     <GridContainer>
@@ -68,35 +89,40 @@ const CategoryGrid = ({
       </GridHeader>
       
       <Grid>
-        {categories.map((category, index) => (
-          <CategoryCard
-            key={category.id || index}
-            title={category.title}
-            imageUrl={category.imageUrl}
-            link={category.link}
-            showTitle={category.showTitle}
-            rotation={category.rotation}
-          />
+        {products.map((product, index) => (
+          <PreOrderWrapper key={product.id || index}>
+            {product.preOrder && (
+              <PreOrderBadge>ПРЕДЗАКАЗ</PreOrderBadge>
+            )}
+            <ProductCard
+              product={product}
+              onAddToCart={onAddToCart}
+            />
+          </PreOrderWrapper>
         ))}
       </Grid>
     </GridContainer>
   );
 };
 
-CategoryGrid.propTypes = {
-  categories: PropTypes.arrayOf(
+ProductGrid.propTypes = {
+  products: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      title: PropTypes.string.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       imageUrl: PropTypes.string,
-      link: PropTypes.string,
-      showTitle: PropTypes.bool,
-      rotation: PropTypes.number
+      brand: PropTypes.string,
+      name: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      productLink: PropTypes.string,
+      CATALOG_AVAILABLE: PropTypes.oneOf(['Y', 'N']).isRequired,
+      badge: PropTypes.string,
+      preOrder: PropTypes.bool
     })
   ).isRequired,
   title: PropTypes.string,
   viewAllLink: PropTypes.string,
-  viewAllText: PropTypes.string
+  viewAllText: PropTypes.string,
+  onAddToCart: PropTypes.func
 };
 
-export default CategoryGrid; 
+export default ProductGrid; 

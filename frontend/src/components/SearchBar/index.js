@@ -3,21 +3,13 @@ import styled from 'styled-components';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries } from '../../styles/tokens';
 import { SearchIcon } from '../icons';
 
-const reducePx = (value, factor = 3) => {
-  if (typeof value === 'string' && value.endsWith('px')) {
-    const num = parseFloat(value.replace('px', ''));
-    return `${num / factor}px`;
-  }
-  return value;
-};
-
 const SearchSection = styled.section`
   width: 100%;
-  padding: 12px 12px;
+  padding: 12px;
   background-color: ${COLORS.white};
 
   ${mediaQueries.md} {
-    padding: ${reducePx(SPACING['4xl'])} ${(SPACING['2xl'])};
+    padding: 29px 40px;
   }
 `;
 
@@ -30,12 +22,11 @@ const SearchWrapper = styled.div`
   margin: 0 auto;
   border-top: 4px solid ${COLORS.gray400};
   border-bottom: 4px solid ${COLORS.gray400};
-  padding: ${reducePx(SPACING.lg)} 0;
-  min-height: 64px;
+  padding: 7px 0;
+  min-height: 66px;
 
   ${mediaQueries.md} {
-    padding: ${reducePx(SPACING.xl)} 0;
-    min-height: 64px;
+    padding: 7px 0;
   }
 `;
 
@@ -43,8 +34,8 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   flex-grow: 1;
-  gap: ${reducePx(SPACING.md)};
-  padding-right: ${reducePx(SPACING.lg)};
+  gap: 5px;
+  padding-right: 10px;
 `;
 
 const StyledInput = styled.input`
@@ -53,14 +44,14 @@ const StyledInput = styled.input`
   background: none;
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
-  font-weight: ${TYPOGRAPHY.weight.regular};
-  font-size: clamp(${TYPOGRAPHY.size.md}, 3vw, ${TYPOGRAPHY.size.xl});
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  font-size: 30px;
   color: ${COLORS.black};
-  padding: ${reducePx(SPACING.sm)} 0;
+  padding: 7px 0;
 
   &::placeholder {
     color: ${COLORS.gray400};
-    font-weight: ${TYPOGRAPHY.weight.regular};
+    font-weight: ${TYPOGRAPHY.weight.medium};
   }
 
   &:focus {
@@ -72,17 +63,22 @@ const IconWrapper = styled.span`
   color: ${COLORS.gray400};
   display: flex;
   align-items: center;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 4px;
+  }
 `;
 
 const LinkContainer = styled.div`
   display: none;
-  border-left: 3px solid ${COLORS.gray300};
-  padding-left: ${reducePx(SPACING.xl)};
+  border-left: 4px solid ${COLORS.gray400};
+  padding-left: 30px;
   flex-shrink: 0;
 
   ${mediaQueries.md} {
     display: block;
-    padding-left: ${reducePx(SPACING['2xl'])};
   }
 `;
 
@@ -90,7 +86,7 @@ const StyledLink = styled.a`
   color: ${COLORS.primary};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(${TYPOGRAPHY.size.sm}, 2vw, ${TYPOGRAPHY.size.lg});
+  font-size: 30px;
   text-decoration: none;
   white-space: nowrap;
 
@@ -107,7 +103,7 @@ const SearchBar = () => {
         <InputContainer>
           <StyledInput type="text" placeholder="Ищете что-нибудь конкретное?" />
           <IconWrapper>
-            <SearchIcon width={SIZES.iconSizeSmall} height={SIZES.iconSizeSmall} />
+            <SearchIcon width="24px" height="24px" />
           </IconWrapper>
         </InputContainer>
         <LinkContainer>

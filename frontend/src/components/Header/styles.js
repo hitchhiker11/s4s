@@ -43,14 +43,15 @@ export const SHADOWS = {
 
 // Размеры (значения должны соответствовать Figma)
 export const HEADER_SIZES = {
-  // Header
-  headerHeight: '84px',
+  headerHeight: '70px', // Match Figma nav height
   headerHeightScrolled: '64px',
   topBarHeight: '40px',
 
   // Logo
   logoHeight: '44px',
   logoHeightScrolled: '32px',
+  logoWrapperWidth: '200px', // Width of logo wrapper from Figma
+  logoWrapperHeight: '84px', // Height of logo wrapper from Figma
 
   // Icons
   iconSize: '24px',

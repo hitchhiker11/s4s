@@ -1,35 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION } from '../../styles/tokens';
-
-// --- Styled Components based on Figma --- 
+import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries } from '../../styles/tokens';
 
 const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: ${COLORS.white}; // Figma uses #FEFEFE, very close to our white
-  box-shadow: ${SHADOWS.md}; // 4px 4px 0px rgba(182, 182, 182, 1)
+  background-color: ${COLORS.white};
+  box-shadow: ${SHADOWS.md};
   height: 100%;
-  position: relative; // Needed for absolute positioning of the badge
-  // No border or radius specified in Figma
+  position: relative;
 `;
 
 const ImageLinkWrapper = styled.a`
   display: block;
   text-decoration: none;
-  padding: ${SPACING.xl}; // Generous padding around the image container
+  padding: ${SPACING.xl};
   background-color: ${COLORS.white};
 `;
 
 const CardImageContainer = styled.div`
   width: 100%;
-  aspect-ratio: 1 / 1; // Maintain square aspect ratio
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: ${COLORS.white};
-  overflow: hidden; // Prevent image spilling
+  overflow: hidden;
 `;
 
 const CardImage = styled.img`
@@ -45,9 +42,9 @@ const TextContent = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: ${SPACING.xl} ${SPACING.lg}; // Approx 29px 17px from Figma
-  gap: ${SPACING.sm}; // Reduced gap to better match Figma spacing
-  background-color: ${COLORS.white}; // Match card background
+  padding: ${SPACING.xl} ${SPACING.lg};
+  gap: ${SPACING.sm};
+  background-color: ${COLORS.white};
   flex-grow: 1;
 `;
 
@@ -58,51 +55,66 @@ const BrandLinkWrapper = styled.a`
 `;
 
 const Brand = styled.span`
-  font-family: ${TYPOGRAPHY.fontFamily}; // Rubik
+  font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.lg}; // Adjusted to 20px, Figma's 23px is large
+  font-size: clamp(0.95rem, 5vw, ${TYPOGRAPHY.size.lg});
   color: ${COLORS.primary};
   text-transform: uppercase;
   line-height: 1.2;
+
+  ${mediaQueries.md} {
+    font-size: ${TYPOGRAPHY.size.lg};
+  }
 `;
 
 const Name = styled.h4`
-  font-family: ${TYPOGRAPHY.fontFamily}; // Rubik
+  font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.lg}; // Adjusted to 20px
+  font-size: clamp(0.95rem, 5vw, ${TYPOGRAPHY.size.lg});
   color: ${COLORS.black};
-  margin: ${SPACING.xs} 0 0 0; // Add small top margin
+  margin: ${SPACING.xs} 0 0 0;
   line-height: 1.2;
-  // Allow wrapping
+
+  ${mediaQueries.md} {
+    font-size: ${TYPOGRAPHY.size.lg};
+  }
 `;
 
 const Price = styled.span`
-  font-family: ${TYPOGRAPHY.fontFamily}; // Rubik
+  font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size['3xl']}; // 35px
+  font-size: clamp(1.1rem, 8vw, ${TYPOGRAPHY.size['3xl']});
   color: ${COLORS.primary};
   line-height: 1.1;
-  margin-top: ${SPACING.md}; // More space above price
+  margin-top: ${SPACING.md};
+
+  ${mediaQueries.md} {
+    font-size: ${TYPOGRAPHY.size['3xl']};
+  }
 `;
 
 const SeparatorLine = styled.hr`
   width: 100%;
   border: none;
-  border-top: 1.5px dashed rgba(0, 0, 0, 0.25); // Match Figma stroke/color
-  margin: 0; 
+  border-top: 2px dashed rgba(0, 0, 0, 0.25);
+  margin: 0;
+
+  ${mediaQueries.md} {
+    border-top-width: 4px;
+  }
 `;
 
 const AddToCartContainer = styled.div`
-  padding: ${SPACING.lg} ${SPACING.xl}; // Approx 19px 38px
+  padding: ${SPACING.lg} ${SPACING.xl};
   width: 100%;
   text-align: center;
   background-color: ${COLORS.white};
 `;
 
 const AddToCartButton = styled.button`
-  font-family: ${TYPOGRAPHY.fontFamily}; // Rubik
+  font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.lg}; // Adjusted to 20px
+  font-size: clamp(0.95rem, 5vw, ${TYPOGRAPHY.size.lg});
   color: ${COLORS.primary};
   text-transform: uppercase;
   background: none;
@@ -121,9 +133,12 @@ const AddToCartButton = styled.button`
     color: ${COLORS.gray400};
     cursor: not-allowed;
   }
+
+  ${mediaQueries.md} {
+    font-size: ${TYPOGRAPHY.size.lg};
+  }
 `;
 
-// Badge component (example, customize as needed)
 const Badge = styled.div`
   position: absolute;
   top: ${SPACING.md};
@@ -131,29 +146,31 @@ const Badge = styled.div`
   background-color: ${COLORS.primary};
   color: ${COLORS.white};
   border-radius: ${SIZES.borderRadius.round};
-  width: 40px; 
-  height: 40px; 
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${TYPOGRAPHY.size.xs}; 
+  font-size: clamp(0.65rem, 4vw, ${TYPOGRAPHY.size.xs});
   font-weight: ${TYPOGRAPHY.weight.bold};
   text-transform: uppercase;
-  z-index: 1; 
-  // Add specific badge image/icon if needed from Figma
+  z-index: 1;
+
+  ${mediaQueries.md} {
+    font-size: ${TYPOGRAPHY.size.xs};
+  }
 `;
 
-// --- Main Component Logic --- 
 const ProductCard = ({ product, onAddToCart }) => {
-  const { 
-    id, 
-    imageUrl, 
-    brand, 
-    name, 
-    price, 
-    productLink = '#', 
-    CATALOG_AVAILABLE, 
-    badge // Get badge prop
+  const {
+    id,
+    imageUrl,
+    brand,
+    name,
+    price,
+    productLink = '#',
+    CATALOG_AVAILABLE,
+    badge
   } = product;
 
   const formatPrice = (num) => {
@@ -173,9 +190,8 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <CardWrapper>
-      {/* Conditionally render Badge - adjust logic/content as needed */}
       {badge && <Badge>{badge}</Badge>}
-      
+
       <ImageLinkWrapper href={productLink}>
         <CardImageContainer>
           {imageUrl ? (
@@ -205,7 +221,6 @@ const ProductCard = ({ product, onAddToCart }) => {
   );
 };
 
-// Update PropTypes
 ProductCard.propTypes = {
   product: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -214,10 +229,10 @@ ProductCard.propTypes = {
     name: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     productLink: PropTypes.string,
-    CATALOG_AVAILABLE: PropTypes.oneOf(['Y', 'N']).isRequired, // Make required if always present
-    badge: PropTypes.string, // Optional badge text
+    CATALOG_AVAILABLE: PropTypes.oneOf(['Y', 'N']).isRequired,
+    badge: PropTypes.string,
   }).isRequired,
   onAddToCart: PropTypes.func,
 };
 
-export default ProductCard; 
+export default ProductCard;

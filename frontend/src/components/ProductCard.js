@@ -2,19 +2,20 @@ import React from 'react';
 import styled from 'styled-components';
 import { useQueryClient } from 'react-query';
 import { basketApi } from '../lib/api';
-import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, ANIMATION } from '../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, ANIMATION, mediaQueries } from '../styles/tokens';
 
 const Card = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: ${COLORS.white};
-  box-shadow: ${SHADOWS.md};
+
   overflow: hidden;
   height: 100%;
   width: 100%;
-  padding-left: ${SPACING.lg};
-  padding-right: ${SPACING.lg};
+  transition: ${ANIMATION.transitionBase};
+  border-right: 2px solid ${COLORS.gray400};
+  border-bottom: 2px solid ${COLORS.gray400};
 
   &:hover {
     transform: translateY(-4px);
@@ -25,11 +26,18 @@ const Card = styled.div`
     padding-left: 0;
     padding-right: 0;
   }
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.lg};
+    min-height: 240px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+  }
 `;
 
 const ImageContainer = styled.div`
   width: 100%;
-  height: 180px;
+  height: 200px;
   background-color: ${COLORS.white};
   display: flex;
   justify-content: center;
@@ -37,7 +45,7 @@ const ImageContainer = styled.div`
   overflow: hidden;
   padding: ${SPACING.sm};
 
-  @media (min-width: 600px) {
+  @media (min-width: 768px) {
     height: 240px;
     padding: ${SPACING.md};
   }
@@ -55,8 +63,8 @@ const Content = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #FEFEFE;
-  padding: ${SPACING.md} 0;
-  gap: ${SPACING.sm};
+  padding: ${SPACING.xl} ${SPACING.lg};
+  gap: 17px;
   width: 100%;
   text-align: center;
   flex-grow: 1;
@@ -70,28 +78,41 @@ const Content = styled.div`
 const BrandTitle = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.xl};
+  font-size: clamp(1.05rem, 5vw, 23.27px);
   line-height: 1;
   color: ${COLORS.primary};
   text-transform: uppercase;
+
+  @media (min-width: 1024px) {
+    font-size: 23.27px;
+  }
 `;
 
 const ProductTitle = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.xl};
-  line-height: 1.2;
+  font-size: clamp(1.05rem, 5vw, 23.27px);
+  line-height: 1;
   color: ${COLORS.black};
   margin: 0;
+  text-align: center;
+
+  @media (min-width: 1024px) {
+    font-size: 23.27px;
+  }
 `;
 
 const Price = styled.div`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size["3xl"]};
-  line-height: 0.7;
+  font-size: clamp(1.15rem, 7vw, ${TYPOGRAPHY.size["3xl"]});
+  line-height: 0.66;
   color: ${COLORS.primary};
   margin-top: ${SPACING.xs};
+
+  @media (min-width: 1024px) {
+    font-size: ${TYPOGRAPHY.size["3xl"]};
+  }
 
   @media (min-width: 600px) {
     margin-top: ${SPACING.sm};
@@ -102,10 +123,10 @@ const DividerLine = styled.hr`
   border: none;
   border-top: 2px dashed rgba(0, 0, 0, 0.25);
   width: 100%;
-  margin: ${SPACING.sm} 0 0 0;
+  margin: 0;
 
-  @media (min-width: 600px) {
-    margin: ${SPACING.lg} 0 0 0;
+  @media (min-width: 1024px) {
+    border-top-width: 2px;
   }
 `;
 
@@ -114,7 +135,7 @@ const CartActionArea = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #FEFEFE;
-  padding: ${SPACING.md} 0;
+  padding: 19px 38px;
   width: 100%;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -131,10 +152,14 @@ const CartActionArea = styled.div`
 const AddToCartText = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.xl};
+  font-size: clamp(1.05rem, 5vw, 23.27px);
   line-height: 1;
   color: ${COLORS.primary};
   text-transform: uppercase;
+
+  @media (min-width: 1024px) {
+    font-size: 23.27px;
+  }
 `;
 
 const ProductCard = ({ product, onAddToCart }) => {

@@ -37,7 +37,7 @@ const SlideImageContainer = styled.div`
   ${mediaQueries.lg} {
     height: auto;
     aspect-ratio: 21 / 9; // Широкоформатное соотношение для десктопов
-    max-height: 856px; // Максимальная высота из дизайна
+    max-height: 856px; // Точное значение из Figma
   }
 `;
 
@@ -52,10 +52,10 @@ const SlideImage = styled.img`
 const SlideTitle = styled.h2`
   position: absolute;
   top: 20px;
-  right: 20px;
+  left: 20px;
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-weight: 900;
-  font-size: clamp(24px, 5vw, 40px);
+  font-size: 40px;
   line-height: 1.22;
   color: ${COLORS.primary};
   text-transform: uppercase;
@@ -63,16 +63,16 @@ const SlideTitle = styled.h2`
   max-width: 250px;
   opacity: 0;
   transform: translateY(20px);
-  
+
   ${mediaQueries.md} {
     top: 30px;
-    right: 30px;
+    left: 30px;
     max-width: 280px;
   }
-  
+
   ${mediaQueries.lg} {
     top: 40px;
-    right: 40px;
+    left: 40px;
     max-width: 300px;
   }
 `;
@@ -83,7 +83,6 @@ const BrandLogo = styled.div`
   left: 20px;
   width: 140px;
   height: 50px;
-  background-color: ${COLORS.white};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,7 +128,7 @@ const PaginationDot = styled.div`
   height: 12px;
   background-color: ${props => props.active ? '#000000' : 'rgba(0, 0, 0, 0.5)'};
   width: ${props => props.active ? '48px' : '21px'};
-  border-radius: 145px;
+  border-radius: 145px; // Из Figma
   cursor: pointer;
   transition: all 0.3s ease;
   class-name: pagination-dot ${props => props.active ? 'active' : ''};
@@ -214,7 +213,7 @@ const AboutSlider = () => {
             <SlideImageContainer>
               <SlideImage src={slide.image} alt={slide.title} />
               <SlideTitle className="slide-title">{slide.title}</SlideTitle>
-              <BrandLogo className="brand-logo">
+              {/* <BrandLogo className="brand-logo">
                 {slide.brandLogo.map((logo, index) => (
                   <img 
                     key={index} 
@@ -223,7 +222,7 @@ const AboutSlider = () => {
                     style={{ maxWidth: '100%', height: 'auto' }} 
                   />
                 ))}
-              </BrandLogo>
+              </BrandLogo> */}
             </SlideImageContainer>
           </SwiperSlide>
         ))}
