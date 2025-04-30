@@ -41,7 +41,7 @@ const TitleRow = styled.div`
   align-items: center;
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
-  padding: ${SPACING.sm} 0;
+  padding: 5px 0;
   min-height: 65px;
 
   ${mediaQueries.sm} {

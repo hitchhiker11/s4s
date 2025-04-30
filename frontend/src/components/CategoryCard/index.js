@@ -17,7 +17,6 @@ const CardLink = styled.a`
   max-width: 100%;
   
   &:hover {
-    /* Remove transform and box-shadow for hover */
     border-right-color: ${COLORS.gray500};
     border-bottom-color: ${COLORS.gray500};
   }
@@ -41,7 +40,7 @@ const CardTitle = styled.h3`
   font-size: clamp(14px, 3vw, 27.5px);
   color: ${COLORS.black};
   // margin: 0 0 ${SPACING.md} 0;
-  text-align: center;
+  text-align: left;
   line-height: 1.2;
   padding: ${SPACING.md};
   padding-bottom: 0;
@@ -59,16 +58,16 @@ const CardTitle = styled.h3`
 
 const CardImageContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: end;
+  justify-content: end;
   background: transparent;
   overflow: hidden;
   flex-grow: 1;
   // padding: ${SPACING.md};
-  min-height: 0;
-
+  max-height: 110px;
   ${mediaQueries.md} {
     padding: ${SPACING.lg};
+    max-height: 250px;
   }
 `;
 
@@ -77,7 +76,7 @@ const getRandomRotation = () => Math.random() * 16 - 8;
 
 const CardImage = styled.img`
   max-width: 100%;
-  max-height: 100%;
+  max-height: 90%;
   object-fit: contain;
   transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
   

@@ -11,15 +11,15 @@ const Card = styled.div`
   background-color: ${COLORS.white};
 
   overflow: hidden;
-  height: 75%;
+  height: 70%;
   width: 100%;
   transition: ${ANIMATION.transitionBase};
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    border-right-color: ${COLORS.gray500};
+    border-bottom-color: ${COLORS.gray500};
   }
 
   @media (min-width: 600px) {
@@ -28,7 +28,7 @@ const Card = styled.div`
   }
 
   ${mediaQueries.md} {
-    padding: ${SPACING.lg};
+    // padding: ${SPACING.lg};
     min-height: 240px;
     border-right-width: 4px;
     border-bottom-width: 4px;
@@ -43,11 +43,11 @@ const ImageContainer = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  padding: ${SPACING.sm};
+  // padding: ${SPACING.sm};
 
   @media (min-width: 768px) {
     height: 240px;
-    padding: ${SPACING.md};
+    // padding: ${SPACING.md};
   }
 `;
 
@@ -63,7 +63,7 @@ const Content = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #FEFEFE;
-  padding: ${SPACING.xl} ${SPACING.lg};
+  padding: ${SPACING.md} ${SPACING.lg};
   gap: 4px;
   width: 100%;
   text-align: center;
@@ -78,7 +78,7 @@ const Content = styled.div`
 const BrandTitle = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(14px, 3vw, 27.5px);
+  font-size: clamp(10px, 3vw, 27.5px);
   line-height: 1.05;
   color: ${COLORS.primary};
   text-transform: uppercase;
@@ -91,7 +91,7 @@ const BrandTitle = styled.span`
 const ProductTitle = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(14px, 3vw, 27.5px);
+  font-size: clamp(10px, 3vw, 27.5px);
   line-height: 1;
   color: ${COLORS.black};
   margin: 0;
@@ -135,7 +135,7 @@ const CartActionArea = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #FEFEFE;
-  padding: 19px 38px;
+  padding: 8px 38px 8px 38px;
   width: 100%;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -145,14 +145,15 @@ const CartActionArea = styled.div`
   }
 
   @media (min-width: 600px) {
-    padding: ${SPACING.lg} ${SPACING.xl};
+    padding: ${SPACING.lg} ${SPACING.xl}  ${SPACING.lg} ${SPACING.xl};
   }
 `;
 
 const AddToCartText = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(1.05rem, 5vw, 23.27px);
+  font-size: clamp(10px, 3vw, 27.5px);
+  margin-bottom: 8px;
   line-height: 1;
   color: ${COLORS.primary};
   text-transform: uppercase;

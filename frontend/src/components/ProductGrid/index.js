@@ -43,7 +43,7 @@ const TitleRow = styled.div`
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
   padding: ${SPACING.sm} 0;
-  min-height: 65px;
+  max-height: 28px;
 
   ${mediaQueries.sm} {
     border-top-width: 2px;
@@ -52,6 +52,7 @@ const TitleRow = styled.div`
 
   ${mediaQueries.md} {
     border-top-width: 4px;
+    max-height: 45px;
   }
 `;
 

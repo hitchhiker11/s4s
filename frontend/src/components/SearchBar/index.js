@@ -53,7 +53,7 @@ const StyledInput = styled.input`
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(18px, 5vw, 30px);
+  font-size: clamp(14px, 3vw, 30px);
   color: ${COLORS.black};
   padding: 5px 0;
   width: 100%;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -21,6 +21,7 @@ import {
 } from './styles';
 import { NAV_LINKS_DESKTOP, NavLinkPropTypes } from './config';
 import { COLORS, TYPOGRAPHY } from '../../styles/tokens';
+import MobileSearchOverlay from '../SearchBar/MobileSearchOverlay';
 
 // --- Стили ---
 
@@ -278,7 +279,7 @@ const CartLink = styled(ActionButton).attrs({ as: 'a' })`
   }
 `;
 
-const CartCounter = styled.span`
+const CartBadge = styled.span`
   ${badgeStyles}
   position: absolute;
   top: -8px;
@@ -396,19 +397,27 @@ const MainHeader = ({
   toggleMobileMenu
 }) => {
   const router = useRouter();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const handleSearchClick = () => {
-    router.push('/search');
+    if (window.innerWidth <= 768) {
+      // For mobile, open the search overlay
+      setIsSearchOpen(true);
+    } else {
+      // For desktop, navigate to search page
+      router.push('/search');
+    }
+  };
+
+  const closeSearch = () => {
+    setIsSearchOpen(false);
   };
 
   const isActive = (path) => {
-    return router.pathname === path || (path !== '/' && router.pathname.startsWith(path));
+    return router.pathname === path || (path !== '/' && router.pathname.startsWith(path + '/'));
   };
 
   const getBasketAriaLabel = () => {
-    if (isBasketLoading) {
-      return "Корзина, загрузка";
-    }
     let label = "Корзина";
     if (basketCount > 0) {
       label += `, ${basketCount} товар`;
@@ -422,106 +431,75 @@ const MainHeader = ({
   };
 
   return (
-    <MainHeaderWrapper>
-      <MainHeaderContent>
-        {/* --- Desktop Search (far left) --- */}
-        <DesktopSearchButton onClick={handleSearchClick} aria-label="Открыть поиск" title="Поиск">
-          <HeaderIconStyles>
-            <SearchIcon />
-          </HeaderIconStyles>
-        </DesktopSearchButton>
+    <>
+      <MainHeaderWrapper>
+        <MainHeaderContent>
+          <MobileMenuButton 
+            onClick={toggleMobileMenu}
+            aria-label="Показать меню"
+            aria-expanded="false"
+          >
+            <HeaderIconStyles>
+              <MenuBurgerIcon />
+            </HeaderIconStyles>
+          </MobileMenuButton>
 
-        {/* --- Mobile View Elements (order handled by styled-components) --- */}
-        <MobileMenuButton
-          onClick={toggleMobileMenu}
-          aria-label="Открыть меню навигации"
-          title="Меню"
-        >
-          <HeaderIconStyles>
-            <MenuBurgerIcon />
-          </HeaderIconStyles>
-        </MobileMenuButton>
+          <LogoWrapper>
+            <Link href="/" legacyBehavior>
+              <a aria-label="Shop4Shoot - Перейти на главную">
+                <img src="/images/header/logo.svg" alt="Shop4Shoot" />
+              </a>
+            </Link>
+          </LogoWrapper>
 
-        {/* --- Desktop Navigation Items (hidden on mobile) --- */}
-        <HeaderNavItem
-          className={isActive('/catalog') ? 'active' : ''}
-          onClick={() => router.push('/catalog')}
-        >
-          Каталог
-        </HeaderNavItem>
+          {NAV_LINKS_DESKTOP.map((item) => (
+            <HeaderNavItem 
+              key={item.id}
+              as={Link}
+              href={item.path}
+            >
+              {item.name}
+            </HeaderNavItem>
+          ))}
 
-        <HeaderNavItem
-          className={isActive('/brands') ? 'active' : ''}
-          onClick={() => router.push('/brands')}
-        >
-          Бренды
-        </HeaderNavItem>
-
-        {/* --- Logo (order handled by styled-components) --- */}
-        <LogoWrapper>
-          <Link href="/" passHref legacyBehavior>
-            <a aria-label="Shop4Shoot - Перейти на главную">
-              <img src="/images/header/logo-icon.svg" alt="Shop4Shoot"/>
-            </a>
-          </Link>
-        </LogoWrapper>
-
-        {/* --- Desktop Navigation Items (hidden on mobile) --- */}
-        <HeaderNavItem
-          className={isActive('/about') ? 'active' : ''}
-          onClick={() => router.push('/about')}
-        >
-          О нас
-        </HeaderNavItem>
-
-        <HeaderNavItem
-          className={isActive('/contacts') ? 'active' : ''}
-          onClick={() => router.push('/contacts')}
-        >
-          Контакты
-        </HeaderNavItem>
-
-        {/* --- Action Icons (Search for Desktop + Cart) --- */}
-        {/* HeaderActions container handles order for mobile view */}
-        <HeaderActions>
-          {/* Mobile Search Button - now inside HeaderActions to be next to cart */}
-          {mediaQuery.max.lg && (
-            <SearchActionButton 
-              onClick={handleSearchClick} 
-              aria-label="Открыть поиск" 
-              title="Поиск"
-              css={`
-                display: none;
-                ${mediaQuery.max.lg} {
-                  display: inline-flex;
-                }
-              `}
+          <HeaderActions>
+            <ActionButton 
+              onClick={handleSearchClick}
+              aria-label="Поиск"
             >
               <HeaderIconStyles>
                 <SearchIcon />
               </HeaderIconStyles>
-            </SearchActionButton>
-          )}
-          
-          {/* Cart Link - always visible */}
-          <Link href="/cart" passHref legacyBehavior>
-            <CartLink aria-label={getBasketAriaLabel()} title="Корзина">
+            </ActionButton>
+
+            <ActionButton 
+              aria-label={getBasketAriaLabel()}
+              as={Link} 
+              href="/cart" 
+              className="cart-button"
+            >
               <HeaderIconStyles>
                 <CartIcon />
               </HeaderIconStyles>
-              {isBasketLoading ? (
-                <LoadingIndicator aria-hidden="true" />
-              ) : basketCount > 0 ? (
-                <CartCounter aria-hidden="true">
-                  {basketCount > 99 ? '99+' : basketCount}
-                </CartCounter>
-              ) : null}
-            </CartLink>
-          </Link>
-        </HeaderActions>
+              {basketCount > 0 && (
+                <CartBadge 
+                  $isLoading={isBasketLoading}
+                  aria-hidden="true"
+                >
+                  {basketCount}
+                </CartBadge>
+              )}
+            </ActionButton>
+          </HeaderActions>
+        </MainHeaderContent>
+      </MainHeaderWrapper>
 
-      </MainHeaderContent>
-    </MainHeaderWrapper>
+      {/* Mobile Search Overlay */}
+      <MobileSearchOverlay 
+        isOpen={isSearchOpen}
+        onClose={closeSearch}
+      />
+    </>
   );
 };
 

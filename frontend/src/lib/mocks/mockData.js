@@ -8,7 +8,7 @@ export const aboutSliderMockData = {
   data: [
     {
       id: 1,
-      image: '/images/slider/slider-image-1.svg',
+      image: '/images/slider/slider-image-2.png',
       title: 'Лучшее предложение',
       brand: 'Recover Tactical',
       brandLogo: [

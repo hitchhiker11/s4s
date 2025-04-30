@@ -1,83 +1,93 @@
-# Shop4Shoot - Next.js Frontend for 1C-Bitrix CMS
+# Bitrix + React Frontend with Storybook
 
-This project is a Next.js SSR frontend for an existing 1C-Bitrix CMS e-commerce site. It uses a reverse-engineered approach to integrate with Bitrix Ajax endpoints.
+This project contains a React frontend for Bitrix CMS, with a comprehensive Storybook setup for component documentation and development.
 
-## Setup
+## Setup and Installation
 
 1. Clone the repository
 2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Copy `.env.example` to `.env.local` and adjust values:
-   ```
-   cp .env .env.local
-   ```
-4. Start the development server:
-   ```
-   npm run dev
-   ```
+```bash
+npm install
+```
 
-## Architecture
+## Running Storybook
 
-The project follows a clean architecture approach with clear separation of concerns:
+To start the Storybook development server:
+```bash
+npm run storybook
+```
 
-### API Layer
+This will start Storybook at [http://localhost:6006](http://localhost:6006)
 
-The API layer is responsible for communicating with the Bitrix backend:
+## Component Structure
 
-- `src/lib/api/bitrix.ts` - Core API adapters and utilities for Bitrix integration
-- Strongly typed with Zod schemas for runtime validation
-- Error handling and logging
+The components are organized following the Atomic Design methodology:
 
-### Hooks Layer
+- **Atoms**: Basic building blocks like buttons, inputs, and typography
+- **Molecules**: Combinations of atoms, like forms, cards, and search bars
+- **Organisms**: Complex UI components composed of molecules and atoms
+- **Templates**: Page-level component arrangements
+- **Pages**: Complete page implementations
 
-Custom React hooks abstract away the complexity of data fetching:
+## Design System
 
-- `src/lib/hooks/useBasketCount.ts` - Hook for basket count functionality
-- Integrated with React Query for caching, stale-while-revalidate, etc.
+The design system is built on a foundation of tokens:
 
-### Component Layer
+- **Colors**: Brand colors and UI states
+- **Typography**: Font families, sizes, and weights
+- **Spacing**: Consistent spacing values
+- **Sizes**: Dimensions and border-radius
+- **Animations**: Timing functions and durations
+- **Shadows**: Elevation levels
+- **Breakpoints**: Responsive design breakpoints
 
-React components using the Atomic Design methodology:
+## Creating New Components
 
-- Atoms: Basic UI elements
-- Molecules: Groups of atoms
-- Organisms: Groups of molecules (like Header)
-- Templates: Page layouts
-- Pages: Specific page implementations
+1. Create a new component in the appropriate directory based on its complexity level
+2. Create a story file with the same name as your component (e.g., `Button.stories.js`)
+3. Run Storybook to see your component in action
 
-## Bitrix Integration
+### Example Story
 
-This frontend integrates with the following Bitrix endpoints:
+```jsx
+// MyComponent.stories.js
+import React from 'react';
+import MyComponent from './index';
 
-### Basket API
+export default {
+  title: 'Atoms/MyComponent',
+  component: MyComponent,
+  parameters: {
+    componentSubtitle: 'A brief description',
+  },
+  argTypes: {
+    // Define controls for props
+  },
+};
 
-- Endpoint: `/bitrix/ajax/getProductCountInBasket.php`
-- Returns: `{ count: number, status: boolean }`
-- Usage: Displays the number of items in the cart in the Header component
+// Create stories
+export const Default = () => <MyComponent />;
+export const Variant = () => <MyComponent variant="special" />;
+```
 
-### Authentication
+## Integration with Bitrix
 
-- Relies on cookies for authentication state
-- Integration with Bitrix auth system is pending implementation
+The React components are designed to work with Bitrix CMS through the existing AJAX handlers. For more information on this integration, please refer to the [Technical Requirements Document](frontend.mdc).
 
-## Development Guidelines
+## Building Storybook
 
-1. **TypeScript**: Use strict typing everywhere
-2. **API Integration**: Use the Bitrix adapter pattern for all API calls
-3. **Caching**: Implement proper caching strategies based on data type
-4. **Error Handling**: Gracefully handle API errors with fallbacks
-5. **Testing**: Write tests for all new functionality
+To build a static version of Storybook for deployment:
 
-## Next Steps
+```bash
+npm run build-storybook
+```
 
-- [ ] Implement user authentication integration
-- [ ] Add product catalog browsing
-- [ ] Implement cart functionality
-- [ ] Add checkout process
-- [ ] Implement search functionality
+This will create a `storybook-static` directory with the compiled Storybook that can be deployed to any static hosting service.
 
-## License
+## Troubleshooting
 
-This project is proprietary and confidential. 
+If you encounter any issues with Storybook or component development, please check:
+
+1. Make sure all dependencies are installed
+2. Verify that your component imports are correct
+3. Check the console for any errors 

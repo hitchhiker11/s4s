@@ -1,0 +1,66 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# UI Component Library for Bitrix + React
+
+This Storybook documents the UI components used in our Bitrix CMS React integration project.
+
+## Project Architecture
+
+Our frontend architecture is based on a React + Next.js application that integrates with an existing Bitrix CMS e-commerce site. The components are designed to work with server-side rendering for SEO compatibility while maintaining a modern React frontend.
+
+## Component Structure
+
+Our components follow the Atomic Design methodology:
+
+### 1. Atoms
+The basic building blocks of our interface:
+- Buttons
+- Icons
+- Input fields
+- Typography elements
+
+### 2. Molecules
+Groups of atoms that function together:
+- Form fields
+- Search bars
+- Navigation links
+- Cards
+
+### 3. Organisms
+Complex UI components composed of molecules and atoms:
+- Headers
+- Footer
+- Product cards
+- Category displays
+- Brand features
+
+### 4. Templates
+Page-level component arrangements:
+- Catalog templates
+- Product detail templates
+- Checkout flow templates
+
+### 5. Pages
+Complete page implementations:
+- Home page
+- Category page
+- Product detail page
+- Cart page
+
+## Design Tokens
+
+Our design system is built on a set of foundational tokens:
+
+- **Colors**: Brand colors, UI states, and neutrals
+- **Typography**: Font families, sizes, weights
+- **Spacing**: Consistent spacing values
+- **Sizes**: Dimensions, border-radius, etc.
+- **Animations**: Timing, easing functions
+- **Shadows**: Elevation and depth
+- **Breakpoints**: Responsive design breakpoints
+
+## Integration with Bitrix
+
+These components are designed to integrate with Bitrix CMS via AJAX/JSON, without modifying the backend logic. Server-side rendering is implemented via Next.js to maintain SEO compatibility. 

@@ -27,6 +27,7 @@ const SliderContainer = styled.div`
 const SlideImageContainer = styled.div`
   position: relative;
   width: 100%;
+  min-height: 434px;
   aspect-ratio: 16 / 9; // Стандартное соотношение сторон
   overflow: hidden;
   background-color: ${COLORS.black};
@@ -214,7 +215,7 @@ const AboutSlider = () => {
           <SwiperSlide key={slide.id}>
             <SlideImageContainer>
               <SlideImage src={slide.image} alt={slide.title} />
-              <SlideTitle className="slide-title">{slide.title}</SlideTitle>
+              {/* <SlideTitle className="slide-title">{slide.title}</SlideTitle> */}
               {/* <BrandLogo className="brand-logo">
                 {slide.brandLogo.map((logo, index) => (
                   <img 

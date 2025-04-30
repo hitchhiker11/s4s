@@ -38,7 +38,12 @@ const TitleRow = styled.div`
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
   padding: ${SPACING.sm} 0;
-  min-height: 50px; /* Adjusted height */
+
+  max-height: 28px;
+  ${mediaQueries.sm} {
+  max-height: 45px;
+    padding: 0 ${SPACING.lg};
+  }
 `;
 
 const Title = styled.h2`
