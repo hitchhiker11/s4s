@@ -53,23 +53,9 @@ const slideOutTop = keyframes`
   }
 `;
 
-const MobileMenuOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(28, 28, 28, 0.5);
-  z-index: 1001;
-  opacity: 0;
-  visibility: hidden;
-  animation: ${props => (props.$isOpen ? overlayFadeIn : overlayFadeOut)} ${ANIMATION.duration} ${ANIMATION.timing} forwards;
-  backdrop-filter: blur(25px);
-`;
-
 const MobileMenuContainer = styled.div`
   position: fixed;
-  top: 0;
+  top: ${HEADER_SIZES.headerHeight}; // Position right below the header
   left: 0;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.65);
@@ -127,6 +113,7 @@ const MobileNavList = styled.ul`
   justify-content: center;
   align-items: center;
   gap: 19px;
+  padding: 10px 0 20px;
 `;
 
 const MobileNavItem = styled.li`
@@ -178,17 +165,11 @@ const MobileMenu = ({
       // Add event listener for Escape key
       document.addEventListener('keydown', handleEscapeKey);
       
-      // Prevent scrolling of background content when menu is open
-      document.body.style.overflow = 'hidden';
-      
       // Set focus to the menu container
       if (menuRef.current) {
         menuRef.current.focus();
       }
     } else {
-      // Restore scrolling when menu is closed
-      document.body.style.overflow = '';
-      
       // Restore focus to the element that had it before the menu was opened
       if (previousFocusRef.current) {
         previousFocusRef.current.focus();
@@ -197,7 +178,6 @@ const MobileMenu = ({
 
     return () => {
       document.removeEventListener('keydown', handleEscapeKey);
-      document.body.style.overflow = '';
     };
   }, [isOpen, onClose]);
 
@@ -230,65 +210,58 @@ const MobileMenu = ({
     }
   };
 
+  // If menu is not open, don't render it at all
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <>
-      <MobileMenuOverlay $isOpen={isOpen} onClick={onClose} />
-      <MobileMenuContainer 
-        $isOpen={isOpen}
-        ref={menuRef}
-        tabIndex={-1}
-        onKeyDown={handleKeyDown}
-        aria-hidden={!isOpen}
-      >
-        <MobileMenuHeader>
-          <CloseButton 
-            onClick={onClose}
-            aria-label="Close menu"
+    <MobileMenuContainer 
+      $isOpen={isOpen}
+      ref={menuRef}
+      tabIndex={-1}
+      onKeyDown={handleKeyDown}
+      aria-hidden={!isOpen}
+    >
+      <MobileNavList>
+        <MobileNavItem>
+          <MobileNavLink 
+            href="/catalog"
+            className={router.pathname.startsWith('/catalog') ? 'active' : ''}
+            onClick={handleLinkClick}
           >
-            <CloseIcon />
-          </CloseButton>
-        </MobileMenuHeader>
-        
-        <MobileNavList>
-          <MobileNavItem>
-            <MobileNavLink 
-              href="/catalog"
-              className={router.pathname.startsWith('/catalog') ? 'active' : ''}
-              onClick={handleLinkClick}
-            >
-              Каталог
-            </MobileNavLink>
-          </MobileNavItem>
-          <MobileNavItem>
-            <MobileNavLink 
-              href="/brands"
-              className={router.pathname.startsWith('/brands') ? 'active' : ''}
-              onClick={handleLinkClick}
-            >
-              Бренды
-            </MobileNavLink>
-          </MobileNavItem>
-          <MobileNavItem>
-            <MobileNavLink 
-              href="/about"
-              className={router.pathname.startsWith('/about') ? 'active' : ''}
-              onClick={handleLinkClick}
-            >
-              О нас
-            </MobileNavLink>
-          </MobileNavItem>
-          <MobileNavItem>
-            <MobileNavLink 
-              href="/contacts"
-              className={router.pathname.startsWith('/contacts') ? 'active' : ''}
-              onClick={handleLinkClick}
-            >
-              Контакты
-            </MobileNavLink>
-          </MobileNavItem>
-        </MobileNavList>
-      </MobileMenuContainer>
-    </>
+            Каталог
+          </MobileNavLink>
+        </MobileNavItem>
+        <MobileNavItem>
+          <MobileNavLink 
+            href="/brands"
+            className={router.pathname.startsWith('/brands') ? 'active' : ''}
+            onClick={handleLinkClick}
+          >
+            Бренды
+          </MobileNavLink>
+        </MobileNavItem>
+        <MobileNavItem>
+          <MobileNavLink 
+            href="/about"
+            className={router.pathname.startsWith('/about') ? 'active' : ''}
+            onClick={handleLinkClick}
+          >
+            О нас
+          </MobileNavLink>
+        </MobileNavItem>
+        <MobileNavItem>
+          <MobileNavLink 
+            href="/contacts"
+            className={router.pathname.startsWith('/contacts') ? 'active' : ''}
+            onClick={handleLinkClick}
+          >
+            Контакты
+          </MobileNavLink>
+        </MobileNavItem>
+      </MobileNavList>
+    </MobileMenuContainer>
   );
 };
 

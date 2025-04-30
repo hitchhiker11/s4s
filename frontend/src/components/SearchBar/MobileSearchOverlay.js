@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled, { keyframes } from 'styled-components';
 import { SearchIcon, CloseIcon } from '../Header/icons';
 import { COLORS, TYPOGRAPHY } from '../../styles/tokens';
+import SearchResults from './SearchResults';
+import { useRouter } from 'next/router';
 
 // Animations
 const fadeIn = keyframes`
@@ -42,6 +44,8 @@ const Overlay = styled.div`
 const SearchContainer = styled.div`
   padding: 0 23px;
   margin-top: 20px;
+  width: 100%;
+  position: relative;
 `;
 
 const SearchInputWrapper = styled.div`
@@ -90,10 +94,91 @@ const CloseButton = styled.button`
   }
 `;
 
+// Mock API call function (replace with actual API call in production)
+const searchAPI = async (query) => {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  // Return mock results based on query
+  if (!query || query.length < 2) return { brands: [], categories: [], products: [] };
+  
+  const mockData = {
+    brands: [
+      { id: 1, name: 'Canon', slug: 'canon' },
+      { id: 2, name: 'Nikon', slug: 'nikon' },
+      { id: 3, name: 'Sony', slug: 'sony' },
+    ],
+    categories: [
+      { id: 1, name: 'Камеры', slug: 'cameras' },
+      { id: 2, name: 'Объективы', slug: 'lenses' },
+      { id: 3, name: 'Аксессуары', slug: 'accessories' },
+    ],
+    products: [
+      { id: 1, name: 'Canon EOS R5', slug: 'canon-eos-r5' },
+      { id: 2, name: 'Nikon Z9', slug: 'nikon-z9' },
+      { id: 3, name: 'Sony Alpha A7 IV', slug: 'sony-alpha-a7-iv' },
+    ]
+  };
+  
+  // Filter results based on query
+  const lowerQuery = query.toLowerCase();
+  return {
+    brands: mockData.brands.filter(b => b.name.toLowerCase().includes(lowerQuery)),
+    categories: mockData.categories.filter(c => c.name.toLowerCase().includes(lowerQuery)),
+    products: mockData.products.filter(p => p.name.toLowerCase().includes(lowerQuery))
+  };
+};
+
 const MobileSearchOverlay = ({ isOpen, onClose }) => {
+  const router = useRouter();
   const inputRef = useRef(null);
   const overlayRef = useRef(null);
   const previousFocusRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState({
+    brands: [],
+    categories: [],
+    products: []
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (query.length >= 2) {
+      setIsLoading(true);
+      setShowResults(true);
+      
+      // Debounce the API call
+      const timeoutId = setTimeout(async () => {
+        const results = await searchAPI(query);
+        setSearchResults(results);
+        setIsLoading(false);
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setShowResults(false);
+      setSearchResults({ brands: [], categories: [], products: [] });
+    }
+  };
+
+  // Handle search result click
+  const handleResultClick = (type, data) => {
+    onClose();
+    
+    // Navigate based on result type
+    if (type === 'brand') {
+      router.push(`/brands/${data.slug}`);
+    } else if (type === 'category') {
+      router.push(`/catalog/${data.slug}`);
+    } else if (type === 'search') {
+      router.push(`/search?q=${encodeURIComponent(data.query)}`);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -110,6 +195,10 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
       // Prevent scrolling of background content
       document.body.style.overflow = 'hidden';
     } else {
+      // Reset search when closing
+      setSearchQuery('');
+      setShowResults(false);
+      
       // Restore scrolling
       document.body.style.overflow = '';
       
@@ -140,6 +229,15 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
+  // Handle submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      onClose();
+    }
+  };
+
   // Don't render anything if not open
   if (!isOpen) return null;
 
@@ -152,15 +250,26 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
       </CloseButtonWrapper>
       
       <SearchContainer>
-        <SearchInputWrapper>
-          <SearchInput
-            ref={inputRef}
-            type="text" 
-            placeholder="Ищете что-нибудь конкретное?"
-            aria-label="Search"
-          />
-          <SearchIcon />
-        </SearchInputWrapper>
+        <form onSubmit={handleSubmit}>
+          <SearchInputWrapper>
+            <SearchInput
+              ref={inputRef}
+              type="text" 
+              placeholder="Ищете что-нибудь конкретное?"
+              aria-label="Search"
+              value={searchQuery}
+              onChange={handleInputChange}
+            />
+            <SearchIcon />
+          </SearchInputWrapper>
+        </form>
+        
+        <SearchResults 
+          isVisible={showResults}
+          query={searchQuery}
+          results={searchResults}
+          onResultClick={handleResultClick}
+        />
       </SearchContainer>
     </Overlay>
   );
