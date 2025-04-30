@@ -3,27 +3,31 @@
 export const mockCategories = [
   {
     id: 'cat-1',
-    title: 'Тюнинг оружия',
+    title: 'Тюнинг',
     imageUrl: '/images/categories/tuning.jpg',
     link: '/catalog/tuning',
+    showTitle: true
   },
   {
     id: 'cat-2',
     title: 'Экипировка',
     imageUrl: '/images/categories/equipment.jpg',
     link: '/catalog/gear',
+    showTitle: true
   },
   {
     id: 'cat-3',
     title: 'Обслуживание',
     imageUrl: '/images/categories/maintenance.jpg',
     link: '/catalog/maintenance',
+    showTitle: true
   },
   {
     id: 'cat-4',
     title: 'Релоадинг',
     imageUrl: '/images/categories/reloading.jpg',
     link: '/catalog/reloading',
+    showTitle: true
   },
   // {
   //   id: 5,
@@ -80,26 +84,30 @@ export const mockBrands = [
   {
     id: 'brand-1',
     title: 'STAСK DATA DEFENS',
-    imageUrl: 'https://via.placeholder.com/250x100/FFFFFF/1C1C1C?text=STACK+DATA+DEFENS',
+    imageUrl: '/images/brands/stack_data.png',
     link: '/brands/stack-data-defens',
+    showTitle: false
   },
   {
     id: 'brand-2',
     title: 'FAB DEFENSE',
-    imageUrl: 'https://via.placeholder.com/250x100/FFFFFF/E7194A?text=FAB+DEFENSE',
+    imageUrl: '/images/brands/fab_defense.png',
     link: '/brands/fab-defense',
+    showTitle: false
   },
   {
     id: 'brand-3',
     title: 'ARMANOV',
-    imageUrl: 'https://via.placeholder.com/250x100/FFFFFF/1C1C1C?text=ARMANOV',
+    imageUrl: '/images/brands/armanov.png',
     link: '/brands/armanov',
+    showTitle: false
   },
   {
     id: 'brand-4',
     title: 'TANFOGLIO',
-    imageUrl: 'https://via.placeholder.com/250x100/FFFFFF/E7194A?text=TANFOGLIO',
+    imageUrl: '/images/brands/tanfoglio.png',
     link: '/brands/tanfoglio',
+    showTitle: false
   },
 ];
 
@@ -107,7 +115,7 @@ export const mockBrands = [
 export const mockBestsellers = [
   {
     id: 'best-101',
-    imageUrl: 'https://via.placeholder.com/200x200/FAFAFA/1C1C1C?text=Tool', 
+    imageUrl: '/images/heats/aim.png', 
     brand: 'EIGER TAC',
     name: 'ПРИЦЕЛ ДЛЯ ПИСТОЛЕТА ТАКОЙ ТО МОДЕЛИ С ДЛИННЫМ НАЗВАНИЕМ',
     price: 2100,
@@ -116,7 +124,7 @@ export const mockBestsellers = [
   },
   {
     id: 'best-102',
-    imageUrl: 'https://via.placeholder.com/200x200/FAFAFA/1C1C1C?text=Stock', 
+    imageUrl: '/images/heats/aim2.png', 
     brand: 'EIGER TAC',
     name: 'ПРИЦЕЛ ДЛЯ ПИСТОЛЕТА ТАКОЙ ТО МОДЕЛИ С ДЛИННЫМ НАЗВАНИЕМ',
     price: 2100,
@@ -125,7 +133,7 @@ export const mockBestsellers = [
   },
   {
     id: 'best-103',
-    imageUrl: 'https://via.placeholder.com/200x200/FAFAFA/1C1C1C?text=Ammo', 
+    imageUrl: '/images/heats/aim3.png', 
     brand: 'EIGER TAC',
     name: 'ПРИЦЕЛ ДЛЯ ПИСТОЛЕТА ТАКОЙ ТО МОДЕЛИ С ДЛИННЫМ НАЗВАНИЕМ',
     price: 2100,
@@ -134,7 +142,7 @@ export const mockBestsellers = [
   },
   {
     id: 'best-104',
-    imageUrl: 'https://via.placeholder.com/200x200/FAFAFA/1C1C1C?text=Vest', 
+    imageUrl: '/images/heats/aim4.png', 
     brand: 'EIGER TAC',
     name: 'ПРИЦЕЛ ДЛЯ ПИСТОЛЕТА ТАКОЙ ТО МОДЕЛИ С ДЛИННЫМ НАЗВАНИЕМ',
     price: 2100,

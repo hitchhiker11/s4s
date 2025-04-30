@@ -1,81 +1,95 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
 const CardLink = styled.a`
-  display: block;
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
   background-color: ${COLORS.white};
-  padding: ${SPACING.md};
   transition: ${ANIMATION.transitionBase};
   overflow: hidden;
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
   position: relative;
-  min-height: 220px;
-
+  min-height: 120px;
+  max-width: 100%;
+  
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 4px 8px 12px 0 rgba(0, 0, 0, 0.10);
+    /* Remove transform and box-shadow for hover */
+    border-right-color: ${COLORS.gray500};
+    border-bottom-color: ${COLORS.gray500};
   }
 
   ${mediaQueries.md} {
-    padding: ${SPACING.lg};
-    min-height: 240px;
+    max-height: 300px;
+    max-width: 330px;
     border-right: 4px solid ${COLORS.gray400};
     border-bottom: 4px solid ${COLORS.gray400};
+    
+    &:hover {
+      border-right-color: ${COLORS.gray500};
+      border-bottom-color: ${COLORS.gray500};
+    }
   }
 `;
 
 const CardTitle = styled.h3`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(18px, 6vw, 27.5px);
+  font-size: clamp(14px, 3vw, 27.5px);
   color: ${COLORS.black};
-  margin: 0 0 ${SPACING.md} 0;
+  // margin: 0 0 ${SPACING.md} 0;
   text-align: center;
   line-height: 1.2;
-  z-index: 2;
+  padding: ${SPACING.md};
+  padding-bottom: 0;
 
   ${mediaQueries.md} {
     font-size: 27.5px;
   }
-`;
 
-const CardImageContainer = styled.div`
-  position: absolute;
-  right: ${SPACING.md};
-  bottom: ${SPACING.md};
-  width: 140px;
-  height: 140px;
-  background-color: ${COLORS.white};
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  ${mediaQueries.md} {
-    width: 160px;
-    height: 160px;
-    right: ${SPACING.lg};
-    bottom: ${SPACING.lg};
+  /* Mobile specific font size - Force override */
+  @media (max-width: ${BREAKPOINTS.sm - 1}px) {
+    font-size: 14px !important;
+    margin-bottom: ${SPACING.sm};
   }
 `;
 
-const CardImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: ${props => props.isBrandLogo ? 'contain' : 'cover'};
-  display: block;
-  transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
-  transition: ${ANIMATION.transitionBase};
+const CardImageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  overflow: hidden;
+  flex-grow: 1;
+  // padding: ${SPACING.md};
+  min-height: 0;
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.lg};
+  }
 `;
 
-function getRandomRotation() {
-  // Возвращает случайное целое число от -15 до 15 включительно
-  return Math.floor(Math.random() * 31) - 15;
-}
+// Helper to get random rotation value between -8 and 8 degrees
+const getRandomRotation = () => Math.random() * 16 - 8;
+
+const CardImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
+  
+  /* Specific styles for brand logos */
+  ${props => props.isBrandLogo && `
+    padding: ${SPACING.md};
+    
+    ${mediaQueries.md} {
+      padding: ${SPACING.lg};
+    }
+  `};
+`;
 
 const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation }) => {
   const isBrandLogo = !showTitle;

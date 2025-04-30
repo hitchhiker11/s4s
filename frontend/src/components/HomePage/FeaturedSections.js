@@ -1,127 +1,13 @@
 import React from 'react';
 import ResponsiveCategorySection from '../ResponsiveCategorySection';
 import ResponsiveProductSection from '../ResponsiveProductSection';
+import { mockCategories, mockNewArrivals, mockBrands, mockBestsellers } from '../../lib/mockData';
+import styled from 'styled-components';
 
-// Example categories data
-const categoriesData = [
-  {
-    id: 1,
-    title: 'Тюнинг',
-    imageUrl: '/images/categories/tuning.jpg',
-    link: '/catalog/tuning',
-    showTitle: true
-  },
-  {
-    id: 2,
-    title: 'Экипировка',
-    imageUrl: '/images/categories/equipment.jpg',
-    link: '/catalog/equipment',
-    showTitle: true
-  },
-  {
-    id: 3,
-    title: 'Обслуживание',
-    imageUrl: '/images/categories/service.jpg',
-    link: '/catalog/service',
-    showTitle: true
-  },
-  {
-    id: 4,
-    title: 'Аксессуары',
-    imageUrl: '/images/categories/accessories.jpg',
-    link: '/catalog/accessories',
-    showTitle: true
-  }
-];
-
-// Example featured products data
-const featuredProductsData = [
-  {
-    id: 101,
-    brand: 'STRIKE INDUSTRIES',
-    name: 'ПРИЦЕЛ ДЛЯ ПИСТОЛЕТА ТАЙСОН-ГУАДАЛУПЕ С ДЛИННЫМ НАЗВАНИЕМ',
-    price: 2100,
-    imageUrl: '/images/products/sight1.jpg',
-    productLink: '/product/101',
-    CATALOG_AVAILABLE: 'Y',
-    preOrder: true
-  },
-  {
-    id: 102,
-    brand: 'STRIKE INDUSTRIES',
-    name: 'ПРИЦЕЛ ДЛЯ ПИСТОЛЕТА ТАЙСОН-МЭДЖИК С ДЛИННЫМ НАЗВАНИЕМ',
-    price: 2100,
-    imageUrl: '/images/products/sight2.jpg',
-    productLink: '/product/102',
-    CATALOG_AVAILABLE: 'Y',
-    preOrder: true
-  },
-  {
-    id: 103,
-    brand: 'HOLOSUN',
-    name: 'Коллиматорный прицел HS510C',
-    price: 35000,
-    imageUrl: '/images/products/sight3.jpg',
-    productLink: '/product/103',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 104,
-    brand: 'MAGPUL',
-    name: 'Тактические перчатки',
-    price: 1800,
-    imageUrl: '/images/products/gloves.jpg',
-    productLink: '/product/104',
-    CATALOG_AVAILABLE: 'Y'
-  }
-];
-
-// Example new products data
-const newProductsData = [
-  {
-    id: 201,
-    brand: 'ZENITCO',
-    name: 'Тактический фонарь 2ПС+',
-    price: 12500,
-    imageUrl: '/images/products/flashlight.jpg',
-    productLink: '/product/201',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 202,
-    brand: 'HOLOSUN',
-    name: 'Коллиматорный прицел HS403B',
-    price: 22000,
-    imageUrl: '/images/products/sight4.jpg',
-    productLink: '/product/202',
-    CATALOG_AVAILABLE: 'Y'
-  }
-];
-
-// Example brands data
-const brandsData = [
-  {
-    id: 301,
-    title: 'ZENITCO',
-    imageUrl: '/images/brands/zenitco.png',
-    link: '/brands/zenitco',
-    showTitle: false
-  },
-  {
-    id: 302,
-    title: 'HOLOSUN',
-    imageUrl: '/images/brands/holosun.png',
-    link: '/brands/holosun',
-    showTitle: false
-  },
-  {
-    id: 303,
-    title: 'MAGPUL',
-    imageUrl: '/images/brands/magpul.png',
-    link: '/brands/magpul',
-    showTitle: false
-  }
-];
+const SectionsContainer = styled.div`
+  width: 100%;
+  overflow-x: hidden; /* Ensure no horizontal scrolling from sliders */
+`;
 
 const FeaturedSections = () => {
   const handleAddToCart = (productId) => {
@@ -129,42 +15,49 @@ const FeaturedSections = () => {
     // Here you would call your actual cart API
   };
 
+  // Enable debug mode for development to see viewport size indicator
+  const debug = process.env.NODE_ENV === 'development';
+
   return (
-    <div>
+    <SectionsContainer>
       {/* Categories Section */}
       <ResponsiveCategorySection
-        categories={categoriesData}
+        categories={mockCategories}
         title="Каталог товаров"
         viewAllLink="/catalog"
         viewAllText="Смотреть все"
+        debug={debug}
       />
 
-      {/* Featured Products Section */}
+      {/* New Arrivals Section */}
       <ResponsiveProductSection
-        products={featuredProductsData}
-        title="Хиты продаж"
-        viewAllLink="/catalog/bestsellers"
-        viewAllText="Смотреть все"
-        onAddToCart={handleAddToCart}
-      />
-
-      {/* New Products Section */}
-      <ResponsiveProductSection
-        products={newProductsData}
+        products={mockNewArrivals}
         title="Новые поступления"
         viewAllLink="/catalog/new"
         viewAllText="Смотреть все"
         onAddToCart={handleAddToCart}
+        debug={debug}
       />
 
       {/* Brands Section */}
       <ResponsiveCategorySection
-        categories={brandsData}
-        title="Бренды"
+        categories={mockBrands}
+        title="Наши бренды"
         viewAllLink="/brands"
         viewAllText="Смотреть все"
+        debug={debug}
       />
-    </div>
+
+      {/* Bestsellers Section */}
+      <ResponsiveProductSection
+        products={mockBestsellers}
+        title="Хиты продаж 🔥"
+        viewAllLink="/catalog/bestsellers"
+        viewAllText="Смотреть все"
+        onAddToCart={handleAddToCart}
+        debug={debug}
+      />
+    </SectionsContainer>
   );
 };
 

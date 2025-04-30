@@ -7,15 +7,16 @@ import { mockCategories, mockNewArrivals, mockBrands, mockBestsellers } from '..
 // Components
 import AboutSlider from '../components/AboutSlider';
 import SearchBar from '../components/SearchBar';
-import ItemGrid from '../components/CategoryGrid'; // Corrected path: Use original directory name
-import CategoryCard from '../components/CategoryCard'; // Import card for categories
-import ProductCard from '../components/ProductCard'; // Import card for products
+import ResponsiveCategorySection from '../components/ResponsiveCategorySection'; // Use responsive wrapper
+import ResponsiveProductSection from '../components/ResponsiveProductSection'; // Use responsive wrapper
+import CategoryCard from '../components/CategoryCard'; // Import card for rendering
+import ProductCard from '../components/ProductCard'; // Import card for rendering
 import BrandFeature from '../components/BrandFeature'; // Import brand feature component
 import ClubSubscription from '../components/ClubSubscription'; // Import club subscription component
 import Layout from '../components/Layout'; // Import Layout component
 
 // Styles
-import { COLORS, SPACING, TYPOGRAPHY, mediaQueries, BREAKPOINTS } from '../styles/tokens';
+import { COLORS, SPACING, TYPOGRAPHY, mediaQueries, SIZES, BREAKPOINTS } from '../styles/tokens';
 
 // Define a hardcoded version of the featured brand data
 const hardcodedFeaturedBrandData = {
@@ -42,7 +43,7 @@ const HomePageContainer = styled.div`
 
 const HeroSection = styled.section`
   width: 100%;
-  min-height: 250px;
+  min-height: 150px;
   background-color: ${COLORS.white};
   display: flex;
   align-items: center;
@@ -67,7 +68,7 @@ const HeroSection = styled.section`
 
   ${mediaQueries.xxl} {
     padding: 0 40px;
-    max-width: 2000px;
+    max-width: 1493px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -75,7 +76,7 @@ const HeroSection = styled.section`
 
 const HeroContent = styled.div`
   width: 100%;
-  max-width: var(--container-width, 2000px);
+  max-width: var(--container-width, 1493px);
   margin: 0 auto;
   text-align: left;
   display: flex;
@@ -94,24 +95,19 @@ const Highlight = styled.span`
   }
 `;
 
-// Based on Figma design
 const HeroTitle = styled.h1`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-style: normal;
   font-weight: 700;
-  font-size: 107px; // Exact size from Figma
-  line-height: 1.22; // From Figma
-  letter-spacing: -5%; // From Figma
+  font-size: 28px;
+  line-height: 1.22;
+  letter-spacing: -5%;
   color: ${COLORS.black};
   margin: 0;
   padding: 0;
-  
+
   ${mediaQueries.sm} {
     font-size: clamp(60px, 8vw, 107px);
-  }
-  
-  ${mediaQueries.xs} {
-    font-size: clamp(40px, 8vw, 34px);
   }
   ${mediaQueries.lg} {
     font-size: clamp(40px, 8vw, 107px);
@@ -130,7 +126,14 @@ const HeroSubtitle = styled.p`
 `;
 
 const AboutSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 0 0;
+  max-width: ${SIZES.containerMaxWidth};
+  margin: 0 auto;
+  // min-height: 600px;
 `;
 
 const SectionTitle = styled.h2`
@@ -150,6 +153,22 @@ const HomePage = () => {
     // Add actual cart logic here later
   };
 
+  // Define render functions for cards
+  const renderCategoryCard = (category) => (
+    <CategoryCard 
+      key={category.id} 
+      {...category} // Spread category props (title, imageUrl, link, showTitle)
+    />
+  );
+
+  const renderProductCard = (product) => (
+    <ProductCard 
+      key={product.id} 
+      product={product} // Pass the whole product object
+      onAddToCart={handleAddToCart} 
+    />
+  );
+
   return (
     <Layout mockBasketCount={5}>
       <HomePageContainer>
@@ -168,73 +187,43 @@ const HomePage = () => {
         </HeroSection>
         <SearchBar />
         
-        {/* Categories Section using ItemGrid */}
-        <ItemGrid 
+        {/* Categories Section using Responsive Wrapper */}
+        <ResponsiveCategorySection 
           title="Каталог товаров" 
           viewAllLink="/catalog"
-          items={mockCategories} 
-          renderItem={(category) => 
-            <CategoryCard 
-              key={category.id} 
-              title={category.title} 
-              imageUrl={category.imageUrl} 
-              link={category.link} 
-            />
-          }
+          items={mockCategories} // Use 'items' prop name
+          renderItem={renderCategoryCard} // Pass the render function
         />
 
-        {/* New Arrivals Section using ItemGrid */}
-         <ItemGrid 
+        {/* New Arrivals Section using Responsive Wrapper */}
+         <ResponsiveProductSection 
           title="Новые поступления"
           subtitle="посмотрите наши новинки"
           viewAllLink="/catalog?filter=new"
-          items={mockNewArrivals} 
-          renderItem={(product) => {
-            // --- DEBUG LOG (HomePage) ---
-            console.log('Rendering ProductCard for product:', product);
-            // --- END DEBUG LOG ---
-            return (
-              <ProductCard 
-                key={product.id} 
-                product={product}
-                onAddToCart={handleAddToCart}
-              />
-            );
-          }}
+          items={mockNewArrivals} // Use 'items' prop name
+          renderItem={renderProductCard} // Pass the render function
+          onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
         />
 
-        {/* Our Brands Section using ItemGrid */}
-        <ItemGrid 
+        {/* Our Brands Section using Responsive Wrapper */}
+        <ResponsiveCategorySection 
           title="Наши бренды"
           subtitle="если хотите пополнить коллекцию"
           viewAllLink="/brands"
-          items={mockBrands} 
-          renderItem={(brand) => 
-            <CategoryCard 
-              key={brand.id} 
-              title={brand.title} 
-              imageUrl={brand.imageUrl} 
-              link={brand.link}
-              showTitle={false} // Don't show the title text on the card
-            />
-          }
+          items={mockBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
+          renderItem={renderCategoryCard} // Pass the render function
         />
 
         
-        {/* Bestsellers Section (Top Sales) */}
-        <ItemGrid 
+        {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}
+        <ResponsiveProductSection 
           title="Хиты продаж 🔥"
           subtitle="посмотрите самые популярные продукты"
           viewAllLink="/catalog?filter=bestsellers"
-          items={mockBestsellers} 
+          items={mockBestsellers} // Use 'items' prop name
+          renderItem={renderProductCard} // Pass the render function
           useGradientTitle={true}
-          renderItem={(product) => (
-            <ProductCard 
-              key={product.id} 
-              product={product}
-              onAddToCart={handleAddToCart}
-            />
-          )}
+          onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
         />
 
         {/* Featured Brand Section */}

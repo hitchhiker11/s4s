@@ -1,27 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ResponsiveContainer from './ResponsiveContainer';
-import CategoryGrid from './CategoryGrid';
+import ItemGrid from './ItemGrid';
 import CategorySlider from './CategorySlider';
 
 /**
- * ResponsiveCategorySection - Renders either CategoryGrid (desktop) or CategorySlider (mobile)
+ * ResponsiveCategorySection - Renders either ItemGrid (desktop) or CategorySlider (mobile)
  * based on the current viewport size
  */
-const ResponsiveCategorySection = (props) => {
+const ResponsiveCategorySection = ({ items, renderItem, ...props }) => {
+  const categorySliderProps = {
+    ...props,
+    categories: items
+  };
+
+  const itemGridProps = { 
+    ...props, 
+    items,
+    renderItem 
+  };
+
   return (
     <ResponsiveContainer
-      DesktopComponent={CategoryGrid}
+      DesktopComponent={ItemGrid}
       MobileComponent={CategorySlider}
-      {...props}
+      desktopProps={itemGridProps}
+      mobileProps={categorySliderProps}
     />
   );
 };
 
 ResponsiveCategorySection.propTypes = {
-  categories: PropTypes.arrayOf(
+  items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       title: PropTypes.string.isRequired,
       imageUrl: PropTypes.string,
       link: PropTypes.string,
@@ -29,9 +41,16 @@ ResponsiveCategorySection.propTypes = {
       rotation: PropTypes.number
     })
   ).isRequired,
+  renderItem: PropTypes.func.isRequired,
   title: PropTypes.string,
+  subtitle: PropTypes.string,
   viewAllLink: PropTypes.string,
-  viewAllText: PropTypes.string
+  viewAllText: PropTypes.string,
+  useGradientTitle: PropTypes.bool,
+};
+
+ResponsiveCategorySection.defaultProps = {
+  items: [],
 };
 
 export default ResponsiveCategorySection; 

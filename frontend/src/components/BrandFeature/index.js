@@ -4,14 +4,14 @@ import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
 
 const FeatureContainer = styled.section`
   width: 100%;
-  padding: ${SPACING.lg};
+  padding-right: ${SPACING.lg};
 
   ${mediaQueries.md} {
   padding: ${SPACING['2xl']};
   }
   
   ${mediaQueries.xxl} {
-    max-width: 2000px;
+    max-width: 1493px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -20,27 +20,29 @@ const FeatureContainer = styled.section`
 const FeatureContent = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: ${SPACING.sm};
+  font-size: 6px;
 
-  
   ${mediaQueries.md} {
     flex-direction: row;
     align-items: center;
     gap: ${SPACING["2xl"]};
+    font-size: ${TYPOGRAPHY.size.md};
   }
-  
+
   ${mediaQueries.lg} {
-    gap: 52px; // As per Figma design
+    gap: 52px;
   }
 `;
 
 const ImageContainer = styled.div`
+  display: none;
   width: 100%;
   height: 300px;
 
-  
   ${mediaQueries.md} {
+    display: block;
     width: 40%;
     height: 600px;
   }
@@ -59,7 +61,7 @@ const FeatureImage = styled.img`
 
 const TextContainer = styled.div`
   width: 100%;
-
+  padding: ${SPACING.lg};
   display: flex;
   flex-direction: column;
   gap: ${SPACING.sm};
@@ -84,7 +86,7 @@ const BrandLogo = styled.img`
 const BrandDescription = styled.p`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5;
   color: ${COLORS.black};
   margin: 0;

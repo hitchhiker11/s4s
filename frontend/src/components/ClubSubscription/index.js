@@ -20,7 +20,7 @@ const SubscriptionContainer = styled.section`
   }
 
   ${mediaQueries.xxl} {
-    max-width: 2000px;
+    max-width: 1493px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -51,15 +51,16 @@ const FormHeading = styled.h2`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-style: normal;
   font-weight: 600;
-  font-size: clamp(1.5rem, 6vw, 54px);
+  font-size: clamp(1.25rem, 5vw, 54px);
   line-height: 1.1;
   color: ${COLORS.black};
-  margin-bottom: ${SPACING["3xl"]};
-  padding-top: 16px;
-  padding-bottom: 16px;
+  margin-bottom: ${SPACING.xl};
+  padding-top: 12px;
+  padding-bottom: 12px;
 
   ${mediaQueries.md} {
     font-size: 54px;
+    margin-bottom: ${SPACING["3xl"]};
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -68,8 +69,13 @@ const FormHeading = styled.h2`
 const InputsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  margin-bottom: ${SPACING["2xl"]};
+  gap: 24px;
+  margin-bottom: ${SPACING.xl};
+  
+  ${mediaQueries.md} {
+    gap: 40px;
+    margin-bottom: ${SPACING["2xl"]};
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -86,12 +92,12 @@ const InputWrapper = styled.div`
 const Input = styled.input`
   width: 100%;
   font-family: ${TYPOGRAPHY.fontFamily};
-  font-size: clamp(1.1rem, 5vw, 27px);
-  line-height: 1.5;
+  font-size: clamp(1rem, 4vw, 27px);
+  line-height: 1.4;
   color: ${COLORS.black};
   border: none;
   background: transparent;
-  padding: ${SPACING.sm} 0;
+  padding: ${SPACING.xs} 0;
   letter-spacing: 2%;
 
   &::placeholder {
@@ -105,6 +111,8 @@ const Input = styled.input`
 
   ${mediaQueries.md} {
     font-size: 27px;
+    padding: ${SPACING.sm} 0;
+    line-height: 1.5;
   }
 `;
 
@@ -114,10 +122,10 @@ const SubmitButton = styled.button`
   color: ${COLORS.white};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: 500;
-  font-size: clamp(1rem, 4vw, 20px);
+  font-size: clamp(0.9rem, 3.5vw, 20px);
   text-transform: uppercase;
   border: none;
-  padding: 24px 40px;
+  padding: 16px 30px;
   cursor: pointer;
   box-shadow: ${SHADOWS.md};
   transition: background-color 0.3s ease;
@@ -130,6 +138,7 @@ const SubmitButton = styled.button`
   ${mediaQueries.md} {
     width: 473px;
     font-size: 20px;
+    padding: 24px 40px;
   }
 `;
 

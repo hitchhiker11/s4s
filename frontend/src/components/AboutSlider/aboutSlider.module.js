@@ -16,6 +16,7 @@ const SliderContainer = styled.div`
   position: relative;
   width: 100%;
   margin-bottom: 60px;
+  // min-height: 600px;
 `;
 
 const SlideImageContainer = styled.div`

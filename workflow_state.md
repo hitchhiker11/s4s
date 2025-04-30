@@ -6,89 +6,76 @@
 ## Plan: Mobile Responsiveness Improvement - Grid to Slider Conversion
 
 ### Problem Statement
-Currently, our category and product cards on the main page form a grid layout that dynamically adjusts the number of columns when screen size decreases (mobile view). This approach is not optimal for mobile user experience.
+Currently, category and product card sections (e.g., new arrivals, brands, bestsellers) on the main page use a responsive grid layout. When the screen width decreases for mobile viewports, the grid dynamically adjusts the number of columns. This behavior is not optimal for mobile user experience, as it can lead to cramped layouts or excessive scrolling.
 
 ### Solution Approach
-Replace the responsive grid layouts with horizontal swipeable sliders/carousels specifically for mobile viewports. Desktop views will maintain their current grid layout.
+Replace the current responsive grid behavior for category and product sections on mobile devices. Implement horizontal, swipeable sliders (carousels) for these sections specifically on mobile viewports (e.g., below a certain breakpoint like 768px). Desktop viewports will retain the existing grid layout. This will improve usability and visual appeal on smaller screens.
 
 ### Visual Reference
-The implementation should follow the layout shown in the provided screenshot, featuring:
-- Horizontal sliding carousel for products on mobile
-- Category navigation at the top
-- Product cards showing product image, brand/name, and price
-- "ПРЕДЗАКАЗ" (pre-order) button for applicable products
-- Horizontal slider navigation indicated with directional arrows
-- Clear section headers with "Смотреть все" (View all) option
+- Mobile product card design: [Figma Link](https://www.figma.com/design/gEClQ3mz6kC8HWfCP2t81y/FORKShop4Shoot-Dev?node-id=334-6202&t=dzyo3dI3zZjQpczI-4)
+- Mobile catalog card design: [Figma Link](https://www.figma.com/design/gEClQ3mz6kC8HWfCP2t81y/FORKShop4Shoot-Dev?node-id=6-20722&t=dzyo3dI3zZjQpczI-4)
 
 ### Implementation Steps
 
-1. **Analysis Phase** ✓
-   - Identified components using responsive grid layouts: CategoryCard, ProductCard
-   - Determined breakpoint for conversion: 768px
-   - Selected Swiper.js as the slider library for implementation
+1.  **Analysis Phase**:
+    *   Identify all components/sections on the main page that currently use responsive grids for displaying category or product cards.
+    *   Determine the appropriate breakpoint (e.g., 768px) to switch between the desktop grid view and the mobile slider view.
+    *   Select a suitable JavaScript library for implementing the sliders (e.g., Swiper.js, Slick Carousel) if not already in use.
 
-2. **Environment Setup** ✓
-   - Selected Swiper.js as our slider library
-   - Added import statements for Swiper components and CSS
+2.  **Environment Setup** (If needed):
+    *   Install the chosen slider library (e.g., `npm install swiper`).
+    *   Import necessary components and styles from the library.
 
-3. **Component Modifications** ✓
-   - Created responsive wrapper components:
-     - Created `ResponsiveContainer.js` - A higher-order component that detects viewport size
-     - Created `CategorySlider.js` and `ProductSlider.js` for mobile views
-     - Created `CategoryGrid.js` and `ProductGrid.js` for desktop views
-     - Created `ResponsiveCategorySection.js` and `ResponsiveProductSection.js` as usage examples
-   - Implemented for sections shown in screenshot:
-     - Category navigation with sliders
-     - Product listings with pre-order options
-     - "Catalog" sections with view all links
+3.  **Component Modifications**:
+    *   Create or modify a responsive wrapper component (or use a hook) that detects the current viewport width.
+    *   Update the identified components (e.g., `CategoryGrid`, `ProductGrid`, or container components) to conditionally render either the existing grid layout or a new slider component based on the viewport width.
+    *   Create dedicated slider components (e.g., `CategorySlider`, `ProductSlider`) to encapsulate the slider logic and configuration.
 
-4. **Implementation Details** ✓
-   - CategorySlider Component:
-     - Implemented horizontal slider with ~1.5 cards visible
-     - Added navigation controls
-     - Maintained CategoryCard component design
-     - Added section header and "Смотреть все" link
-   - ProductSlider Component:
-     - Created horizontal swipeable cards
-     - Implemented single product view with peek at next product
-     - Added ПРЕДЗАКАЗ (pre-order) badges
-     - Maintained brand/name hierarchy
+4.  **Slider Implementation**:
+    *   Configure the slider components with appropriate options (e.g., slides per view, space between slides, navigation arrows, pagination dots, loop behavior).
+    *   Ensure the sliders are swipeable on touch devices and navigable with clicks if arrows are present.
+    *   Pass the category/product data to the slider components for rendering individual items (slides). Reuse existing `CategoryCard` / `ProductCard` components within the slides if possible.
 
-5. **CSS Modifications** ✓
-   - Created slider container styles
-   - Modified existing card components for slider view
-   - Added navigation elements (arrows, pagination dots)
-   - Ensured proper spacing in slider mode
+5.  **Styling**:
+    *   Apply necessary CSS styles to the slider containers, slides, and navigation elements to match the desired design.
+    *   Ensure styles are scoped correctly and do not interfere with the desktop grid layout.
+    *   Adjust card styling if necessary for optimal display within a slider context.
 
-6. **Responsive Logic Implementation** ✓
-   - Created viewport detection hook in ResponsiveContainer
-   - Implemented conditional rendering logic
-   - Set breakpoint at 768px
+6.  **Testing**:
+    *   Thoroughly test the implementation across various screen sizes, focusing on the breakpoint transition.
+    *   Test on different browsers and mobile devices (or emulators).
+    *   Verify touch/swipe interactions and navigation controls.
+    *   Ensure accessibility standards are met.
 
-7. **Testing** (Pending)
-   - Test on various mobile devices and screen sizes
-   - Verify that slider navigation works with both touch and click
-   - Ensure pre-order buttons are accessible in slider view
-   - Test transition between desktop and mobile views
-
-8. **Performance Optimization** (Pending)
-   - Implement lazy loading for off-screen slides
-   - Optimize images for slider view
-   - Ensure smooth animations and transitions
+7.  **Performance Optimization** (Optional but recommended):
+    *   Implement lazy loading for slider images or slides if performance is impacted.
+    *   Ensure the slider library and its implementation are efficient.
 
 ## Log
-- Initial plan created for mobile slider implementation
-- Plan approved by client with screenshot reference provided
-- Created ResponsiveContainer component with viewport detection logic
-- Implemented CategorySlider and ProductSlider components for mobile views
-- Created CategoryGrid and ProductGrid components for desktop views
-- Created ResponsiveCategorySection and ResponsiveProductSection components as usage examples
+- Initial plan created for mobile slider implementation.
+- Plan approved by user.
+- Installed Swiper.js library (`npm install swiper --legacy-peer-deps`).
+- Renamed `CategoryGrid` directory to `ItemGrid`.
+- Updated import path in `ResponsiveCategorySection.js`.
+- Created `CategorySlider` component (`frontend/src/components/CategorySlider/index.js`) using Swiper.
+- Created `ProductSlider` component (`frontend/src/components/ProductSlider/index.js`) using Swiper.
+- Updated `ResponsiveCategorySection.js` to use `CategorySlider` for mobile view.
+- Updated `ResponsiveProductSection.js` to use `ProductSlider` for mobile view.
+- Updated hover animations on cards to darken the corner border instead of shadow and scale.
+- Fixed mobile card sizing to better match Figma designs.
+- Adjusted proportions for mobile product and category cards.
 
 ## Next Steps
-1. To complete implementation, install Swiper.js in the project:
-   ```bash
-   npm install swiper
-   ```
-2. Modify page components to use the new responsive section components
-3. Test the implementation on different devices and screen sizes
-4. Optimize performance based on testing results
+- **Testing:**
+    - Run the development server and visually inspect the changes.
+    - Thoroughly test the components across various screen sizes (desktop grid vs. mobile slider, breakpoint transition).
+    - Test on different browsers and mobile device emulators.
+    - Verify touch/swipe interactions (touch) and navigation arrows (click).
+    - Ensure card content (`CategoryCard`, `ProductCard`) displays correctly within slides.
+    - Check `onAddToCart` functionality in `ProductSlider`.
+    - Verify "View All" links.
+    - Ensure accessibility standards are considered.
+- **Performance Optimization** (If necessary based on testing):
+    - Investigate lazy loading options for Swiper if performance is impacted on mobile.
+    - Optimize images used in cards.
+- **Update Status:** Set Status to TESTING once verification is complete.

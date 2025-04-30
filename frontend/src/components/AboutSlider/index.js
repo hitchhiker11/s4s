@@ -16,6 +16,7 @@ const SliderContainer = styled.div`
   position: relative;
   width: 100%;
   margin-bottom: 40px;
+  // min-height: 600px;
   
   ${mediaQueries.md} {
     margin-bottom: 60px;
@@ -45,6 +46,7 @@ const SlideImage = styled.img`
   background-color: ${COLORS.white};
   width: 100%;
   height: 100%;
+  min-height: 300px;
   object-fit: cover;
   object-position: center;
 `;
@@ -126,12 +128,12 @@ const CustomPagination = styled.div`
 
 const PaginationDot = styled.div`
   height: 12px;
-  background-color: ${props => props.active ? '#000000' : 'rgba(0, 0, 0, 0.5)'};
-  width: ${props => props.active ? '48px' : '21px'};
+  background-color: ${props => props.$active ? '#000000' : 'rgba(0, 0, 0, 0.5)'};
+  width: ${props => props.$active ? '48px' : '21px'};
   border-radius: 145px; // Из Figma
   cursor: pointer;
   transition: all 0.3s ease;
-  class-name: pagination-dot ${props => props.active ? 'active' : ''};
+  class-name: pagination-dot ${props => props.$active ? 'active' : ''};
 `;
 
 // Компонент Loader для отображения в процессе загрузки данных
@@ -232,7 +234,7 @@ const AboutSlider = () => {
         {sliderData.map((_, index) => (
           <PaginationDot 
             key={index} 
-            active={activeIndex === index}
+            $active={activeIndex === index}
             className={`pagination-dot ${activeIndex === index ? 'active' : ''}`}
             onClick={() => handlePaginationClick(index)}
           />

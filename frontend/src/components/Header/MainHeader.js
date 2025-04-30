@@ -151,14 +151,18 @@ const LogoWrapper = styled.div`
   }
 
   @media (max-width: 600px) {
-    width: 80px;
-    height: 40px;
+    width: 147px;
+    height: 67px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-80%);
+    margin: 0 auto;
 
     img, svg {
-      max-width: 60px;
-      max-height: 30px;
-      min-width: 28px;
-      min-height: 14px;
+      width: 80%;
+      height: 60%;
+      max-width: 118px;
+      max-height: 40px;
     }
   }
 
@@ -209,6 +213,11 @@ const HeaderActions = styled.div`
   ${mediaQuery.max.lg} {
     order: 4; /* Mobile order: [Menu(1)][Search(2)][Logo(3)][Cart(4)] */
   }
+
+  @media (max-width: 600px) {
+    gap: 15px;
+    margin-right: 10px;
+  }
 `;
 
 const ActionButton = styled.button`
@@ -237,7 +246,7 @@ const ActionButton = styled.button`
     outline-offset: 1px;
   }
 
-  ${navLinesMixin} // Apply the shared line mixin instead of corners
+  ${navLinesMixin}
 
   @media (max-width: 900px) {
     padding: 12px 7px;
@@ -248,21 +257,25 @@ const ActionButton = styled.button`
   }
 
   @media (max-width: 600px) {
-    padding: 8px 4px;
+    padding: 14px 10px;
     ${HeaderIconStyles} {
-      width: 16px;
-      height: 16px;
+      width: 22px;
+      height: 22px;
     }
   }
 `;
 
-// Separate component for Search Button to control its visibility
 const SearchActionButton = styled(ActionButton)`
   /* Styles specific to search if needed */
 `;
 
 const CartLink = styled(ActionButton).attrs({ as: 'a' })`
   ${navLinesMixin}
+  
+  @media (max-width: 600px) {
+    padding: 14px 10px;
+    border-radius: 29px;
+  }
 `;
 
 const CartCounter = styled.span`
@@ -291,11 +304,11 @@ const CartCounter = styled.span`
   }
 
   @media (max-width: 600px) {
-    min-width: 12px;
-    height: 12px;
-    font-size: 8px;
-    top: -4px;
-    right: -4px;
+    min-width: 14px;
+    height: 14px;
+    font-size: 9px;
+    top: -5px;
+    right: -5px;
   }
 `;
 
@@ -305,6 +318,17 @@ const MobileMenuButton = styled(ActionButton)`
   ${mediaQuery.max.lg} {
     display: inline-flex;
     order: 1;
+    margin-left: 0;
+    padding-left: 16px;
+  }
+
+  @media (max-width: 600px) {
+    margin-left: 0;
+    padding-left: 0px;
+    ${HeaderIconStyles} {
+      width: 26px;
+      height: 18px;
+    }
   }
 `;
 

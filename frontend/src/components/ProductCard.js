@@ -11,7 +11,7 @@ const Card = styled.div`
   background-color: ${COLORS.white};
 
   overflow: hidden;
-  height: 100%;
+  height: 75%;
   width: 100%;
   transition: ${ANIMATION.transitionBase};
   border-right: 2px solid ${COLORS.gray400};
@@ -64,7 +64,7 @@ const Content = styled.div`
   justify-content: center;
   background-color: #FEFEFE;
   padding: ${SPACING.xl} ${SPACING.lg};
-  gap: 17px;
+  gap: 4px;
   width: 100%;
   text-align: center;
   flex-grow: 1;
@@ -78,8 +78,8 @@ const Content = styled.div`
 const BrandTitle = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(1.05rem, 5vw, 23.27px);
-  line-height: 1;
+  font-size: clamp(14px, 3vw, 27.5px);
+  line-height: 1.05;
   color: ${COLORS.primary};
   text-transform: uppercase;
 
@@ -91,7 +91,7 @@ const BrandTitle = styled.span`
 const ProductTitle = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(1.05rem, 5vw, 23.27px);
+  font-size: clamp(14px, 3vw, 27.5px);
   line-height: 1;
   color: ${COLORS.black};
   margin: 0;
@@ -105,8 +105,8 @@ const ProductTitle = styled.h3`
 const Price = styled.div`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(1.15rem, 7vw, ${TYPOGRAPHY.size["3xl"]});
-  line-height: 0.66;
+  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size["3xl"]});
+  line-height: 0.9;
   color: ${COLORS.primary};
   margin-top: ${SPACING.xs};
 

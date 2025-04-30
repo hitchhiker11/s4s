@@ -20,13 +20,16 @@ const SearchWrapper = styled.div`
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
-  border-top: 4px solid ${COLORS.gray400};
-  border-bottom: 4px solid ${COLORS.gray400};
-  padding: 7px 0;
-  min-height: 66px;
+  border-top: 2px solid ${COLORS.gray400};
+  border-bottom: 2px solid ${COLORS.gray400};
+  padding: 5px 0;
+  min-height: 48px;
 
   ${mediaQueries.md} {
     padding: 7px 0;
+    min-height: 66px;
+    border-top: 4px solid ${COLORS.gray400};
+    border-bottom: 4px solid ${COLORS.gray400};
   }
 `;
 
@@ -34,8 +37,13 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   flex-grow: 1;
-  gap: 5px;
-  padding-right: 10px;
+  gap: 3px;
+  padding-right: 5px;
+
+  ${mediaQueries.md} {
+    gap: 5px;
+    padding-right: 10px;
+  }
 `;
 
 const StyledInput = styled.input`
@@ -45,9 +53,10 @@ const StyledInput = styled.input`
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: 30px;
+  font-size: clamp(18px, 5vw, 30px);
   color: ${COLORS.black};
-  padding: 7px 0;
+  padding: 5px 0;
+  width: 100%;
 
   &::placeholder {
     color: ${COLORS.gray400};
@@ -57,6 +66,11 @@ const StyledInput = styled.input`
   &:focus {
     font-weight: ${TYPOGRAPHY.weight.medium};
   }
+
+  ${mediaQueries.md} {
+    font-size: 30px;
+    padding: 7px 0;
+  }
 `;
 
 const IconWrapper = styled.span`
@@ -65,9 +79,17 @@ const IconWrapper = styled.span`
   align-items: center;
   
   svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 4px;
+    width: 18px;
+    height: 18px;
+    stroke-width: 3px;
+  }
+
+  ${mediaQueries.md} {
+    svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 4px;
+    }
   }
 `;
 

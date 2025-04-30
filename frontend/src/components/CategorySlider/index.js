@@ -1,125 +1,171 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+// Import required modules
+import { Navigation } from 'swiper/modules';
 import CategoryCard from '../CategoryCard';
-import { COLORS, SPACING, TYPOGRAPHY, mediaQueries } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
-// Import Swiper styles
+// Import Swiper styles (make sure these paths are correct)
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
-const SliderContainer = styled.div`
-  margin: ${SPACING.lg} 0;
-  position: relative;
+const SliderSection = styled.section`
   width: 100%;
+  padding: ${SPACING.lg} 0; /* Adjust padding for mobile */
+  background-color: ${COLORS.white};
 `;
 
-const SliderHeader = styled.div`
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: ${SIZES.containerMaxWidth};
+  margin: 0 auto ${SPACING.lg};
+  padding: 0 ${SPACING.md}; /* Add horizontal padding */
+
+  ${mediaQueries.sm} {
+    padding: 0 ${SPACING.lg};
+  }
+`;
+
+const TitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${SPACING.md};
-  padding: 0 ${SPACING.md};
+  width: 100%;
+  border-top: 2px solid ${COLORS.gray400};
+  padding: ${SPACING.sm} 0;
+  min-height: 50px; /* Adjusted height */
 `;
 
-const SectionTitle = styled.h2`
+const Title = styled.h2`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: ${TYPOGRAPHY.size.xl};
+  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size.xl});
   color: ${COLORS.black};
   margin: 0;
+  line-height: 1.2;
+
+  
+  /* Mobile specific font size - Force override */
+  @media (max-width: ${BREAKPOINTS.sm - 1}px) {
+    font-size: 14px !important;
+  }
 `;
 
 const ViewAllLink = styled.a`
   font-family: ${TYPOGRAPHY.fontFamily};
-  font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: ${TYPOGRAPHY.size.sm};
-  color: ${COLORS.primary};
+  font-weight: ${TYPOGRAPHY.weight.semiBold};
+  font-size: clamp(0.9rem, 4vw, ${TYPOGRAPHY.size.lg}); /* Adjusted size */
+  color: ${COLORS.black};
   text-decoration: none;
-  
+  white-space: nowrap;
+  line-height: 1;
+
   &:hover {
+    color: ${COLORS.primary};
     text-decoration: underline;
   }
 `;
 
-const StyledSwiper = styled(Swiper)`
+const SwiperContainer = styled.div`
+  position: relative; 
   width: 100%;
-  padding: 0 ${SPACING.md};
-  
-  .swiper-slide {
-    width: 80%;
-    height: auto;
-  }
-  
-  .swiper-pagination-bullet {
-    background-color: ${COLORS.primary};
-  }
-  
-  .swiper-button-next,
-  .swiper-button-prev {
-    color: ${COLORS.primary};
-    
-    &:after {
-      font-size: 24px;
+  max-width: ${SIZES.containerMaxWidth};
+  margin: 0 auto;
+
+  .swiper {
+    padding-left: ${SPACING.md};
+    padding-right: ${SPACING.md};
+
+    ${mediaQueries.sm} {
+      padding-left: ${SPACING.lg};
+      padding-right: ${SPACING.lg};
     }
+  }
+
+  .swiper-slide {
+    width: 70%; /* Match Figma design width for mobile */
+    max-width: 140px; /* Based on Figma design */
+    height: auto;
+    display: flex;
+  }
+
+  /* Hide navigation arrows */
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none;
   }
 `;
 
+const EmptyMessage = styled.div`
+  padding: ${SPACING.lg};
+  text-align: center;
+  font-family: ${TYPOGRAPHY.fontFamily};
+  color: ${COLORS.gray400};
+  width: 100%;
+`;
+
 const CategorySlider = ({ 
-  categories, 
-  title = "Категории", 
-  viewAllLink = "#", 
+  categories = [],
+  title = "Categories",
+  viewAllLink = "#",
   viewAllText = "Смотреть все"
 }) => {
+  const displayCategories = Array.isArray(categories) ? categories : [];
+  const spaceBetweenValue = parseInt(SPACING.sm.replace('px', ''), 10); // Use smaller spacing for mobile
+
   return (
-    <SliderContainer>
-      <SliderHeader>
-        <SectionTitle>{title}</SectionTitle>
-        <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>
-      </SliderHeader>
-      
-      <StyledSwiper
-        modules={[Navigation, Pagination]}
-        spaceBetween={10}
-        slidesPerView={1.5}
-        centeredSlides={false}
-        pagination={{ clickable: true }}
-        navigation
-        autoplay={{ delay: 5000 }}
-      >
-        {categories.map((category, index) => (
-          <SwiperSlide key={category.id || index}>
-            <CategoryCard
-              title={category.title}
-              imageUrl={category.imageUrl}
-              link={category.link}
-              showTitle={category.showTitle}
-              rotation={category.rotation}
-            />
-          </SwiperSlide>
-        ))}
-      </StyledSwiper>
-    </SliderContainer>
+    <SliderSection>
+      <HeaderContainer>
+        <TitleRow>
+          <Title>{title}</Title>
+          {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+        </TitleRow>
+        {/* No subtitle in slider view for simplicity, can be added if needed */}
+      </HeaderContainer>
+
+      {displayCategories.length > 0 ? (
+        <SwiperContainer>
+          <Swiper
+            modules={[Navigation]}
+            spaceBetween={spaceBetweenValue} // Use dynamic smaller gap
+            slidesPerView={'auto'} // Let CSS width/max-width control sizing
+            navigation
+            grabCursor={true}
+          >
+            {displayCategories.map((category) => (
+              <SwiperSlide key={category.id}>
+                <CategoryCard {...category} style={{ height: '100%', width: '100%' }} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </SwiperContainer>
+      ) : (
+        <EmptyMessage>Нет доступных категорий</EmptyMessage>
+      )}
+    </SliderSection>
   );
 };
 
 CategorySlider.propTypes = {
   categories: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      // Include other props expected by CategoryCard
       title: PropTypes.string.isRequired,
       imageUrl: PropTypes.string,
       link: PropTypes.string,
       showTitle: PropTypes.bool,
-      rotation: PropTypes.number
+      rotation: PropTypes.number,
     })
-  ).isRequired,
+  ),
   title: PropTypes.string,
   viewAllLink: PropTypes.string,
-  viewAllText: PropTypes.string
+  viewAllText: PropTypes.string,
 };
 
 export default CategorySlider; 

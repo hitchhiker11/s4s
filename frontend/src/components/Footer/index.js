@@ -8,19 +8,20 @@ const FooterContainer = styled.footer`
   background-color: ${COLORS.white};
   
   ${mediaQueries.xxl} {
-    max-width: 2000px;
+    max-width: 1493px;
     margin-left: auto;
     margin-right: auto;
   }
 `;
 
 const MainFooter = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: ${SPACING.xl};
+  display: grid;
+  grid-template-columns: 1fr;
   gap: ${SPACING["2xl"]};
+  padding: ${SPACING.xl};
   
   ${mediaQueries.md} {
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     padding: ${SPACING["2xl"]} ${SPACING["3xl"]};
@@ -57,11 +58,12 @@ const Logo = styled.a`
 `;
 
 const NavSections = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: ${SPACING["2xl"]};
   
   ${mediaQueries.md} {
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     width: 70%;
@@ -76,11 +78,13 @@ const NavSections = styled.div`
 `;
 
 const NavSection = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 24px;
   
   ${mediaQueries.md} {
+    display: flex;
+    flex-direction: column;
     width: calc(50% - ${SPACING["2xl"]});
   }
   
@@ -99,9 +103,14 @@ const SectionTitle = styled.h3`
 `;
 
 const NavLinks = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 12px;
+  
+  ${mediaQueries.md} {
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const NavLink = styled.a`
@@ -120,15 +129,16 @@ const NavLink = styled.a`
 `;
 
 const BrandsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: ${SPACING.md};
   
   ${mediaQueries.md} {
-    width: 100%;
+    display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    width: 100%;
     margin-top: ${SPACING.xl};
   }
   
@@ -162,11 +172,12 @@ const BrandLogo = styled.img`
 const BottomFooter = styled.div`
   background-color: ${COLORS.gray300};
   padding: 16px 60px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: ${SPACING.md};
   
   ${mediaQueries.md} {
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -174,11 +185,12 @@ const BottomFooter = styled.div`
 `;
 
 const LegalLinks = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: ${SPACING.sm};
   
   ${mediaQueries.md} {
+    display: flex;
     flex-direction: row;
     gap: 37px;
   }

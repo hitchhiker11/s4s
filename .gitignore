@@ -7,3 +7,4 @@ frontend/.env.development.local
 frontend/.env.test.local
 bitrix
 .cursor
+*storybook.log

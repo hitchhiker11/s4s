@@ -1,40 +1,69 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
 const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${COLORS.white};
-  box-shadow: ${SHADOWS.md};
   height: 100%;
   position: relative;
+  border-right: 2px solid ${COLORS.gray400};
+  border-bottom: 2px solid ${COLORS.gray400};
+  transition: ${ANIMATION.transitionBase};
+  
+  &:hover {
+    border-right-color: ${COLORS.gray500};
+    border-bottom-color: ${COLORS.gray500};
+  }
+  
+  ${mediaQueries.md} {
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    
+    &:hover {
+      border-right-color: ${COLORS.gray500};
+      border-bottom-color: ${COLORS.gray500};
+    }
+  }
 `;
 
 const ImageLinkWrapper = styled.a`
   display: block;
   text-decoration: none;
-  padding: ${SPACING.xl};
   background-color: ${COLORS.white};
+  width: 100%; /* Ensure link takes full width */
+  aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
+  padding: ${SPACING.xs}; /* Smaller padding for mobile */
+  position: relative; /* Add relative positioning for absolute children if needed */
+  overflow: hidden; /* Hide overflow from image container */
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.lg};
+  }
 `;
 
 const CardImageContainer = styled.div`
-  width: 100%;
-  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: ${COLORS.white};
   overflow: hidden;
+  position: absolute; /* Position absolutely within the link wrapper */
+  inset: 0; /* Cover the entire link wrapper area */
+  padding: ${SPACING.xs}; /* Smaller padding for mobile */
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.lg};
+  }
 `;
 
 const CardImage = styled.img`
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  height: auto;
-  object-fit: contain;
+  width: 100%; /* Make image fill container width */
+  height: 100%; /* Make image fill container height */
+  object-fit: contain; /* Keep contain for product images */
 `;
 
 const TextContent = styled.div`
@@ -42,10 +71,15 @@ const TextContent = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: ${SPACING.xl} ${SPACING.lg};
-  gap: ${SPACING.sm};
+  padding: ${SPACING.md} ${SPACING.sm}; /* Smaller padding for mobile */
+  gap: ${SPACING.xs};
   background-color: ${COLORS.white};
   flex-grow: 1;
+  
+  ${mediaQueries.md} {
+    padding: ${SPACING.xl} ${SPACING.lg};
+    gap: ${SPACING.sm};
+  }
 `;
 
 const BrandLinkWrapper = styled.a`
@@ -55,109 +89,104 @@ const BrandLinkWrapper = styled.a`
 `;
 
 const Brand = styled.span`
+  display: block;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(0.95rem, 5vw, ${TYPOGRAPHY.size.lg});
+  font-size: clamp(9.2px, 2vw, 23.27px); /* Smaller font size for mobile based on Figma */
   color: ${COLORS.primary};
   text-transform: uppercase;
-  line-height: 1.2;
-
+  line-height: 1;
+  margin-bottom: ${SPACING.xs};
+  
   ${mediaQueries.md} {
-    font-size: ${TYPOGRAPHY.size.lg};
+    font-size: 23.27px;
+    margin-bottom: ${SPACING.sm};
   }
 `;
 
-const Name = styled.h4`
+const Name = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(0.95rem, 5vw, ${TYPOGRAPHY.size.lg});
-  color: ${COLORS.black};
-  margin: ${SPACING.xs} 0 0 0;
+  font-size: clamp(9.2px, 2vw, 18px); /* Smaller font size for mobile based on Figma */
   line-height: 1.2;
-
-  ${mediaQueries.md} {
-    font-size: ${TYPOGRAPHY.size.lg};
-  }
-`;
-
-const Price = styled.span`
-  font-family: ${TYPOGRAPHY.fontFamily};
-  font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(1.1rem, 8vw, ${TYPOGRAPHY.size['3xl']});
-  color: ${COLORS.primary};
-  line-height: 1.1;
-  margin-top: ${SPACING.md};
-
-  ${mediaQueries.md} {
-    font-size: ${TYPOGRAPHY.size['3xl']};
-  }
-`;
-
-const SeparatorLine = styled.hr`
-  width: 100%;
-  border: none;
-  border-top: 2px dashed rgba(0, 0, 0, 0.25);
   margin: 0;
-
+  color: ${COLORS.black};
+  text-transform: uppercase;
+  
   ${mediaQueries.md} {
-    border-top-width: 4px;
+    font-size: 18px;
   }
 `;
 
-const AddToCartContainer = styled.div`
-  padding: ${SPACING.lg} ${SPACING.xl};
-  width: 100%;
-  text-align: center;
-  background-color: ${COLORS.white};
-`;
-
-const AddToCartButton = styled.button`
+const Price = styled.div`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(0.95rem, 5vw, ${TYPOGRAPHY.size.lg});
+  font-size: clamp(13.88px, 2.5vw, 35px); /* Adjusted font size based on Figma */
   color: ${COLORS.primary};
-  text-transform: uppercase;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: ${ANIMATION.transitionBase};
-  line-height: 1.2;
-
-  &:hover:not(:disabled) {
-    color: ${COLORS.primaryHover};
-    opacity: 0.8;
-  }
-
-  &:disabled {
-    color: ${COLORS.gray400};
-    cursor: not-allowed;
-  }
-
+  margin-top: auto;
+  line-height: 0.67; /* Match Figma spec */
+  
   ${mediaQueries.md} {
-    font-size: ${TYPOGRAPHY.size.lg};
+    font-size: 35px;
   }
 `;
 
 const Badge = styled.div`
   position: absolute;
-  top: ${SPACING.md};
-  left: ${SPACING.md};
+  top: ${SPACING.sm};
+  left: ${SPACING.sm};
   background-color: ${COLORS.primary};
   color: ${COLORS.white};
-  border-radius: ${SIZES.borderRadius.round};
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(0.65rem, 4vw, ${TYPOGRAPHY.size.xs});
+  font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  text-transform: uppercase;
-  z-index: 1;
-
+  font-size: 10px;
+  padding: 4px 8px;
+  z-index: 10;
+  
   ${mediaQueries.md} {
-    font-size: ${TYPOGRAPHY.size.xs};
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+`;
+
+const SeparatorLine = styled.div`
+  height: 1px;
+  width: 100%;
+  background-color: ${COLORS.gray300};
+  opacity: 0.35;
+`;
+
+const AddToCartContainer = styled.div`
+  padding: ${SPACING.xs} ${SPACING.sm} 0; /* Removed bottom padding */
+  display: flex;
+  justify-content: center;
+  
+  ${mediaQueries.md} {
+    padding: ${SPACING.md} ${SPACING.lg} 0; /* Removed bottom padding */
+  }
+`;
+
+const AddToCartButton = styled.button`
+  background-color: transparent;
+  color: ${COLORS.black};
+  border: none;
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.bold};
+  font-size: clamp(9.2px, 2vw, 14px); /* Adjusted font size for mobile */
+  padding: ${SPACING.xs} 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  
+  &:disabled {
+    color: ${COLORS.gray400};
+    cursor: not-allowed;
+  }
+  
+  ${mediaQueries.md} {
+    font-size: 14px;
+    padding: ${SPACING.sm} 0;
   }
 `;
 

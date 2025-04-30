@@ -2,7 +2,7 @@
 export const mockCategories = [
   {
     id: 1,
-    title: 'Тюнинг оружия',
+    title: 'Тюнинг',
     imageUrl: '/images/categories/tuning.svg',
     link: '/catalog/tuning'
   },
