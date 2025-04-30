@@ -3,12 +3,10 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
+// Completely restructured CardWrapper to fix height calculation issues
 const CardWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: ${COLORS.white};
-  height: 100%;
   position: relative;
+  background-color: ${COLORS.white};
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
   transition: ${ANIMATION.transitionBase};
@@ -33,11 +31,11 @@ const ImageLinkWrapper = styled.a`
   display: block;
   text-decoration: none;
   background-color: ${COLORS.white};
-  width: 100%; /* Ensure link takes full width */
+  width: 100%;
   aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
-  padding: ${SPACING.xs}; /* Smaller padding for mobile */
-  position: relative; /* Add relative positioning for absolute children if needed */
-  overflow: hidden; /* Hide overflow from image container */
+  padding: ${SPACING.xs};
+  position: relative;
+  overflow: hidden;
 
   ${mediaQueries.md} {
     padding: ${SPACING.lg};
@@ -50,9 +48,9 @@ const CardImageContainer = styled.div`
   justify-content: center;
   background-color: ${COLORS.white};
   overflow: hidden;
-  position: absolute; /* Position absolutely within the link wrapper */
-  inset: 0; /* Cover the entire link wrapper area */
-  padding: ${SPACING.xs}; /* Smaller padding for mobile */
+  position: absolute;
+  inset: 0;
+  padding: ${SPACING.xs};
 
   ${mediaQueries.md} {
     padding: ${SPACING.lg};
@@ -61,24 +59,20 @@ const CardImageContainer = styled.div`
 
 const CardImage = styled.img`
   display: block;
-  width: 100%; /* Make image fill container width */
-  height: 100%; /* Make image fill container height */
-  object-fit: contain; /* Keep contain for product images */
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
+// Modified to create a more predictable height
 const TextContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: block;
   text-align: center;
-  padding: ${SPACING.md} ${SPACING.sm}; /* Smaller padding for mobile */
-  gap: ${SPACING.xs};
+  padding: ${SPACING.md} ${SPACING.sm};
   background-color: ${COLORS.white};
-  flex-grow: 1;
   
   ${mediaQueries.md} {
     padding: ${SPACING.xl} ${SPACING.lg};
-    gap: ${SPACING.sm};
   }
 `;
 
@@ -92,7 +86,7 @@ const Brand = styled.span`
   display: block;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(9.2px, 2vw, 23.27px); /* Smaller font size for mobile based on Figma */
+  font-size: clamp(9.2px, 2vw, 23.27px);
   color: ${COLORS.primary};
   text-transform: uppercase;
   line-height: 1;
@@ -107,7 +101,7 @@ const Brand = styled.span`
 const Name = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(9.2px, 2vw, 18px); /* Smaller font size for mobile based on Figma */
+  font-size: clamp(9.2px, 2vw, 18px);
   line-height: 1.2;
   margin: 0;
   color: ${COLORS.black};
@@ -121,10 +115,10 @@ const Name = styled.h3`
 const Price = styled.div`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(13.88px, 2.5vw, 35px); /* Adjusted font size based on Figma */
+  font-size: clamp(13.88px, 2.5vw, 35px);
   color: ${COLORS.primary};
-  margin-top: auto;
-  line-height: 0.67; /* Match Figma spec */
+  margin-top: ${SPACING.sm};
+  line-height: 0.67;
   
   ${mediaQueries.md} {
     font-size: 35px;
@@ -156,13 +150,14 @@ const SeparatorLine = styled.div`
   opacity: 0.35;
 `;
 
+// Simplified button container to avoid flexbox issues
 const AddToCartContainer = styled.div`
-  padding: ${SPACING.xs} ${SPACING.sm} 0; /* Removed bottom padding */
-  display: flex;
-  justify-content: center;
+  padding: ${SPACING.xs} ${SPACING.sm} ${SPACING.xs};
+  text-align: center;
+  background-color: ${COLORS.white};
   
   ${mediaQueries.md} {
-    padding: ${SPACING.md} ${SPACING.lg} 0; /* Removed bottom padding */
+    padding: ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   }
 `;
 
@@ -172,7 +167,7 @@ const AddToCartButton = styled.button`
   border: none;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(9.2px, 2vw, 14px); /* Adjusted font size for mobile */
+  font-size: clamp(9.2px, 2vw, 14px);
   padding: ${SPACING.xs} 0;
   cursor: pointer;
   width: 100%;
@@ -258,10 +253,10 @@ ProductCard.propTypes = {
     name: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     productLink: PropTypes.string,
-    CATALOG_AVAILABLE: PropTypes.oneOf(['Y', 'N']).isRequired,
-    badge: PropTypes.string,
+    CATALOG_AVAILABLE: PropTypes.oneOf(['Y', 'N']),
+    badge: PropTypes.string
   }).isRequired,
-  onAddToCart: PropTypes.func,
+  onAddToCart: PropTypes.func
 };
 
 export default ProductCard;

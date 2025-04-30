@@ -79,9 +79,9 @@ const ViewAllLink = styled.a`
 const SwiperContainer = styled.div`
   position: relative; 
   width: 100%;
+
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
-
   .swiper {
     padding-left: ${SPACING.md};
     padding-right: ${SPACING.md};

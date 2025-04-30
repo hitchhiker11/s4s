@@ -12,8 +12,9 @@ import 'swiper/css/navigation';
 
 const SliderSection = styled.section`
   width: 100%;
-  padding: ${SPACING.lg} 0 0 0; /* убираем нижний отступ */
+  padding: ${SPACING.lg} 0 0 0;
   background-color: ${COLORS.white};
+  position: relative; /* Add position context */
 `;
 
 const HeaderContainer = styled.div`
@@ -71,48 +72,50 @@ const ViewAllLink = styled.a`
   }
 `;
 
+// Completely restructured SwiperContainer to ensure proper height handling
 const SwiperContainer = styled.div`
   position: relative;
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
-
+  padding-bottom: ${SPACING.md};
+  
+  /* Override Swiper's default height calculation */
   .swiper {
+    position: relative;
     padding-left: ${SPACING.md};
     padding-right: ${SPACING.md};
-
+    overflow: visible;
+    
     ${mediaQueries.sm} {
       padding-left: ${SPACING.lg};
       padding-right: ${SPACING.lg};
     }
   }
 
+  /* Fix the wrapper height calculation issue */
   .swiper-wrapper {
-    align-items: stretch;
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
   }
 
+  /* Fix individual slide height */
   .swiper-slide {
     min-width: 173px;
     max-width: 173px;
-    flex-basis: 173px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    align-self: stretch;
-    height: auto;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  /* Восстанавливаем отступ между карточками */
-  .swiper-slide:not(:last-child) {
-    margin-right: ${SPACING.sm};
-  }
-
-  /* Убираем отступ справа у последнего слайда */
-  .swiper-slide:last-child {
-    margin-right: 0 !important;
+    width: 173px;
+    
+    /* Override Swiper's default height calculation */
+    height: auto !important;
+    
+    /* Fix flexbox alignment */
+    display: block !important;
+    
+    /* Use consistent spacing between cards */
+    &:not(:last-child) {
+      margin-right: ${SPACING.sm};
+    }
   }
 
   /* Hide navigation arrows */
@@ -122,30 +125,14 @@ const SwiperContainer = styled.div`
   }
 `;
 
-// Обертка для ProductCard с усиленной чисткой отступов
+// Completely restructured ProductCardWrapper
 const ProductCardWrapper = styled.div`
+  position: relative;
   width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
   
-  /* Убираем нижний отступ у карточки и всех вложенных элементов */
-  & > * {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-  }
-  
-  /* Усиленная специфичность для кнопки корзины и её контейнера */
-  & div:last-child,
-  & button {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-  }
-  
-  /* Скрываем любые оставшиеся переполнения */
-  overflow: hidden;
+  /* Remove all auto height/flex behaviors causing the issue */
+  display: block;
+  height: auto;
 `;
 
 const EmptyMessage = styled.div`
@@ -187,7 +174,7 @@ const ProductSlider = ({
             slidesPerView={'auto'}
             navigation
             grabCursor={true}
-            style={{overflow: 'visible'}}
+            // Remove inline overflow style
           >
             {displayProducts.map((product) => (
               <SwiperSlide key={product.id}>
@@ -195,14 +182,6 @@ const ProductSlider = ({
                   <ProductCard
                     product={product}
                     onAddToCart={onAddToCart}
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      marginBottom: 0,
-                      paddingBottom: 0,
-                    }}
                   />
                 </ProductCardWrapper>
               </SwiperSlide>

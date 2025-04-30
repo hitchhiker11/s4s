@@ -178,6 +178,8 @@ const GridContainer = styled.div`
       flex-shrink: 0;
       width: 70%;
       scroll-snap-align: start;
+      height: auto;
+      align-self: flex-start;
 
       ${mediaQueries.xs} {
          width: 75%;

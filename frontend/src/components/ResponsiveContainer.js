@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 /**
  * Custom hook to detect viewport size and determine if we're in mobile view
@@ -58,6 +59,15 @@ const ViewportIndicator = ({ isMobile, width }) => {
   );
 };
 
+const ResponsiveWrapper = styled.div`
+  display: block;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: visible;
+  height: auto;
+`;
+
 /**
  * ResponsiveContainer - Renders either mobile or desktop component based on viewport size
  * 
@@ -77,7 +87,7 @@ const ResponsiveContainer = ({
   const { isMobile, width } = useViewport();
 
   return (
-    <>
+    <ResponsiveWrapper>
       {/* Render the appropriate component based on viewport size, passing specific props */}
       {isMobile ? (
         <MobileComponent {...mobileProps} />
@@ -87,7 +97,7 @@ const ResponsiveContainer = ({
       
       {/* Show debug indicator during development */}
       {debug && <ViewportIndicator isMobile={isMobile} width={width} />}
-    </>
+    </ResponsiveWrapper>
   );
 };
 

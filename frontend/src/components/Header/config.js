@@ -110,7 +110,7 @@ export const SocialLinkPropTypes = PropTypes.shape({
 const COMMON_LINKS = {
   catalog: { id: 'catalog', name: 'Каталог', path: '/catalog' },
   brands: { id: 'brands', name: 'Бренды', path: '/brands' },
-  delivery: { id: 'delivery', name: 'Доставка и оплата', path: '/delivery' },
+  delivery: { id: 'delivery', name: 'О нас', path: '/about' },
   contacts: { id: 'contacts', name: 'Контакты', path: '/contacts' },
   about: { id: 'about', name: 'О компании', path: '/about' },
   shops: { id: 'shops', name: 'Магазины', path: '/shops' },

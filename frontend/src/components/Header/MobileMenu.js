@@ -113,7 +113,7 @@ const MobileNavList = styled.ul`
   justify-content: center;
   align-items: center;
   gap: 19px;
-  padding: 10px 0 20px;
+  padding: 20px 0 20px;
 `;
 
 const MobileNavItem = styled.li`

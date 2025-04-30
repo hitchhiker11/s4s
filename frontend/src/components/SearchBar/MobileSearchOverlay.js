@@ -5,6 +5,8 @@ import { SearchIcon, CloseIcon } from '../Header/icons';
 import { COLORS, TYPOGRAPHY } from '../../styles/tokens';
 import SearchResults from './SearchResults';
 import { useRouter } from 'next/router';
+// Import searchData utility
+import { searchData } from '../../lib/searchUtils';
 
 // Animations
 const fadeIn = keyframes`
@@ -94,40 +96,22 @@ const CloseButton = styled.button`
   }
 `;
 
-// Mock API call function (replace with actual API call in production)
-const searchAPI = async (query) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // Return mock results based on query
-  if (!query || query.length < 2) return { brands: [], categories: [], products: [] };
-  
-  const mockData = {
-    brands: [
-      { id: 1, name: 'Canon', slug: 'canon' },
-      { id: 2, name: 'Nikon', slug: 'nikon' },
-      { id: 3, name: 'Sony', slug: 'sony' },
-    ],
-    categories: [
-      { id: 1, name: 'Камеры', slug: 'cameras' },
-      { id: 2, name: 'Объективы', slug: 'lenses' },
-      { id: 3, name: 'Аксессуары', slug: 'accessories' },
-    ],
-    products: [
-      { id: 1, name: 'Canon EOS R5', slug: 'canon-eos-r5' },
-      { id: 2, name: 'Nikon Z9', slug: 'nikon-z9' },
-      { id: 3, name: 'Sony Alpha A7 IV', slug: 'sony-alpha-a7-iv' },
-    ]
-  };
-  
-  // Filter results based on query
-  const lowerQuery = query.toLowerCase();
-  return {
-    brands: mockData.brands.filter(b => b.name.toLowerCase().includes(lowerQuery)),
-    categories: mockData.categories.filter(c => c.name.toLowerCase().includes(lowerQuery)),
-    products: mockData.products.filter(p => p.name.toLowerCase().includes(lowerQuery))
-  };
-};
+const NoItemsLink = styled.a`
+  display: block;
+  text-align: right;
+  margin-top: 10px;
+  padding: 0 5px 5px 0;
+  color: ${COLORS.primary};
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  font-size: 16px;
+  text-decoration: none;
+
+  &:hover {
+    color: ${COLORS.primaryHover};
+    text-decoration: underline;
+  }
+`;
 
 const MobileSearchOverlay = ({ isOpen, onClose }) => {
   const router = useRouter();
@@ -147,6 +131,7 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
   const handleInputChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
+    console.log('Mobile search input changed:', query);
     
     if (query.length >= 2) {
       setIsLoading(true);
@@ -154,13 +139,16 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
       
       // Debounce the API call
       const timeoutId = setTimeout(async () => {
-        const results = await searchAPI(query);
+        console.log('Mobile: Calling search API after debounce');
+        const results = await searchData(query, 'mobile');
         setSearchResults(results);
         setIsLoading(false);
+        console.log('Mobile: Results set to state:', results);
       }, 300);
       
       return () => clearTimeout(timeoutId);
     } else {
+      console.log('Mobile: Query too short, hiding results');
       setShowResults(false);
       setSearchResults({ brands: [], categories: [], products: [] });
     }
@@ -175,6 +163,8 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
       router.push(`/brands/${data.slug}`);
     } else if (type === 'category') {
       router.push(`/catalog/${data.slug}`);
+    } else if (type === 'product') {
+      router.push(`/product/${data.slug}`);
     } else if (type === 'search') {
       router.push(`/search?q=${encodeURIComponent(data.query)}`);
     }
@@ -262,6 +252,8 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
             />
             <SearchIcon />
           </SearchInputWrapper>
+          
+          {/* <NoItemsLink href="#">Нет нужного товара?</NoItemsLink> */}
         </form>
         
         <SearchResults 
@@ -277,7 +269,7 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
 
 MobileSearchOverlay.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 export default MobileSearchOverlay; 

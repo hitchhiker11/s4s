@@ -4,15 +4,17 @@ import styled from 'styled-components';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries } from '../../styles/tokens';
 import { SearchIcon } from '../icons';
 import SearchResults from './SearchResults';
+// Import searchData utility
+import { searchData } from '../../lib/searchUtils';
 
 const SearchSection = styled.section`
   width: 100%;
-  padding: 12px;
+  padding: 12px; /* Mobile padding */
   background-color: ${COLORS.white};
-  position: relative;
+  position: relative; /* Needed for ResultsContainer positioning */
 
   ${mediaQueries.md} {
-    padding: 29px 40px;
+    padding: 29px 40px; /* Desktop padding */
   }
 `;
 
@@ -38,7 +40,8 @@ const SearchWrapper = styled.div`
 
 const FormContainer = styled.form`
   display: flex;
-  width: 100%;
+  flex-grow: 1; /* Allow form to grow but leave space for link */
+  /* Removed width: 100% */
 `;
 
 const InputContainer = styled.div`
@@ -62,7 +65,7 @@ const StyledInput = styled.input`
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(18px, 5vw, 30px);
+  font-size: clamp(14px, 3vw, 30px); /* Responsive font size */
   color: ${COLORS.black};
   padding: 5px 0;
   width: 100%;
@@ -77,7 +80,7 @@ const StyledInput = styled.input`
   }
 
   ${mediaQueries.md} {
-    font-size: 30px;
+    font-size: 30px; /* Fixed desktop font size */
     padding: 7px 0;
   }
 `;
@@ -86,7 +89,7 @@ const IconWrapper = styled.span`
   color: ${COLORS.gray400};
   display: flex;
   align-items: center;
-  
+
   svg {
     width: 18px;
     height: 18px;
@@ -102,76 +105,67 @@ const IconWrapper = styled.span`
   }
 `;
 
-const LinkContainer = styled.div`
-  display: none;
-  border-left: 4px solid ${COLORS.gray400};
-  padding-left: 30px;
-  flex-shrink: 0;
+// Container for the link, displayed BELOW SearchSection on MOBILE only
+const MobileLinkContainer = styled.div`
+  display: flex; /* Use flex to center content */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically if needed */
+  max-width: ${SIZES.containerMaxWidth};
+  margin: ${SPACING.small} auto 0; /* Add some top margin */
+  padding: 0 12px; /* Match SearchSection horizontal padding */
 
   ${mediaQueries.md} {
-    display: block;
+    display: none; // Hide on desktop
   }
 `;
 
+// Container for the link, displayed INSIDE SearchWrapper on DESKTOP only
+const DesktopLinkContainer = styled.div`
+  display: none; // Hide on mobile by default
+
+  ${mediaQueries.md} {
+    display: flex; // Show on desktop
+    align-items: center; // Align vertically with search input
+    flex-shrink: 0; // Prevent shrinking when input grows
+    padding-left: ${SPACING.large}; // Space between search form and link
+  }
+`;
+
+// Common style for the link itself
 const StyledLink = styled.a`
   color: ${COLORS.primary};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: 30px;
+  font-size: 14px;
   text-decoration: none;
   white-space: nowrap;
+  display: block; // Ensure it behaves predictably
 
   &:hover {
     color: ${COLORS.primaryHover};
     text-decoration: underline;
   }
+
+  ${mediaQueries.md} {
+    font-size: 16px; // Slightly larger font on desktop
+  }
 `;
 
 const ResultsContainer = styled.div`
   position: absolute;
-  top: 100%;
+  top: 100%; /* Position below the SearchSection */
   left: 0;
   right: 0;
-  width: 100%;
   max-width: ${SIZES.containerMaxWidth};
-  margin: 0 auto;
+  margin: 0 auto; /* Center it */
   z-index: 1000;
-`;
+  /* Match SearchSection horizontal padding for alignment */
+  padding: 0 12px; /* Mobile padding */
 
-// Mock API call function (replace with actual API call in production)
-const searchAPI = async (query) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // Return mock results based on query
-  if (!query || query.length < 2) return { brands: [], categories: [], products: [] };
-  
-  const mockData = {
-    brands: [
-      { id: 1, name: 'Canon', slug: 'canon' },
-      { id: 2, name: 'Nikon', slug: 'nikon' },
-      { id: 3, name: 'Sony', slug: 'sony' },
-    ],
-    categories: [
-      { id: 1, name: 'Камеры', slug: 'cameras' },
-      { id: 2, name: 'Объективы', slug: 'lenses' },
-      { id: 3, name: 'Аксессуары', slug: 'accessories' },
-    ],
-    products: [
-      { id: 1, name: 'Canon EOS R5', slug: 'canon-eos-r5' },
-      { id: 2, name: 'Nikon Z9', slug: 'nikon-z9' },
-      { id: 3, name: 'Sony Alpha A7 IV', slug: 'sony-alpha-a7-iv' },
-    ]
-  };
-  
-  // Filter results based on query
-  const lowerQuery = query.toLowerCase();
-  return {
-    brands: mockData.brands.filter(b => b.name.toLowerCase().includes(lowerQuery)),
-    categories: mockData.categories.filter(c => c.name.toLowerCase().includes(lowerQuery)),
-    products: mockData.products.filter(p => p.name.toLowerCase().includes(lowerQuery))
-  };
-};
+   ${mediaQueries.md} {
+     padding: 0 40px; /* Desktop padding */
+   }
+`;
 
 const SearchBar = () => {
   const router = useRouter();
@@ -184,103 +178,155 @@ const SearchBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const inputRef = useRef(null);
-  const searchRef = useRef(null);
+  const componentRef = useRef(null); // Ref for the entire component including the mobile link
 
-  // Handle input changes
+  // Debounced search effect
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setShowResults(false);
+      // Don't clear results immediately, maybe keep stale results briefly?
+      // setSearchResults({ brands: [], categories: [], products: [] });
+      setIsLoading(false);
+      return; // No API call needed
+    }
+
+    // Show results container immediately (can show loading state within SearchResults)
+    setShowResults(true);
+    setIsLoading(true);
+
+    const handler = setTimeout(async () => {
+      console.log('Calling search API after debounce for:', searchQuery);
+      try {
+        // Pass 'desktop' context regardless of view, as results format is likely the same
+        const results = await searchData(searchQuery, 'desktop');
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Search API error:", error);
+        setSearchResults({ brands: [], categories: [], products: [] }); // Clear results on error
+      } finally {
+        setIsLoading(false);
+        console.log('Search results updated');
+      }
+    }, 300);
+
+    // Cleanup function to cancel the timeout if query changes before 300ms
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]); // Re-run effect when searchQuery changes
+
+  // Handle input changes - just updates the state
   const handleInputChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    
-    if (query.length >= 2) {
-      setIsLoading(true);
-      setShowResults(true);
-      
-      // Debounce the API call
-      const timeoutId = setTimeout(async () => {
-        const results = await searchAPI(query);
-        setSearchResults(results);
-        setIsLoading(false);
-      }, 300);
-      
-      return () => clearTimeout(timeoutId);
-    } else {
-      setShowResults(false);
-      setSearchResults({ brands: [], categories: [], products: [] });
-    }
+    console.log('Search input changed:', query);
   };
 
   // Handle search result click
   const handleResultClick = (type, data) => {
     setShowResults(false);
-    setSearchQuery('');
-    
+    setSearchQuery(''); // Clear input after selection
+
     // Navigate based on result type
+    let path = '';
     if (type === 'brand') {
-      router.push(`/brands/${data.slug}`);
+      path = `/brands/${data.slug}`;
     } else if (type === 'category') {
-      router.push(`/catalog/${data.slug}`);
+      path = `/catalog/${data.slug}`;
+    } else if (type === 'product') {
+      path = `/product/${data.slug}`;
     } else if (type === 'search') {
-      router.push(`/search?q=${encodeURIComponent(data.query)}`);
+      // This case might be for a "see all results for 'query'" link
+      path = `/search?q=${encodeURIComponent(data.query)}`;
+    }
+    if (path) {
+      router.push(path);
     }
   };
 
   // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
       setShowResults(false);
-      setSearchQuery('');
+      setSearchQuery(''); // Clear input after submit
+      inputRef.current?.blur(); // Remove focus from input
     }
   };
 
-  // Handle clicks outside the search component
+  // Handle clicks outside the search component (input + results + mobile link)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
+      // Check if the click is outside the entire component wrapper
+      if (componentRef.current && !componentRef.current.contains(event.target)) {
         setShowResults(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
-    <SearchSection ref={searchRef}>
-      <SearchWrapper>
-        <FormContainer onSubmit={handleSubmit}>
-          <InputContainer>
-            <StyledInput 
-              type="text" 
-              placeholder="Ищете что-нибудь конкретное?" 
-              value={searchQuery}
-              onChange={handleInputChange}
-              ref={inputRef}
+    // Use a wrapper div with the ref for outside click detection
+    <div ref={componentRef}>
+      <SearchSection> {/* Removed ref here as componentRef covers it */}
+        <SearchWrapper>
+          <FormContainer onSubmit={handleSubmit}>
+            <InputContainer>
+              <StyledInput
+                type="text"
+                placeholder="Ищете что-нибудь конкретное?"
+                value={searchQuery}
+                onChange={handleInputChange}
+                onFocus={() => searchQuery.length >= 2 && setShowResults(true)} // Show results on focus if query is long enough
+                ref={inputRef}
+                aria-haspopup="listbox" // Indicate results dropdown
+                aria-expanded={showResults} // State of the dropdown
+                aria-controls="search-results-list" // ID of the results list
+                autoComplete="off" // Prevent browser autocomplete interference
+              />
+              <IconWrapper>
+                {/* Consider making the icon clickable to submit form */}
+                <SearchIcon width="24px" height="24px" />
+              </IconWrapper>
+            </InputContainer>
+          </FormContainer>
+
+          {/* Link displayed INSIDE SearchWrapper on DESKTOP only */}
+          <DesktopLinkContainer>
+            <StyledLink href="#">Нет нужного товара?</StyledLink>
+          </DesktopLinkContainer>
+
+        </SearchWrapper>
+
+        {/* Results container positioned absolutely relative to SearchSection */}
+        {/* Conditionally render ResultsContainer only when needed */}
+        {showResults && (
+          <ResultsContainer>
+            <SearchResults
+              id="search-results-list" // Add ID for aria-controls
+              isVisible={showResults} // Pass visibility (might be redundant now)
+              query={searchQuery}
+              results={searchResults}
+              onResultClick={handleResultClick}
+              isLoading={isLoading} // Pass loading state
             />
-            <IconWrapper>
-              <SearchIcon width="24px" height="24px" />
-            </IconWrapper>
-          </InputContainer>
-        </FormContainer>
-        <LinkContainer>
-          <StyledLink href="#">Нет нужного товара?</StyledLink>
-        </LinkContainer>
-      </SearchWrapper>
-      
-      <ResultsContainer>
-        <SearchResults 
-          isVisible={showResults}
-          query={searchQuery}
-          results={searchResults}
-          onResultClick={handleResultClick}
-        />
-      </ResultsContainer>
-    </SearchSection>
+          </ResultsContainer>
+        )}
+      </SearchSection>
+
+      {/* Link displayed BELOW SearchSection on MOBILE only */}
+      <MobileLinkContainer>
+        <StyledLink href="#">Нет нужного товара?</StyledLink>
+      </MobileLinkContainer>
+    </div>
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

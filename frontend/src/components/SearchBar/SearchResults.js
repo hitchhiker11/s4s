@@ -67,6 +67,71 @@ const NoResults = styled.div`
   font-size: 16px;
 `;
 
+// Новые стили для товаров
+const ProductResultItem = styled(ResultItem)`
+  padding: 12px 16px;
+  gap: 10px;
+  
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+`;
+
+const ProductImage = styled.div`
+  width: 50px;
+  height: 50px;
+  min-width: 40px;
+  background-image: url(${props => props.src});
+  background-size: cover;
+  background-position: center;
+  background-color: ${COLORS.gray100};
+  border-radius: 4px;
+`;
+
+const ProductInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+`;
+
+const ProductBrand = styled.span`
+  font-size: 12px;
+  color: ${COLORS.gray600};
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  margin-bottom: 2px;
+`;
+
+const ProductName = styled.span`
+  font-size: 14px;
+  color: ${COLORS.black};
+  font-weight: ${TYPOGRAPHY.weight.regular};
+`;
+
+const ProductPrice = styled.span`
+  font-size: 14px;
+  color: ${COLORS.primary};
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  margin-left: auto;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  min-width: 70px;
+`;
+
+const AvailabilityBadge = styled.span`
+  font-size: 11px;
+
+  border-radius: 3px;
+  background-color: ${props => props.available ? COLORS.successLight : COLORS.errorLight};
+  color: ${props => props.available ? COLORS.success : COLORS.error};
+  margin-left: 0;
+  margin-top: 4px;
+  align-self: flex-start;
+  display: block;
+`;
+
 const SearchResults = ({ 
   isVisible,
   query,
@@ -79,6 +144,17 @@ const SearchResults = ({
   const hasCategories = results?.categories?.length > 0;
   const hasProducts = results?.products?.length > 0;
   const hasResults = hasBrands || hasCategories || hasProducts;
+
+  console.log('Rendering search results:', { hasBrands, hasCategories, hasProducts, results });
+
+  // Форматирование цены
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      maximumFractionDigits: 0
+    }).format(price);
+  };
 
   return (
     <ResultsContainer isVisible={isVisible}>
@@ -118,10 +194,38 @@ const SearchResults = ({
       
       {hasProducts && (
         <ResultSection>
-          <SectionTitle>Запрос</SectionTitle>
+          <SectionTitle>Товары</SectionTitle>
+          {results.products.map((product) => (
+            <ProductResultItem 
+              key={`product-${product.id}`} 
+              onClick={() => onResultClick('product', product)}
+            >
+              <Link href={`/product/${product.slug}`}>
+                <ProductImage src={product.imageUrl} />
+                <ProductInfo>
+                  <ProductBrand>{product.brand}</ProductBrand>
+                  <ProductName>{product.name}</ProductName>
+                </ProductInfo>
+                <ProductPrice>
+                  {formatPrice(product.price)}
+                  {product.available !== undefined && (
+                    <AvailabilityBadge available={product.available}>
+                      {product.available ? 'В наличии' : 'Нет в наличии'}
+                    </AvailabilityBadge>
+                  )}
+                </ProductPrice>
+              </Link>
+            </ProductResultItem>
+          ))}
+        </ResultSection>
+      )}
+      
+      {hasResults && (
+        <ResultSection>
+          <SectionTitle>Поиск по запросу</SectionTitle>
           <ResultItem onClick={() => onResultClick('search', { query })}>
             <Link href={`/search?q=${encodeURIComponent(query)}`}>
-              <ResultItemTitle>{query}</ResultItemTitle>
+              <ResultItemTitle>Показать все результаты для "{query}"</ResultItemTitle>
             </Link>
           </ResultItem>
         </ResultSection>

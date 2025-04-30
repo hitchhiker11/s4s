@@ -92,8 +92,18 @@ const MainHeaderContent = styled(Container)`
 
   ${mediaQuery.min.lg} {
     justify-content: center;
-    gap: 55px;
+    gap: 70px; /* Matching Figma gap between elements (70px) */
     padding: 0;
+  }
+`;
+
+const NavGroup = styled.div`
+  display: none;
+  
+  ${mediaQuery.min.lg} {
+    display: flex;
+    align-items: center;
+    gap: 70px; /* Matching Figma gap between nav items */
   }
 `;
 
@@ -195,10 +205,6 @@ const HeaderNavItem = styled.span`
   @media (max-width: 600px) {
     font-size: 15px;
     padding: 0.7em 0.3em;
-  }
-
-  ${mediaQuery.max.lg} {
-    display: none;
   }
 `;
 
@@ -337,7 +343,11 @@ const MobileSearchButton = styled(SearchActionButton)`
   display: none; /* Hidden by default (on desktop) */
 
   ${mediaQuery.max.lg} {
-    display: none; /* Not needed anymore as search is in HeaderActions */
+    display: inline-flex; /* Visible on mobile */
+  }
+
+  ${mediaQuery.min.lg} {
+    display: none; /* Hidden on desktop */
   }
 `;
 
@@ -430,10 +440,15 @@ const MainHeader = ({
     return label;
   };
 
+  // Split the navigation links for desktop layout according to Figma design
+  const leftNavLinks = NAV_LINKS_DESKTOP.slice(0, 2); // First 2 links (Каталог, Бренды)
+  const rightNavLinks = NAV_LINKS_DESKTOP.slice(2); // Last 2 links (Доставка и оплата, Контакты)
+
   return (
     <>
       <MainHeaderWrapper>
         <MainHeaderContent>
+          {/* Mobile Menu Button (only visible on mobile) */}
           <MobileMenuButton 
             onClick={toggleMobileMenu}
             aria-label="Показать меню"
@@ -444,6 +459,29 @@ const MainHeader = ({
             </HeaderIconStyles>
           </MobileMenuButton>
 
+          {/* Left Navigation Group (only visible on desktop) */}
+          <NavGroup>
+          <DesktopSearchButton 
+              onClick={handleSearchClick}
+              aria-label="Поиск"
+            >
+              <HeaderIconStyles>
+                <SearchIcon />
+              </HeaderIconStyles>
+            </DesktopSearchButton>
+            
+            {leftNavLinks.map((item) => (
+              <HeaderNavItem 
+                key={item.id}
+                as={Link}
+                href={item.path}
+              >
+                {item.name}
+              </HeaderNavItem>
+            ))}
+          </NavGroup>
+
+          {/* Logo (centered on desktop, positioned according to mobile layout on mobile) */}
           <LogoWrapper>
             <Link href="/" legacyBehavior>
               <a aria-label="Shop4Shoot - Перейти на главную">
@@ -452,25 +490,49 @@ const MainHeader = ({
             </Link>
           </LogoWrapper>
 
-          {NAV_LINKS_DESKTOP.map((item) => (
-            <HeaderNavItem 
-              key={item.id}
-              as={Link}
-              href={item.path}
-            >
-              {item.name}
-            </HeaderNavItem>
-          ))}
+          {/* Right Navigation Group (only visible on desktop) */}
+          <NavGroup>
+            {rightNavLinks.map((item) => (
+              <HeaderNavItem 
+                key={item.id}
+                as={Link}
+                href={item.path}
+              >
+                {item.name}
+              </HeaderNavItem>
+            ))}
+            
+            {/* <ActionButton 
+              aria-label={getBasketAriaLabel()}
+              as={Link} 
+              href="/cart" 
+              className="cart-button"
+              style={{ padding: "0" }}
+            > */}
+              {/* <HeaderIconStyles>
+                <CartIcon />
+              </HeaderIconStyles>
+              {basketCount > 0 && (
+                <CartBadge 
+                  $isLoading={isBasketLoading}
+                  aria-hidden="true"
+                >
+                  {basketCount}
+                </CartBadge>
+              )}
+            </ActionButton> */}
+          </NavGroup>
 
+          {/* Mobile Actions (only visible on mobile) */}
           <HeaderActions>
-            <ActionButton 
+            <MobileSearchButton 
               onClick={handleSearchClick}
               aria-label="Поиск"
             >
               <HeaderIconStyles>
                 <SearchIcon />
               </HeaderIconStyles>
-            </ActionButton>
+            </MobileSearchButton>
 
             <ActionButton 
               aria-label={getBasketAriaLabel()}

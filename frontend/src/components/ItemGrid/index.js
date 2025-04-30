@@ -141,6 +141,7 @@ const GridContainer = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
   gap: ${SPACING.md};
   width: 100%;
+
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
   justify-content: space-between;

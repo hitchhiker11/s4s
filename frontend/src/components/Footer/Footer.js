@@ -65,7 +65,7 @@ const Footer = () => {
             <FooterLink>О нас</FooterLink>
           </Link>
           <Link href="/delivery" passHref legacyBehavior>
-            <FooterLink>Доставка и оплата</FooterLink>
+            <FooterLink>О нас</FooterLink>
           </Link>
           <Link href="/contacts" passHref legacyBehavior>
             <FooterLink>Контакты</FooterLink>

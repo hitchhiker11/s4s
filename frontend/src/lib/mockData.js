@@ -42,7 +42,7 @@ export const mockNewArrivals = [
     id: 'prod-101',
     imageUrl: '/images/new-products/baseball-hat.png', // Replace
     brand: 'EIGER TAC',
-    name: 'Бейсболка с липучкой рип-стоп A-TACS FG', // Example long name
+    name: 'Бейсболка с липучкой рип-стоп A-TACS FsdfsdfsdfG', // Example long name
     price: 2100,
     productLink: '/product/eiger-tac-cap-atacs-fg',
     CATALOG_AVAILABLE: 'Y', // Add availability flag

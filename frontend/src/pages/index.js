@@ -133,7 +133,12 @@ const AboutSection = styled.section`
   padding: 0 0;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
-  // min-height: 600px;
+  max-height: 434px;
+    
+  ${mediaQueries.md} {
+
+    max-height: 850px;
+  }
 `;
 
 const SectionTitle = styled.h2`

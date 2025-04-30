@@ -1,7 +1,7 @@
 # Workflow State
 
 ## State
-**Status**: CONSTRUCT
+**Status**: TESTING
 
 ## Plan: Mobile Responsiveness Improvement - Grid to Slider Conversion
 
@@ -64,10 +64,16 @@ Replace the current responsive grid behavior for category and product sections o
 - Updated hover animations on cards to darken the corner border instead of shadow and scale.
 - Fixed mobile card sizing to better match Figma designs.
 - Adjusted proportions for mobile product and category cards.
+- Restored desktop header layout to match Figma design with logo centered and navigation links split around it.
+- Added "Нет нужного товара?" button below the search bar in mobile search overlay.
+- Hid the link container in desktop view.
 
 ## Next Steps
 - **Testing:**
     - Run the development server and visually inspect the changes.
+    - Verify desktop header layout matches Figma design.
+    - Check that mobile header maintains its current layout.
+    - Confirm "Нет нужного товара?" link appears below the search bar in mobile search overlay.
     - Thoroughly test the components across various screen sizes (desktop grid vs. mobile slider, breakpoint transition).
     - Test on different browsers and mobile device emulators.
     - Verify touch/swipe interactions (touch) and navigation arrows (click).
@@ -78,4 +84,4 @@ Replace the current responsive grid behavior for category and product sections o
 - **Performance Optimization** (If necessary based on testing):
     - Investigate lazy loading options for Swiper if performance is impacted on mobile.
     - Optimize images used in cards.
-- **Update Status:** Set Status to TESTING once verification is complete.
+- **Update Status:** Set Status to READY once verification is complete.

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Pagination, Navigation } from 'swiper';
 import 'swiper/css';
@@ -137,6 +137,22 @@ const PaginationDot = styled.div`
   class-name: pagination-dot ${props => props.$active ? 'active' : ''};
 `;
 
+// Анимация вращения для лоадера
+const spin = keyframes`
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+`;
+
+// Визуальный спиннер
+const Spinner = styled.div`
+  width: 48px;
+  height: 48px;
+  border: 5px solid ${COLORS.gray300};
+  border-top: 5px solid ${COLORS.primary};
+  border-radius: 50%;
+  animation: ${spin} 1s linear infinite;
+`;
+
 // Компонент Loader для отображения в процессе загрузки данных
 const Loader = styled.div`
   width: 100%;
@@ -180,9 +196,13 @@ const AboutSlider = () => {
     };
   }, [swiperInstance]);
 
-  // Если данные загружаются, показываем лоадер
+  // Если данные загружаются, показываем вращающийся лоадер
   if (isLoading) {
-    return <Loader>Загрузка слайдера...</Loader>;
+    return (
+      <Loader>
+        <Spinner />
+      </Loader>
+    );
   }
 
   // Если произошла ошибка, показываем сообщение
