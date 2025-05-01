@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 import { TextLink } from './common';
-import { SearchIcon, CartIcon, MenuBurgerIcon } from './icons';
+import { SearchIcon, CartIcon, MenuBurgerIcon, CloseIcon } from './icons';
 import {
   HEADER_COLORS,
   Container,
@@ -22,6 +22,8 @@ import {
 import { NAV_LINKS_DESKTOP, NavLinkPropTypes } from './config';
 import { COLORS, TYPOGRAPHY } from '../../styles/tokens';
 import MobileSearchOverlay from '../SearchBar/MobileSearchOverlay';
+import SearchResults from '../SearchBar/SearchResults';
+import { searchData } from '../../lib/searchUtils';
 
 // --- Стили ---
 
@@ -68,7 +70,7 @@ const navLinesMixin = css`
 `;
 
 const MainHeaderWrapper = styled.div`
-  position: sticky;
+  position: relative; /* Changed from sticky to ensure DesktopSearchOverlay is positioned correctly */
   top: 0;
   left: 0;
   width: 100%;
@@ -83,13 +85,14 @@ const MainHeaderWrapper = styled.div`
 `;
 
 const MainHeaderContent = styled(Container)`
+  position: relative; /* Added to ensure DesktopSearchOverlay is positioned correctly */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
   height: 100%;
   width: 100%;
-
+  
   ${mediaQuery.min.lg} {
     justify-content: center;
     gap: 70px; /* Matching Figma gap between elements (70px) */
@@ -399,6 +402,62 @@ const LoadingIndicator = styled.span`
   }
 `;
 
+const DesktopSearchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1001; /* Ensure the search components appear above all other header elements */
+`;
+
+const DesktopSearchInputContainer = styled.div`
+  position: relative;
+`;
+
+const DesktopSearchInputWrapper = styled.div`
+  position: absolute;
+  left: calc(100% + 10px); /* Position it right after the search icon with some spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: ${props => props.$isOpen ? '600px' : '0'};
+  max-width: 600px;
+  opacity: ${props => props.$isOpen ? '1' : '0'};
+  z-index: 1001;
+  background-color: ${COLORS.white};
+  transition: 
+    width 0.3s ease-in-out,
+    opacity 0.2s ease-in-out;
+`;
+
+const DesktopSearchInput = styled.input`
+  border: none;
+  background: transparent;
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.185em;
+  color: ${COLORS.black};
+  width: 100%;
+  outline: none;
+  padding: 5px 0;
+
+  &::placeholder {
+    color: #1C1C1C;
+  }
+`;
+
+const DesktopResultsContainer = styled.div`
+  position: absolute;
+  top: calc(100% + 25px); /* Position below the header, accounting for search button height */
+  left: calc(100% + 10px); /* Align with search input */
+  width: 300px;
+  z-index: 1001;
+  background-color: #FFFFFF;
+  box-shadow: 0px 3px 3px 0px #B6B6B6;
+`;
+
 // --- Компонент ---
 
 const MainHeader = ({
@@ -408,15 +467,117 @@ const MainHeader = ({
 }) => {
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isDesktopSearchOpen, setIsDesktopSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState({
+    brands: [],
+    categories: [],
+    products: []
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchInputRef = useRef(null);
+  const searchWrapperRef = useRef(null);
 
   const handleSearchClick = () => {
     if (window.innerWidth <= 768) {
-      // For mobile, open the search overlay
+      // For mobile, open the mobile search overlay
       setIsSearchOpen(true);
     } else {
-      // For desktop, navigate to search page
-      router.push('/search');
+      // For desktop, toggle the inline search field
+      setIsDesktopSearchOpen(!isDesktopSearchOpen);
+      // Reset search state when closing
+      if (isDesktopSearchOpen) {
+        setSearchQuery('');
+        setShowResults(false);
+      }
     }
+  };
+
+  // Focus search input when opened
+  useEffect(() => {
+    if (isDesktopSearchOpen && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current.focus();
+      }, 300); // Wait for animation to complete
+    }
+  }, [isDesktopSearchOpen]);
+
+  // Handle click outside to close desktop search
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchWrapperRef.current && 
+          !searchWrapperRef.current.contains(event.target) && 
+          isDesktopSearchOpen) {
+        setIsDesktopSearchOpen(false);
+        setSearchQuery('');
+        setShowResults(false);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && isDesktopSearchOpen) {
+        setIsDesktopSearchOpen(false);
+        setSearchQuery('');
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isDesktopSearchOpen]);
+
+  // Debounced search effect
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setShowResults(false);
+      setIsLoading(false);
+      return;
+    }
+
+    setShowResults(true);
+    setIsLoading(true);
+
+    const handler = setTimeout(async () => {
+      try {
+        const results = await searchData(searchQuery, 'desktop');
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Search API error:", error);
+        setSearchResults({ brands: [], categories: [], products: [] });
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim().length > 0) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setIsDesktopSearchOpen(false);
+      setSearchQuery('');
+      setShowResults(false);
+    }
+  };
+
+  const handleResultClick = (type, item) => {
+    setIsDesktopSearchOpen(false);
+    setSearchQuery('');
+    setShowResults(false);
   };
 
   const closeSearch = () => {
@@ -442,7 +603,7 @@ const MainHeader = ({
 
   // Split the navigation links for desktop layout according to Figma design
   const leftNavLinks = NAV_LINKS_DESKTOP.slice(0, 2); // First 2 links (Каталог, Бренды)
-  const rightNavLinks = NAV_LINKS_DESKTOP.slice(2); // Last 2 links (Доставка и оплата, Контакты)
+  const rightNavLinks = NAV_LINKS_DESKTOP.slice(2); // Last 2 links (О нас, Контакты)
 
   return (
     <>
@@ -461,14 +622,41 @@ const MainHeader = ({
 
           {/* Left Navigation Group (only visible on desktop) */}
           <NavGroup>
-          <DesktopSearchButton 
-              onClick={handleSearchClick}
-              aria-label="Поиск"
-            >
-              <HeaderIconStyles>
-                <SearchIcon />
-              </HeaderIconStyles>
-            </DesktopSearchButton>
+            <DesktopSearchWrapper ref={searchWrapperRef}>
+              <DesktopSearchButton 
+                onClick={handleSearchClick}
+                aria-label={isDesktopSearchOpen ? "Закрыть поиск" : "Поиск"}
+                aria-expanded={isDesktopSearchOpen}
+              >
+                <HeaderIconStyles>
+                  <SearchIcon />
+                </HeaderIconStyles>
+              </DesktopSearchButton>
+              
+              <DesktopSearchInputWrapper $isOpen={isDesktopSearchOpen}>
+                <form onSubmit={handleSubmit}>
+                  <DesktopSearchInput
+                    type="text"
+                    placeholder="Поисковой запрос"
+                    value={searchQuery}
+                    onChange={handleInputChange}
+                    ref={searchInputRef}
+                    autoComplete="off"
+                  />
+                </form>
+              </DesktopSearchInputWrapper>
+              
+              {isDesktopSearchOpen && showResults && (
+                <DesktopResultsContainer>
+                  <SearchResults
+                    isVisible={true}
+                    query={searchQuery}
+                    results={searchResults}
+                    onResultClick={handleResultClick}
+                  />
+                </DesktopResultsContainer>
+              )}
+            </DesktopSearchWrapper>
             
             {leftNavLinks.map((item) => (
               <HeaderNavItem 

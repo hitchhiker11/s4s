@@ -90,14 +90,16 @@ const SubtitleContainer = styled.div`
   width: 100%;
   border-bottom: 2px solid ${COLORS.gray400};
   padding: ${SPACING.sm} 0;
-  min-height: 45px;
+  max-height: 28px;
 
   ${mediaQueries.sm} {
+    max-height: 45px;
     border-bottom-width: 2px;
     padding: ${SPACING.md} 0;
   }
 
   ${mediaQueries.md} {
+    max-height: 45px;
     border-bottom-width: 4px;
   }
 `;

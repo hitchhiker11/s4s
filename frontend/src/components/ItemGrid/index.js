@@ -42,7 +42,7 @@ const TitleRow = styled.div`
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
   padding: 5px 0;
-  min-height: 65px;
+  max-height: 28px;
 
   ${mediaQueries.sm} {
     border-top-width: 2px;
@@ -51,6 +51,7 @@ const TitleRow = styled.div`
 
   ${mediaQueries.md} {
     border-top-width: 4px;
+    max-height: 45px;
   }
 `;
 
@@ -92,14 +93,16 @@ const SubtitleContainer = styled.div`
   width: 100%;
   border-bottom: 2px solid ${COLORS.gray400};
   padding: ${SPACING.sm} 0;
-  min-height: 45px;
+  max-height: 28px;
 
   ${mediaQueries.sm} {
     border-bottom-width: 2px;
+    max-height: 45px;
     padding: ${SPACING.md} 0;
   }
 
   ${mediaQueries.md} {
+    max-height: 45px;
     border-bottom-width: 4px;
   }
 `;
@@ -152,11 +155,13 @@ const GridContainer = styled.div`
   }
 
   ${mediaQueries.md} {
+    
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
     gap: ${SPACING.lg};
   }
 
   ${mediaQueries.lg} {
+  
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 30px;
   }

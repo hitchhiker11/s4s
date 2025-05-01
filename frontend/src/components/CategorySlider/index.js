@@ -41,7 +41,7 @@ const TitleRow = styled.div`
 
   max-height: 28px;
   ${mediaQueries.sm} {
-  max-height: 45px;
+    max-height: 45px;
     padding: 0 ${SPACING.lg};
   }
 `;
