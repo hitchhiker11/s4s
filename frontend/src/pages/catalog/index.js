@@ -12,6 +12,8 @@ import Footer from '../../components/Footer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import CategoryCard from '../../components/CategoryCard';
 import ProductCard from '../../components/ProductCard';
+import SubscriptionForm from '../../components/SubscriptionForm';
+import { SIZES, COLORS, mediaQueries } from '../../styles/tokens';
 
 // Стилизованные компоненты
 const Container = styled.div`
@@ -19,23 +21,68 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  padding: 0 12px; /* Add default padding for smaller screens */
+  
+  ${mediaQueries.sm} {
+    padding: 0 16px;
+  }
+  
+  ${mediaQueries.md} {
+    padding: 0 20px;
+  }
+  
+  ${mediaQueries.lg} {
+    padding: 0 40px;
+  }
 `;
 
 const Title = styled.h1`
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
-  font-size: 36px;
+  font-size: 24px;
   line-height: 1em;
   color: #1C1C1C;
-  margin-bottom: 40px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  
+  ${mediaQueries.md} {
+    font-size: 36px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
 `;
 
 const CategoriesGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 23px;
+  display: grid;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
+  
+  /* Default to 3 columns for the desired layout, even on smaller screens */
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 12px; /* Start with a mobile-first gap */
+  
+ 
+  ${mediaQueries.sm} { 
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  
+  ${mediaQueries.md} { 
+    /* On desktop, use auto-fill to allow cards to flow naturally without special handling */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px;
+    margin-bottom: 40px;
+    
+    /* Override the CategoryCardWrapper's special handling for desktop */
+    & > div[style*="grid-column: 1 / -1"] {
+      display: contents !important; /* This makes the children act as direct children of the parent grid */
+    }
+  }
+  
+  ${mediaQueries.lg} { 
+    column-gap: 23px;
+    row-gap: 23px;
+  }
 `;
 
 const RecentlyViewedSection = styled.div`
@@ -62,97 +109,21 @@ const SectionTitle = styled.h2`
 `;
 
 const ProductsGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Default 2 columns for smallest screens */
   gap: 9px;
   width: 100%;
-  padding: 22px;
-`;
-
-const SubscriptionSection = styled.div`
-  width: 100%;
-  margin-bottom: 40px;
-`;
-
-const SubscriptionContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 35px;
-  max-width: 1254px;
-  margin: 0 auto;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-`;
-
-const SubscriptionImage = styled.div`
-  background: rgba(252, 252, 252, 0.1);
-  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1);
-`;
-
-const SubscriptionText = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 29px;
-  line-height: 1.22em;
-  color: #1C1C1C;
-  text-align: right;
-`;
-
-const FormContainer = styled.div`
-  display: flex;
-  justify-content: stretch;
-  align-items: stretch;
-  width: 100%;
-  gap: 42px;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 40px;
-  width: 100%;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-`;
-
-const Input = styled.input`
-  font-family: 'Rubik', sans-serif;
-  font-weight: 300;
-  font-size: 27px;
-  line-height: 1.5em;
-  letter-spacing: 2%;
-  color: rgba(0, 0, 0, 0.3);
-  border: none;
-  background: transparent;
-  width: 100%;
-  outline: none;
+  padding: 12px;
   
-  &::placeholder {
-    color: rgba(0, 0, 0, 0.3);
+  ${mediaQueries.sm} {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 16px;
   }
-`;
-
-const SubmitButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px;
-  padding: 0 40px;
-  font-family: 'Rubik', sans-serif;
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 1.4em;
-  text-transform: uppercase;
-  color: #1C1C1C;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  
+  ${mediaQueries.md} {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 22px;
+  }
 `;
 
 const EmptyState = styled.div`
@@ -168,16 +139,59 @@ const LoadingState = styled.div`
   color: #666;
 `;
 
+// Wrapper component for category cards to handle the last row layout
+const CategoryCardWrapper = ({ categories }) => {
+  const totalCards = categories.length;
+  const remainder = totalCards % 3;
+
+  const fullRowsCount = Math.floor(totalCards / 3);
+  const standardCardsCount = fullRowsCount * 3;
+  const standardRowCategories = categories.slice(0, standardCardsCount);
+  const lastRowCategories = categories.slice(standardCardsCount);
+
+  return (
+    <CategoriesGrid>
+      {/* Render full rows normally */}
+      {standardRowCategories.map(category => (
+        <CategoryCard 
+          key={category.id}
+          title={category.title} 
+          imageUrl={category.imageUrl} 
+          link={category.link}
+        />
+      ))}
+
+      {/* Handle the last row specially if it's not a full row of 3 and not empty */}
+      {remainder > 0 && (
+        <div style={{
+          gridColumn: '1 / -1', // Make this div span all columns of the parent CategoriesGrid
+          display: 'grid',
+          // If 1 card in last row, it's 1fr. If 2 cards, they are 1fr 1fr.
+          gridTemplateColumns: `repeat(${lastRowCategories.length}, 1fr)`,
+          gap: 'inherit' // Use the same gap as the parent CategoriesGrid
+        }}>
+          {lastRowCategories.map(category => (
+            <CategoryCard 
+              key={category.id}
+              title={category.title} 
+              imageUrl={category.imageUrl} 
+              link={category.link}
+            />
+          ))}
+        </div>
+      )}
+    </CategoriesGrid>
+  );
+};
+
 /**
  * Страница каталога по дизайну из Figma
  */
 const CatalogPage = ({ initialData, sectionId, seo }) => {
-  // Получаем query-параметры из URL
   const router = useRouter();
   const { page = 1 } = router.query;
   const currentPage = parseInt(page);
   
-  // Получаем данные каталога с использованием react-query
   const { data, isLoading, error } = useQuery(
     ['catalog', sectionId, currentPage],
     () => catalogApi.getProducts(sectionId, currentPage),
@@ -188,30 +202,10 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
     }
   );
   
-  // Form inputs state
-  const [formInputs, setFormInputs] = useState({
-    phone: '',
-    name: '',
-    email: ''
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormInputs(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Form submission logic here
-    console.log('Form submitted:', formInputs);
-  };
-  
-  // Загружаем скрипты Bitrix при монтировании компонента
   React.useEffect(() => {
     loadBitrixCore();
   }, []);
   
-  // Если данные загружаются, показываем состояние загрузки
   if (isLoading && !data) {
     return (
       <>
@@ -224,7 +218,6 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
     );
   }
   
-  // Если произошла ошибка, показываем сообщение об ошибке
   if (error) {
     return (
       <>
@@ -239,24 +232,21 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
     );
   }
 
-  // Определяем хлебные крошки
   const breadcrumbItems = [
     { href: '/', label: 'Главная' },
     { href: '/catalog', label: 'Каталог' }
   ];
   
-  // Создаём массив категорий для отображения
-  const categories = [
+  const categories = data?.CATEGORIES || [
     { id: 1, title: 'Тюнинг оружия', imageUrl: '/images/categories/tuning.jpg', link: '/catalog/tuning' },
     { id: 2, title: 'Экипировка', imageUrl: '/images/categories/equipment.jpg', link: '/catalog/equipment' },
     { id: 3, title: 'Обслуживание', imageUrl: '/images/categories/maintenance.jpg', link: '/catalog/maintenance' },
     { id: 4, title: 'Релоадинг', imageUrl: '/images/categories/reloading.jpg', link: '/catalog/reloading' },
     { id: 5, title: 'Прочее', imageUrl: '/images/categories/other.jpg', link: '/catalog/other' },
-    { id: 6, title: 'Новинки', imageUrl: '/images/categories/new.svg', link: '/catalog/new' },
-    { id: 7, title: 'Хиты продаж', imageUrl: '/images/categories/hits.svg', link: '/catalog/hits' }
+    { id: 6, title: 'Новинки', imageUrl: '/images/categories/new.svg', link: '/catalog/new/all-products' },
+    { id: 7, title: 'Хиты продаж', imageUrl: '/images/categories/hits.svg', link: '/catalog/hits/all-products' }
   ];
   
-  // Предположим, что у нас есть массив недавно просмотренных товаров
   const recentlyViewed = data?.RECENTLY_VIEWED || [];
   
   return (
@@ -280,19 +270,8 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
       <Container>
         <Title>Каталог Shop4Shoot</Title>
         
-        {/* Сетка категорий */}
-        <CategoriesGrid>
-          {categories.map(category => (
-            <CategoryCard 
-              key={category.id}
-              title={category.title} 
-              imageUrl={category.imageUrl} 
-              link={category.link}
-            />
-          ))}
-        </CategoriesGrid>
+        <CategoryCardWrapper categories={categories} />
         
-        {/* Недавно просмотренные товары */}
         {recentlyViewed.length > 0 && (
           <RecentlyViewedSection>
             <SectionHeader>
@@ -307,62 +286,8 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
           </RecentlyViewedSection>
         )}
         
-        {/* Секция подписки */}
-        <SubscriptionSection>
-          <SubscriptionContainer>
-            <ContentWrapper>
-              <SubscriptionImage>
-                {/* Изображение из фигмы */}
-                <img src="/images/subscription/subscription-image.jpg" alt="Subscription" />
-              </SubscriptionImage>
-              
-              <div>
-                <SubscriptionText>
-                  Вступайте в закрытое сообщество,<br />
-                  получайте эксклюзивные предложения и новости
-                </SubscriptionText>
-              </div>
-            </ContentWrapper>
-            
-            <form onSubmit={handleSubmit}>
-              <FormContainer>
-                <InputGroup>
-                  <Input 
-                    type="tel" 
-                    placeholder="Ваш номер телефона"
-                    name="phone"
-                    value={formInputs.phone}
-                    onChange={handleInputChange}
-                  />
-                </InputGroup>
-                
-                <InputGroup>
-                  <Input 
-                    type="text" 
-                    placeholder="Ваше имя"
-                    name="name"
-                    value={formInputs.name}
-                    onChange={handleInputChange}
-                  />
-                </InputGroup>
-                
-                <InputGroup>
-                  <Input 
-                    type="email" 
-                    placeholder="Ваша почта"
-                    name="email"
-                    value={formInputs.email}
-                    onChange={handleInputChange}
-                  />
-                </InputGroup>
-                
-                <SubmitButton type="submit">
-                  подать заявку
-                </SubmitButton>
-              </FormContainer>
-            </form>
-          </SubscriptionContainer>
-        </SubscriptionSection>
+        <SubscriptionForm />
+
       </Container>
       
       <Footer />
@@ -370,26 +295,18 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
   );
 };
 
-/**
- * Получение данных на сервере для SSR
- */
 export async function getServerSideProps(context) {
   const { sectionId = 0 } = context.query;
   const page = context.query.page || 1;
   
-  // Инициализируем QueryClient для SSR
   const queryClient = new QueryClient();
   
   try {
-    // Предварительно загружаем данные на сервере
     await queryClient.prefetchQuery(['catalog', sectionId, page], () => 
       catalogApi.getProducts(sectionId, page)
     );
     
-    // Получаем предварительно загруженные данные
     const dehydratedState = dehydrate(queryClient);
-    
-    // Получаем SEO-данные из загруженного результата
     const data = queryClient.getQueryData(['catalog', sectionId, page]);
     const seo = data?.SEO || {};
     
@@ -401,8 +318,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
-    console.error('Error fetching catalog data:', error);
-    
+    console.error('Error fetching main catalog data:', error);
     return {
       props: {
         sectionId,

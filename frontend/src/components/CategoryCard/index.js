@@ -15,18 +15,27 @@ const CardLink = styled.a`
   position: relative;
   min-height: 120px;
   max-width: 100%;
-  
+  width: 100%;
+
   &:hover {
     border-right-color: ${COLORS.gray500};
     border-bottom-color: ${COLORS.gray500};
   }
 
   ${mediaQueries.md} {
-    max-height: 300px;
+    /* Унификация размеров карточек на десктопе */
+    width: 330px;
+    height: 300px;
+    min-width: 330px;
     max-width: 330px;
+    min-height: 300px;
+    max-height: 300px;
     border-right: 4px solid ${COLORS.gray400};
     border-bottom: 4px solid ${COLORS.gray400};
-    
+
+    /* Для выравнивания содержимого по высоте */
+    justify-content: flex-start;
+
     &:hover {
       border-right-color: ${COLORS.gray500};
       border-bottom-color: ${COLORS.gray500};
@@ -39,14 +48,17 @@ const CardTitle = styled.h3`
   font-weight: ${TYPOGRAPHY.weight.bold};
   font-size: clamp(14px, 3vw, 27.5px);
   color: ${COLORS.black};
-  // margin: 0 0 ${SPACING.md} 0;
   text-align: left;
   line-height: 1.2;
-  padding: ${SPACING.md};
+  padding: ${SPACING.sm} ${SPACING.sm}; /* Smaller padding for mobile */
   padding-bottom: 0;
+  width: 100%;
+  margin: 0;
 
   ${mediaQueries.md} {
     font-size: 27.5px;
+    padding: ${SPACING.md};
+    padding-bottom: 0;
   }
 
   /* Mobile specific font size - Force override */
@@ -63,8 +75,10 @@ const CardImageContainer = styled.div`
   background: transparent;
   overflow: hidden;
   flex-grow: 1;
-  // padding: ${SPACING.md};
-  max-height: 110px;
+  width: 100%; /* Ensure image container fills the full width */
+  max-height: 90px; /* Slightly shorter for smaller screens */
+  padding: ${SPACING.xs}; /* Add small padding in mobile */
+
   ${mediaQueries.md} {
     padding: ${SPACING.lg};
     max-height: 250px;
@@ -75,14 +89,16 @@ const CardImageContainer = styled.div`
 const getRandomRotation = () => Math.random() * 16 - 8;
 
 const CardImage = styled.img`
+  width: auto;
   max-width: 100%;
+  height: auto;
   max-height: 90%;
   object-fit: contain;
   transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
   
   /* Specific styles for brand logos */
   ${props => props.isBrandLogo && `
-    padding: ${SPACING.md};
+    padding: ${SPACING.xs};
     
     ${mediaQueries.md} {
       padding: ${SPACING.lg};

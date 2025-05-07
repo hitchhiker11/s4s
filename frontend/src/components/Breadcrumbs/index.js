@@ -2,23 +2,42 @@ import React from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import { COLORS, mediaQueries } from '../../styles/tokens';
 const BreadcrumbsContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 12px 0;
   width: 100%;
-  border-bottom: 4px solid #B6B6B6;
+  border-top: 2px solid ${COLORS.gray400};
+  border-bottom: 2px solid ${COLORS.gray400};
+
+  &:hover {
+    border-top: 2px solid ${COLORS.gray500};
+    border-bottom: 2px solid ${COLORS.gray500};
+  }
+
+  ${mediaQueries.md} {
+    border-top: 4px solid ${COLORS.gray400};
+    border-bottom: 4px solid ${COLORS.gray400};
+    &:hover {
+      border-top: 4px solid ${COLORS.gray500};
+      border-bottom: 4px solid ${COLORS.gray500};
+    }
+  }
+
 `;
 
 const BreadcrumbsWrapper = styled.div`
   display: flex;
   justify-content: stretch;
   align-items: stretch;
-  gap: 21px;
+  gap: 12px;
   max-width: 1392px;
   margin: 0 auto;
   width: 100%;
+  ${mediaQueries.md} {
+    gap: 21px;
+  }
 `;
 
 const BackButton = styled.div`
@@ -39,13 +58,19 @@ const ArrowIcon = styled.div`
 const BackText = styled.span`
   font-family: 'Rubik', sans-serif;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 14px;
   line-height: 1.3em;
   letter-spacing: 2%;
   color: #E7194A;
+
+  ${mediaQueries.md} {
+    font-size: 20px;
+  }
 `;
 
 const Separator = styled.span`
+  display: flex;
+  align-items: center;
   font-family: 'Arimo', sans-serif;
   font-weight: 400;
   font-size: 12px;
@@ -64,13 +89,17 @@ const BreadcrumbItem = styled.div`
 const BreadcrumbText = styled.span`
   font-family: 'Rubik', sans-serif;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 14px;
   line-height: 1.3em;
   letter-spacing: 2%;
   color: #1C1C1C;
   padding: 4px 8px;
   border-radius: 8px;
   cursor: pointer;
+
+  ${mediaQueries.md} {
+    font-size: 20px;
+  }
 `;
 
 const Breadcrumbs = ({ items }) => {

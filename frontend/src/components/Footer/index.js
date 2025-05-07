@@ -18,26 +18,26 @@ const MainFooter = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${SPACING["2xl"]};
-  padding: ${SPACING.xl};
+  padding: ${SPACING.xl} ${SPACING.xl} 0 0;
   
   ${mediaQueries.md} {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: ${SPACING["2xl"]} ${SPACING["3xl"]};
+    padding: ${SPACING["2xl"]} ${SPACING["3xl"]} 0 0;
     gap: ${SPACING["3xl"]};
   }
   
   ${mediaQueries.lg} {
     flex-wrap: nowrap;
     justify-content: space-between;
-    padding: ${SPACING["3xl"]} 40px;
+    padding: ${SPACING["3xl"]} 40px 0 0;
   }
 `;
 
 const LogoContainer = styled.div`
   width: 100%;
-  max-width: 240px;
+  max-width: 320px;
   
   ${mediaQueries.md} {
     width: 25%;
@@ -51,10 +51,6 @@ const LogoContainer = styled.div`
 const Logo = styled.a`
   display: block;
   
-  img {
-    max-width: 172px;
-    margin-bottom: ${SPACING.lg};
-  }
 `;
 
 const NavSections = styled.div`
@@ -265,7 +261,11 @@ const Footer = ({ showMainSection = true }) => {
           </NavSections>
           
           <BrandsContainer>
-            <BrandLogo src="/images/footer/culture_logo.jpg" alt="Культура оружия" />
+            <BrandLogo
+              src="/images/footer/culture_logo.jpg"
+              alt="Культура оружия"
+              style={{ filter: 'invert(1)' }}
+            />
             <BrandLogo src="/images/footer/eiger_tac_text.jpg" alt="Eiger TAC" />
           </BrandsContainer>
         </MainFooter>
