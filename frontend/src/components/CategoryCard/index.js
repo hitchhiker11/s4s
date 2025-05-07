@@ -127,7 +127,8 @@ const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation 
             $rotation={imageRotation}
           />
         ) : (
-          <span>Image Placeholder</span>
+          // <span>Image Placeholder</span>
+          <span></span>
         )}
       </CardImageContainer>
     </CardLink>
