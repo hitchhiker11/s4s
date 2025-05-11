@@ -67,18 +67,17 @@ const EmptyState = styled.div`
 `;
 
 // Renamed component to avoid conflict and reflect its purpose
-const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, sectionId, seo }) => {
+const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, seo }) => {
   const router = useRouter();
-  // categoryCode and subCategoryCode are now directly from props (passed by getServerSideProps)
   const { page = 1 } = router.query;
   const currentPage = parseInt(page);
 
+  const ITEMS_PER_PAGE = 18; // Defined items per page
+
   // Fetch products for the subcategory
   const { data, isLoading, error } = useQuery(
-    // sectionId might still be relevant for some API calls, or it might be part of category/subCategory logic
-    ['subCategoryProducts', categoryCode, subCategoryCode, sectionId, currentPage],
-    // Ensure catalogApi.getProductsBySubCategory can handle categoryCode if needed, or use a more specific API method
-    () => catalogApi.getProductsBySubCategory(categoryCode, subCategoryCode, sectionId, currentPage, 18), 
+    ['subCategoryProducts', categoryCode, subCategoryCode, currentPage], // Updated query key
+    () => catalogApi.getProductsBySubCategory(categoryCode, subCategoryCode, currentPage, ITEMS_PER_PAGE), 
     {
       initialData,
       keepPreviousData: true,
@@ -115,10 +114,11 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
   }
 
   const products = data?.ITEMS || [];
-  const totalPages = data?.NAV_RESULT?.nPageCount || 1;
-  // Names should ideally come from `data` fetched by the API for this specific subCategory
-  const subCategoryName = data?.SECTION?.NAME || subCategoryCode; 
-  const categoryName = data?.PARENT_SECTION?.NAME || categoryCode; // Fallback to code
+  const totalPages = data?.NAV_PARAMS?.TOTAL_PAGES || 1; // Updated to use NAV_PARAMS
+  // Use categoryCode and subCategoryCode for names directly, or enhance API to provide them
+  const subCategoryName = data?.SEO?.SUBCATEGORY_NAME || subCategoryCode; 
+  const categoryName = data?.SEO?.CATEGORY_NAME || categoryCode;
+
   // Links for breadcrumbs
   const catalogLink = "/catalog";
   const categoryLink = `${catalogLink}/${categoryCode}`;
@@ -126,21 +126,35 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
 
   const breadcrumbItems = [
     { href: '/', label: 'Главная' },
-    { href: catalogLink, label: 'Каталог' }, // Main catalog page
-    { href: categoryLink, label: categoryName }, // Parent category page
-    { href: currentSubCategoryLink, label: subCategoryName } // Current subcategory products page
+    { href: catalogLink, label: 'Каталог' },
+    { href: categoryLink, label: categoryName }, // Uses resolved or fallback categoryName
+    { href: currentSubCategoryLink, label: subCategoryName }, // Uses resolved or fallback subCategoryName
   ];
   
-  const recentlyViewed = data?.RECENTLY_VIEWED || [];
+  const recentlyViewed = data?.RECENTLY_VIEWED || []; // Assuming RECENTLY_VIEWED might still come from data
 
   const handlePageChange = (newPage) => {
-    // sectionId might or might not be needed in the URL depending on API and routing for pagination
-    const queryParams = sectionId ? `?sectionId=${sectionId}&page=${newPage}` : `?page=${newPage}`;
-    router.push(`/catalog/${categoryCode}/${subCategoryCode}${queryParams}`, undefined, { shallow: true });
+    router.push(`/catalog/${categoryCode}/${subCategoryCode}?page=${newPage}`, undefined, { shallow: true }); // Simplified query params
   };
   
   const handleAddToCart = (product) => {
     console.log('Added to cart (from subCategoryProducts page):', product);
+  };
+
+  const gridContainerStyle = {
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridGap: '20px',
+    rowGap: '30px',
+    alignItems: 'start' // Выравнивание элементов по верхнему краю
+  };
+  
+  // Добавьте эти пропсы для PreOrderWrapper
+  const preOrderWrapperProps = {
+    style: {
+      height: 'auto', // Автоматическая высота вместо растягивания
+      display: 'flex',
+      flexDirection: 'column'
+    }
   };
 
   return (
@@ -155,12 +169,15 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
       <Breadcrumbs items={breadcrumbItems} />
 
       <Container>
-        <Title>{subCategoryName}</Title>
+        <Title style={{ display: 'none' }}>{subCategoryName}</Title>
 
         {products.length > 0 ? (
           <ProductGrid
+            showTitleRow={false}
             products={products}
             onAddToCart={handleAddToCart}
+            gridContainerStyle={gridContainerStyle}
+            preOrderWrapperProps={preOrderWrapperProps}
           />
         ) : (
           <EmptyState>В этой подкатегории пока нет товаров.</EmptyState>
@@ -176,6 +193,7 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
 
         {recentlyViewed.length > 0 && (
           <ResponsiveProductSection
+            showViewAllLink={false}
             items={recentlyViewed}
             title="Недавно просмотренные"
             onAddToCart={handleAddToCart}
@@ -191,8 +209,9 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
 };
 
 export async function getServerSideProps(context) {
-  const { categoryCode, subCategoryCode, sectionId = 0, page = 1 } = context.query;
+  const { categoryCode, subCategoryCode, page = 1 } = context.query; // Removed sectionId from destructuring
   const currentPage = parseInt(page);
+  const ITEMS_PER_PAGE = 18; // Ensure this matches the client-side usage
   const queryClient = new QueryClient();
 
   if (!categoryCode || !subCategoryCode) {
@@ -201,40 +220,40 @@ export async function getServerSideProps(context) {
 
   try {
     await queryClient.prefetchQuery(
-      ['subCategoryProducts', categoryCode, subCategoryCode, sectionId, currentPage],
-      () => catalogApi.getProductsBySubCategory(categoryCode, subCategoryCode, sectionId, currentPage, 18)
+      ['subCategoryProducts', categoryCode, subCategoryCode, currentPage], // Updated query key
+      () => catalogApi.getProductsBySubCategory(categoryCode, subCategoryCode, currentPage, ITEMS_PER_PAGE)
     );
     
     const dehydratedState = dehydrate(queryClient);
-    const data = queryClient.getQueryData(['subCategoryProducts', categoryCode, subCategoryCode, sectionId, currentPage]);
+    const data = queryClient.getQueryData(['subCategoryProducts', categoryCode, subCategoryCode, currentPage]);
     const seo = data?.SEO || {};
-    // Names should ideally come from API response for consistency
-    const currentSubCategoryName = data?.SECTION?.NAME || subCategoryCode;
-    const parentCategoryName = data?.PARENT_SECTION?.NAME || categoryCode;
+    // For pageTitle, we can use SEO title or construct from codes/names
+    const pageTitle = seo?.TITLE || `${subCategoryCode} - ${categoryCode}`;
 
     return {
       props: {
         dehydratedState,
         categoryCode,
         subCategoryCode,
-        sectionId: sectionId, // sectionId might still be used by API or for specific logic
-        seo,
-        pageTitle: `${currentSubCategoryName} - ${parentCategoryName}`,
+        seo, // Pass the whole SEO object
+        // sectionId is removed as it's not used by the API call for this page anymore
+        pageTitle, // This can be used in Head if needed, or rely on seo.TITLE
       },
     };
   } catch (error) {
     console.error('Error fetching subcategory products data:', error);
+    // Prepare props for error display or fallback
+    const pageTitle = `${subCategoryCode} - ${categoryCode}`; // Fallback title
     return {
       props: {
         categoryCode,
         subCategoryCode,
-        sectionId: sectionId,
-        seo: {},
-        pageTitle: `${subCategoryCode} - ${categoryCode}`, // Fallback title
-        error: JSON.stringify(error) // Send error for debugging on client if needed
+        seo: { TITLE: pageTitle, DESCRIPTION: 'Ошибка загрузки данных' }, // Provide basic SEO for error page
+        pageTitle,
+        error: error.message ? error.message : 'Unknown error fetching data', // Pass a serializable error message
       },
     };
   }
 }
 
-export default SubCategoryProductsPage; // Renamed export 
+export default SubCategoryProductsPage; 

@@ -1,0 +1,123 @@
+.deliveryFormContainer {
+  padding: 20px 20px 20px 0px;
+  background-color: #FCFCFC; /* Similar to cart item background */
+  border-radius: 0;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 700;
+  font-size: 22px; /* Adjusted from Figma 26px */
+  color: #1C1C1C;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.cdekSection,
+.recipientSection {
+  margin-bottom: 30px;
+}
+
+.cdekWidgetPlaceholder {
+  border: 2px dashed #d0d0d0;
+  padding: 40px 20px;
+  text-align: center;
+  color: #757575;
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  min-height: 150px; /* Placeholder height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cdekWidgetPlaceholder p {
+  margin: 5px 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 20px 30px; /* row-gap column-gap */
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.inputField {
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+  color: #1C1C1C;
+  background-color: #FCFCFC;
+  padding: 15px;
+  border: none;
+  border-right: 4px solid #B6B6B6;
+  border-bottom: 4px solid #B6B6B6;
+  border-radius: 0;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.inputField:focus {
+  outline: none;
+  /* border-color: #E7194A; */
+}
+
+.inputField::placeholder {
+  color: rgba(28, 28, 28, 0.4); /* Approximate from Figma opacity */
+  font-family: 'Rubik', sans-serif;
+}
+
+.infoText {
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px; /* Adjusted from Figma 17.4px */
+  color: #1C1C1C;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .infoText {
+    display: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .deliveryFormContainer {
+    padding: 15px 0 15px 0;
+    border: 0;
+  }
+  .formGrid {
+    grid-template-columns: 1fr; /* Single column on smaller screens */
+    gap: 15px;
+  }
+  .sectionTitle {
+    font-size: 20px;
+  }
+  .inputField {
+    font-size: 15px;
+    padding: 12px;
+    border-right: 2px solid #B6B6B6;
+    border-bottom: 2px solid #B6B6B6;
+  }
+  .cdekWidgetPlaceholder {
+    padding: 20px 10px;
+    font-size: 14px;
+  }
+} 

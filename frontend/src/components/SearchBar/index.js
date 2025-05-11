@@ -6,6 +6,8 @@ import { SearchIcon } from '../icons';
 import SearchResults from './SearchResults';
 // Import searchData utility
 import { searchData } from '../../lib/searchUtils';
+// Import ContactsModal
+import ContactsModal from '../../components/modals/ContactsModal';
 
 const SearchSection = styled.section`
   width: 100%;
@@ -177,6 +179,7 @@ const SearchBar = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
   const inputRef = useRef(null);
   const componentRef = useRef(null); // Ref for the entire component including the mobile link
 
@@ -272,10 +275,21 @@ const SearchBar = () => {
     };
   }, []); // Empty dependency array means this runs once on mount
 
+  // Handler for opening ContactsModal
+  const handleContactsLinkClick = (e) => {
+    e.preventDefault();
+    setIsContactsModalOpen(true);
+  };
+
+  // Handler for closing ContactsModal
+  const handleContactsModalClose = () => {
+    setIsContactsModalOpen(false);
+  };
+
   return (
     // Use a wrapper div with the ref for outside click detection
     <div ref={componentRef}>
-      <SearchSection> {/* Removed ref here as componentRef covers it */}
+      <SearchSection>
         <SearchWrapper>
           <FormContainer onSubmit={handleSubmit}>
             <InputContainer>
@@ -300,7 +314,7 @@ const SearchBar = () => {
 
           {/* Link displayed INSIDE SearchWrapper on DESKTOP only */}
           <DesktopLinkContainer>
-            <StyledLink href="#">Нет нужного товара?</StyledLink>
+            <StyledLink href="#" onClick={handleContactsLinkClick}>Нет нужного товара?</StyledLink>
           </DesktopLinkContainer>
 
         </SearchWrapper>
@@ -323,8 +337,11 @@ const SearchBar = () => {
 
       {/* Link displayed BELOW SearchSection on MOBILE only */}
       <MobileLinkContainer>
-        <StyledLink href="#">Нет нужного товара?</StyledLink>
+        <StyledLink href="#" onClick={handleContactsLinkClick}>Нет нужного товара?</StyledLink>
       </MobileLinkContainer>
+
+      {/* ContactsModal */}
+      <ContactsModal isOpen={isContactsModalOpen} onClose={handleContactsModalClose} />
     </div>
   );
 };

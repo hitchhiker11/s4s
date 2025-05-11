@@ -1,0 +1,28 @@
+/* Product Page Layout */
+.productPageContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.productLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.productDetailSection {
+  /* No specific styling needed here as the ProductDetailCard handles its own styling */
+}
+
+.productActionsSection {
+  /* This section is currently not used, but kept for potential future use */
+}
+
+/* Responsive Layout */
+@media (min-width: 1024px) {
+  .productLayout {
+    grid-template-columns: 1fr 300px; /* Main product content | Sidebar (if needed) */
+  }
+} 

@@ -44,6 +44,7 @@ const PageTitle = styled.h1`
 
 // Copied CategoriesGrid from /catalog/index.js for consistent layout
 const CategoriesGrid = styled.div`
+  max-width: ${SIZES.containerMaxWidth};
   display: grid;
   width: 100%;
   margin-bottom: 24px;
@@ -132,6 +133,60 @@ const DUMMY_RECENTLY_VIEWED = [
     // Example product structure needed by ProductCard
     // { ID: 'rv1', NAME: 'Recently Viewed Item 1', BRAND_NAME: 'Brand RV', PRICE: 1500, PREVIEW_PICTURE_SRC: '/images/heats/aim.png', CATALOG_AVAILABLE: 'Y' }
 ];
+
+const mockRecentlyViewedProducts = [
+  // Populate with product data similar to ProductGrid's expected format
+  {
+    id: 'rv1',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv1',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv2',
+    imageUrl: '/images/new-products/aim2.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv2',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv3',
+    imageUrl: '/images/new-products/aim3.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv3',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv4',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv4',
+    CATALOG_AVAILABLE: 'Y'
+  },
+];
+
+  // Placeholder add to cart handler
+  const handleAddToCartRecentlyViewed = (productId) => {
+    console.log(`Adding product ${productId} to cart (from HomePage)`);
+    // Add actual cart logic here later
+  };
+
+  const renderRecentlyViewedProductCard = (product) => (
+    <ProductCard 
+      key={product.id} 
+      product={product} // Pass the whole product object
+      onAddToCart={handleAddToCartRecentlyViewed} 
+    />
+  );
 
 // Copied CategoryCardWrapper from /catalog/index.js
 const CategoryCardWrapper = ({ categories }) => {
@@ -253,6 +308,15 @@ const CategoryDetailPage = ({ category, subCategories, seo }) => {
             </RecentlyViewedSection>
         )}
 
+        <ResponsiveProductSection 
+          title="Новые поступления"
+          subtitle=""
+          viewAllLink="/catalog?filter=new"
+          showViewAllLink={false}
+          items={mockRecentlyViewedProducts} // Use 'items' prop name
+          renderItem={renderRecentlyViewedProductCard} // Pass the render function
+          onAddToCart={handleAddToCartRecentlyViewed} // Still needed for ProductCard via renderItem
+        />
         <SubscriptionForm />
 
       </Container>

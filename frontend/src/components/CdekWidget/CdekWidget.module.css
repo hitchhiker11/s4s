@@ -1,0 +1,17 @@
+.widgetContainer {
+  width: 100%; /* Or a specific width like 800px as recommended */
+  min-height: 600px; /* Recommended minimum height */
+  height: 600px; /* Start with a fixed height, can be made responsive */
+  border: 1px solid #eee; /* Optional: to see the widget area */
+  margin: 20px 0; /* Optional: for spacing */
+}
+
+/* Add media queries for responsive adjustments if needed */
+@media (max-width: 835px) {
+  .widgetContainer {
+    /* Adjust width/height for smaller screens if necessary */
+    /* For example, make it full width and adjust height */
+    min-height: 500px;
+    height: auto; /* Or a more suitable height for mobile */
+  }
+} 

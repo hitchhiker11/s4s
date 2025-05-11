@@ -1,451 +1,249 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
-import styled from 'styled-components';
-import { useRouter } from 'next/router';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import Link from 'next/link';
-
-import { basketApi } from '../lib/api';
-import { loadBitrixCore } from '../lib/auth';
-
-// Стилизованные компоненты
-const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-`;
-
-const Title = styled.h1`
-  font-size: 32px;
-  margin-bottom: 30px;
-  color: #333;
-`;
-
-const CartTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 30px;
-  
-  th {
-    text-align: left;
-    padding: 12px;
-    background-color: #f5f5f5;
-    border-bottom: 2px solid #ddd;
+import Header from '../components/Header'; // Assuming Header component exists
+import Footer from '../components/Footer'; // Assuming Footer component exists
+import Breadcrumbs from '../components/Breadcrumbs';
+import CartItem from '../components/CartItem';
+import OrderSummary from '../components/OrderSummary';
+import ResponsiveProductSection from '../components/ResponsiveProductSection'; // Use responsive wrapper
+import ProductCard from '../components/ProductCard'; // Import card for rendering
+import ProductGrid from '../components/ProductGrid'; // For "Recently Viewed"
+import CartTabs from '../components/CartTabs/CartTabs'; // Added import
+import DeliveryInfoForm from '../components/DeliveryInfoForm/DeliveryInfoForm'; // Added import
+import styles from '../styles/pages/CartPage.module.css';
+// Mock data for demonstration
+const initialMockCartItems = [
+  {
+    id: '1',
+    imageUrl: '/images/new-products/aim.png', // Replace with actual image path or use a placeholder service
+    name: 'Полное название продукта, даже если оно очень длинное',
+    brand: 'Бренд',
+    price: 2100,
+    description: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.',
+    quantity: 1,
+    stock: 8,
+    productLink: '/product/1'
+  },
+  {
+    id: '2',
+    imageUrl: '/images/new-products/aim.png', // Replace with actual image path
+    name: 'Еще один товар, тоже с длинным названием для проверки верстки',
+    brand: 'Другой Бренд',
+    price: 1500,
+    description: 'Consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.',
+    quantity: 2,
+    stock: 5,
+    productLink: '/product/2'
   }
-  
-  td {
-    padding: 15px 12px;
-    border-bottom: 1px solid #eee;
-    vertical-align: middle;
-  }
-`;
+];
 
-const ProductImage = styled.img`
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  border: 1px solid #eee;
-  border-radius: 4px;
-`;
+const mockRecentlyViewedProducts = [
+  // Populate with product data similar to ProductGrid's expected format
+  {
+    id: 'rv1',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv1',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv2',
+    imageUrl: '/images/new-products/aim2.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv2',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv3',
+    imageUrl: '/images/new-products/aim3.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv3',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv4',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv4',
+    CATALOG_AVAILABLE: 'Y'
+  },
+];
 
-const ProductName = styled.div`
-  font-weight: 500;
-  margin-bottom: 5px;
-`;
+const breadcrumbItems = [
+  { href: '/', label: 'Главная' },
+  { href: '/cart', label: 'Корзина' },
+  { href: `/cart/`, label: 'Моя корзина' } 
+];
 
-const ProductCode = styled.div`
-  font-size: 12px;
-  color: #777;
-`;
-
-const QuantityControl = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const QuantityButton = styled.button`
-  width: 30px;
-  height: 30px;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: #e5e5e5;
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const QuantityInput = styled.input`
-  width: 40px;
-  height: 30px;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin: 0 5px;
-  
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
-
-const RemoveButton = styled.button`
-  background: none;
-  border: none;
-  color: #cc0000;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const Price = styled.div`
-  font-weight: 600;
-  font-size: 16px;
-`;
-
-const Summary = styled.div`
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-`;
-
-const SummaryRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  font-size: 16px;
-`;
-
-const SummaryTotal = styled(SummaryRow)`
-  font-size: 20px;
-  font-weight: 700;
-  padding-top: 15px;
-  border-top: 1px solid #ddd;
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 16px;
-  transition: all 0.2s;
-  margin-right: 10px;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`;
-
-const PrimaryButton = styled(Button)`
-  background-color: #4285f4;
-  color: white;
-  
-  &:hover {
-    background-color: #3367d6;
-  }
-`;
-
-const SecondaryButton = styled(Button)`
-  background-color: white;
-  border: 1px solid #ddd;
-  color: #333;
-  
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-`;
-
-const EmptyCart = styled.div`
-  text-align: center;
-  padding: 50px 0;
-`;
-
-const EmptyCartTitle = styled.h2`
-  margin-bottom: 20px;
-  color: #333;
-`;
-
-const EmptyCartText = styled.p`
-  color: #666;
-  margin-bottom: 30px;
-`;
-
-/**
- * Страница корзины
- */
 const CartPage = () => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  
-  // Загружаем данные корзины
-  const { data, isLoading, error, refetch } = useQuery(
-    'basket',
-    () => basketApi.getBasket(),
-    {
-      staleTime: 1000 * 60, // 1 минута
-      refetchOnWindowFocus: true,
-    }
-  );
-  
-  // Мутации для обновления корзины
-  const updateItemMutation = useMutation(
-    ({ productId, quantity }) => basketApi.updateBasketItem(productId, quantity),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('basket');
-        queryClient.invalidateQueries('basketCount');
-      },
-    }
-  );
-  
-  const removeItemMutation = useMutation(
-    (productId) => basketApi.removeFromBasket(productId),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('basket');
-        queryClient.invalidateQueries('basketCount');
-      },
-    }
-  );
-  
-  const clearBasketMutation = useMutation(
-    () => basketApi.clearBasket(),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('basket');
-        queryClient.invalidateQueries('basketCount');
-      },
-    }
-  );
-  
-  // Загружаем скрипты Bitrix при монтировании компонента
-  useEffect(() => {
-    loadBitrixCore();
-  }, []);
-  
-  // Обработчики событий
-  const handleQuantityChange = (productId, newQuantity) => {
-    if (newQuantity < 1) newQuantity = 1;
-    updateItemMutation.mutate({ productId, quantity: newQuantity });
+  const [cartItems, setCartItems] = useState(initialMockCartItems); // Use state for cart items
+  const [activeTab, setActiveTab] = useState('cart'); // 'cart', 'delivery', 'payment'
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
   };
-  
-  const handleRemoveItem = (productId) => {
-    if (window.confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
-      removeItemMutation.mutate(productId);
-    }
+
+  // Placeholder add to cart handler
+  const handleAddToCartRecentlyViewed = (productId) => {
+    console.log(`Adding product ${productId} to cart (from HomePage)`);
+    // Add actual cart logic here later
   };
-  
-  const handleClearBasket = () => {
-    if (window.confirm('Вы уверены, что хотите очистить корзину?')) {
-      clearBasketMutation.mutate();
-    }
-  };
-  
-  const handleCheckout = () => {
-    router.push('/checkout');
-  };
-  
-  // Рендеринг пустой корзины
-  if (!isLoading && (!data || !data.ITEMS || data.ITEMS.length === 0)) {
-    return (
-      <>
-        <Head>
-          <title>Корзина - Пусто</title>
-          <meta name="robots" content="noindex, nofollow" />
-        </Head>
-        <Container>
-          <Title>Корзина</Title>
-          <EmptyCart>
-            <EmptyCartTitle>Ваша корзина пуста</EmptyCartTitle>
-            <EmptyCartText>Добавьте товары в корзину, чтобы оформить заказ</EmptyCartText>
-            <Link href="/catalog" passHref>
-              <PrimaryButton as="a">Перейти в каталог</PrimaryButton>
-            </Link>
-          </EmptyCart>
-        </Container>
-      </>
+
+  const renderRecentlyViewedProductCard = (product) => (
+    <ProductCard 
+      key={product.id} 
+      product={product} // Pass the whole product object
+      onAddToCart={handleAddToCartRecentlyViewed} 
+    />
+  );
+
+  // Placeholder functions for quantity changes and item removal
+  const handleQuantityChange = (itemId, newQuantity) => {
+    console.log(`Attempting to change item ${itemId} quantity to ${newQuantity}`);
+    setCartItems(currentItems =>
+      currentItems.map(item =>
+        item.id === itemId 
+          ? { ...item, quantity: newQuantity === '' ? '' : Math.max(0, parseInt(newQuantity,10) || 0) } // Allow temp empty, ensure number
+          : item
+      )
     );
-  }
-  
-  // Рендеринг состояния загрузки
-  if (isLoading) {
-    return (
-      <Container>
-        <Title>Корзина</Title>
-        <div>Загрузка корзины...</div>
-      </Container>
-    );
-  }
-  
-  // Рендеринг ошибки
-  if (error) {
-    return (
-      <Container>
-        <Title>Корзина</Title>
-        <div>Произошла ошибка при загрузке корзины. Пожалуйста, попробуйте позже.</div>
-      </Container>
-    );
-  }
-  
+  };
+
+  const handleRemoveItem = (itemId) => {
+    console.log(`Attempting to remove item ${itemId}`);
+    setCartItems(currentItems => currentItems.filter(item => item.id !== itemId));
+  };
+
+  const handleProceedToCheckout = () => {
+    if (activeTab === 'cart') {
+      setActiveTab('delivery'); // Move to delivery tab
+    } else if (activeTab === 'delivery') {
+      // Here you would typically validate delivery form data
+      console.log('Proceeding to payment with items:', cartItems);
+      setActiveTab('payment'); // Move to payment (placeholder)
+    } else if (activeTab === 'payment') {
+      // Here you would handle final payment processing
+      console.log('Finalizing order...');
+      // Navigate to checkout page or trigger checkout process
+    }
+  };
+
+  const getButtonText = () => {
+    if (activeTab === 'cart') return 'Перейти к оформлению';
+    if (activeTab === 'delivery') return 'Продолжить';
+    if (activeTab === 'payment') return 'Оплатить заказ'; // Example
+    return 'Продолжить';
+  };
+
+  const breadcrumbs = [
+    { name: 'Главная', link: '/' },
+    { name: 'Корзина', link: '/cart' },
+    { name: activeTab === 'cart' ? 'Моя корзина' : activeTab === 'delivery' ? 'Информация о доставке' : 'Оплата', link: '/cart' }, // Dynamic breadcrumb
+  ];
+
+  // Calculate totals based on the current cartItems state
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity === '' ? 0 : item.quantity), 0);
+  const shippingCost = cartItems.length > 0 ? 650 : 0; // Example: shipping only if items exist
+  const packagingCost = 0; // Example
+  const total = subtotal + shippingCost + packagingCost;
+
   return (
     <>
       <Head>
-        <title>Корзина - {data.ITEMS.length} товаров</title>
-        <meta name="robots" content="noindex, nofollow" />
+        <title>
+          {activeTab === 'cart' && 'Моя корзина - ShopShoot'}
+          {activeTab === 'delivery' && 'Информация о доставке - ShopShoot'}
+          {activeTab === 'payment' && 'Оплата - ShopShoot'}
+        </title>
+        <meta name="description" content="Проверьте и оформите ваш заказ в интернет-магазине ShopShoot" />
       </Head>
-      <Container>
-        <Title>Корзина</Title>
+      <Header breadcrumbs={breadcrumbs} />
+      <Breadcrumbs items={breadcrumbItems} />
+
+      <main className={styles.cartPageContainer}>
+        <CartTabs activeTab={activeTab} onTabClick={handleTabClick} /> {/* Added CartTabs */}
         
-        <CartTable>
-          <thead>
-            <tr>
-              <th>Товар</th>
-              <th>Цена</th>
-              <th>Количество</th>
-              <th>Сумма</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.ITEMS.map((item) => (
-              <tr key={item.ID}>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <ProductImage 
-                      src={item.PREVIEW_PICTURE_SRC || '/images/no-image.png'} 
-                      alt={item.NAME} 
-                    />
-                    <div style={{ marginLeft: 15 }}>
-                      <ProductName>{item.NAME}</ProductName>
-                      <ProductCode>Артикул: {item.PRODUCT_ID}</ProductCode>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <Price>
-                    {new Intl.NumberFormat('ru-RU', { 
-                      style: 'currency', 
-                      currency: 'RUB',
-                      maximumFractionDigits: 0 
-                    }).format(item.PRICE)}
-                  </Price>
-                </td>
-                <td>
-                  <QuantityControl>
-                    <QuantityButton 
-                      onClick={() => handleQuantityChange(item.PRODUCT_ID, item.QUANTITY - 1)}
-                      disabled={item.QUANTITY <= 1}
-                    >
-                      -
-                    </QuantityButton>
-                    <QuantityInput 
-                      type="number" 
-                      min="1"
-                      value={item.QUANTITY}
-                      onChange={(e) => handleQuantityChange(item.PRODUCT_ID, parseInt(e.target.value) || 1)}
-                    />
-                    <QuantityButton 
-                      onClick={() => handleQuantityChange(item.PRODUCT_ID, item.QUANTITY + 1)}
-                    >
-                      +
-                    </QuantityButton>
-                  </QuantityControl>
-                </td>
-                <td>
-                  <Price>
-                    {new Intl.NumberFormat('ru-RU', { 
-                      style: 'currency', 
-                      currency: 'RUB',
-                      maximumFractionDigits: 0 
-                    }).format(item.PRICE * item.QUANTITY)}
-                  </Price>
-                </td>
-                <td>
-                  <RemoveButton onClick={() => handleRemoveItem(item.PRODUCT_ID)}>
-                    Удалить
-                  </RemoveButton>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </CartTable>
-        
-        <Summary>
-          <SummaryRow>
-            <span>Товаров:</span>
-            <span>{data.ITEMS.length} шт.</span>
-          </SummaryRow>
-          <SummaryRow>
-            <span>Сумма:</span>
-            <span>
-              {new Intl.NumberFormat('ru-RU', { 
-                style: 'currency', 
-                currency: 'RUB',
-                maximumFractionDigits: 0 
-              }).format(data.TOTAL_PRICE)}
-            </span>
-          </SummaryRow>
-          {data.DISCOUNT_PRICE > 0 && (
-            <SummaryRow>
-              <span>Скидка:</span>
-              <span>- 
-                {new Intl.NumberFormat('ru-RU', { 
-                  style: 'currency', 
-                  currency: 'RUB',
-                  maximumFractionDigits: 0 
-                }).format(data.DISCOUNT_PRICE)}
-              </span>
-            </SummaryRow>
+        <div className={styles.cartLayout}>
+          {activeTab === 'cart' && (
+            <section className={styles.cartItemsSection}>
+              <h1 className={styles.mainTitle}>Моя корзина</h1>
+              {cartItems.length > 0 ? (
+                cartItems.map(item => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    onQuantityChange={handleQuantityChange}
+                    onRemove={handleRemoveItem}
+                  />
+                ))
+              ) : (
+                <p className={styles.emptyCartMessage}>Ваша корзина пуста.</p>
+              )}
+            </section>
           )}
-          <SummaryTotal>
-            <span>Итого:</span>
-            <span>
-              {new Intl.NumberFormat('ru-RU', { 
-                style: 'currency', 
-                currency: 'RUB',
-                maximumFractionDigits: 0 
-              }).format(data.TOTAL_PRICE - (data.DISCOUNT_PRICE || 0))}
-            </span>
-          </SummaryTotal>
-        </Summary>
-        
-        <ButtonGroup>
-          <div>
-            <SecondaryButton onClick={handleClearBasket}>Очистить корзину</SecondaryButton>
-            <Link href="/catalog" passHref>
-              <SecondaryButton as="a">Продолжить покупки</SecondaryButton>
-            </Link>
-          </div>
-          <PrimaryButton onClick={handleCheckout}>Оформить заказ</PrimaryButton>
-        </ButtonGroup>
-      </Container>
+
+          {(activeTab === 'delivery' || activeTab === 'payment') && (
+            <section className={styles.contentSection}> {/* New section for delivery/payment */}
+              {activeTab === 'delivery' && (
+                <>
+                  {/* <div className={styles.infoText}>Lorem ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.</div> */}
+                  <DeliveryInfoForm />
+                </>
+              )}
+              {activeTab === 'payment' && (
+                <>
+                  <h1 className={styles.mainTitle}>Оплата</h1>
+                  {/* Placeholder for Payment Form/Info */}
+                  <div className={styles.placeholderContent}>
+                    <p>Здесь будет форма для выбора способа оплаты и ввода платежных данных.</p>
+                  </div>
+                </>
+              )}
+            </section>
+          )}
+
+          <aside className={styles.orderDetailsSection}>
+             <OrderSummary
+                subtotal={subtotal}
+                packagingCost={packagingCost}
+                shippingCost={shippingCost}
+                total={total}
+                onCheckout={handleProceedToCheckout}
+                buttonText={getButtonText()} // Pass dynamic button text
+                isCheckoutDisabled={activeTab === 'cart' && cartItems.length === 0}
+              />
+          </aside>
+        </div>
+      </main>
+
+        {/* New Arrivals Section using Responsive Wrapper */}
+        <ResponsiveProductSection 
+          title="Новые поступления"
+          subtitle=""
+          viewAllLink="/catalog?filter=new"
+          items={mockRecentlyViewedProducts} // Use 'items' prop name
+          renderItem={renderRecentlyViewedProductCard} // Pass the render function
+          onAddToCart={handleAddToCartRecentlyViewed} // Still needed for ProductCard via renderItem
+        />
+
+      {/* <ProductGrid
+        title="Недавно просмотренные"
+        products={mockRecentlyViewedProducts}
+        viewAllLink="#" // Optional: link to a page with all recently viewed items
+        viewAllText="Смотреть все" // Optional
+        // onAddToCart prop can be omitted if not applicable here or handled differently
+      /> */}
+      <Footer />
     </>
   );
 };
 
-export default CartPage; 
+export default CartPage;

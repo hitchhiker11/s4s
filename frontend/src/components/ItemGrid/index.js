@@ -94,6 +94,7 @@ const SubtitleContainer = styled.div`
   border-bottom: 2px solid ${COLORS.gray400};
   padding: ${SPACING.sm} 0;
   max-height: 28px;
+  align-items: center;
 
   ${mediaQueries.sm} {
     border-bottom-width: 2px;

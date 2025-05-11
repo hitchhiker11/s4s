@@ -1,0 +1,501 @@
+/* Basic structure and layout */
+.productDetailCard {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column for mobile first */
+    gap: 20px;
+    padding: 20px 0px 20px 0px;
+    background-color: #FCFCFC; /* From Figma image container */
+    width: 100%;
+    max-width: 1493px !important; /* Exact width from requirements with !important */
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Rubik', sans-serif; /* Consistent font */
+    box-sizing: border-box;
+}
+
+/* Gallery styles */
+.galleryContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.mainImageContainer {
+    position: relative; /* For badge positioning */
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
+    background-color: #FFFFFF; /* Figma image background */
+    border: 1px solid #EEEEEE;
+    border-radius: 4px;
+    overflow: hidden; /* Ensures image stays within bounds */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mainImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Scales image down to fit, maintaining aspect ratio */
+}
+
+.recommendedBadge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #E7194A; /* Figma accent color */
+    color: white;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+.thumbnailContainer {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow thumbnails to wrap on smaller screens */
+    justify-content: flex-start; /* Align thumbnails to the left */
+    width: 100%;
+}
+
+.thumbnailButton {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 0;
+    cursor: pointer;
+    background-color: #FFFFFF;
+    overflow: hidden;
+    width: 70px; /* Smaller on mobile */
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.thumbnailButton:hover,
+.thumbnailButton.activeThumbnail {
+    border-color: #E7194A;
+}
+
+.thumbnailImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Details container styles */
+.detailsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%; /* Full width */
+}
+
+.productName {
+    font-family: 'Montserrat', sans-serif; /* As per Figma title */
+    font-weight: 700;
+    font-size: 18px; /* Smaller on mobile */
+    line-height: 1.2;
+    color: #1C1C1C;
+    margin: 0;
+    width: 100%;
+}
+
+.metaInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+    color: #555555;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.metaInfo p {
+    margin: 0;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 400;
+    font-size: 14px; /* Smaller on mobile */
+    line-height: 1.33;
+    color: #1C1C1C;
+}
+
+.brand, .article, .availability {
+    /* Specific styles if needed, currently inherits from metaInfo p */
+}
+
+.descriptionContainer {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.description {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 400;
+    font-size: 14px; /* Smaller on mobile */
+    line-height: 1.4;
+    color: #1C1C1C; 
+    white-space: pre-line; /* Respects newlines from the source string */
+    margin: 0;
+}
+
+.priceSection {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.currentPrice {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 700;
+    font-size: 24px; /* Smaller on mobile */
+    color: #1C1C1C; /* Figma price color for main price */
+    margin: 0;
+}
+
+.oldPrice {
+    font-size: 18px; /* Smaller on mobile */
+    color: #888888;
+    text-decoration: line-through;
+    margin: 0;
+}
+
+.addToCartButton {
+    color: #000000; /* Figma button text color */
+    background: none;
+    border-bottom: 2px solid #B6B6B6;
+    border-right: 2px solid #B6B6B6;
+    border-radius: 0;
+    padding: 10px 16px; /* Smaller on mobile */
+    font-family: 'Rubik', sans-serif;
+    font-weight: 500;
+    font-size: 16px; /* Smaller on mobile */
+    cursor: pointer;
+    transition: 
+        background-color 0.2s ease-in-out,
+        border-bottom-color 0.3s ease,
+        border-right-color 0.3s ease;
+    width: 100%; /* Full width on mobile */
+    text-align: center;
+    margin-top: 10px;
+    align-self: flex-start; /* Align button to the start of the flex container */
+}
+
+.addToCartButton:hover {
+    border-bottom-color: #6B6B6B;
+    border-right-color: #6B6B6B;
+}
+
+@media (min-width: 768px) {
+    .addToCartButton {
+        border-bottom-width: 4px;
+        border-right-width: 4px;
+    }
+}
+
+/* Small mobile devices (320px - 479px) */
+@media (min-width: 320px) {
+    .productDetailCard {
+        padding: 0px 0px 15px 0px;
+        gap: 15px;
+    }
+    
+    .mainImageContainer {
+        max-height: 300px;
+    }
+    
+    .thumbnailContainer {
+        justify-content: flex-start;
+    }
+    
+    .thumbnailButton {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .productName {
+        font-size: 18px;
+    }
+    
+    .metaInfo p {
+        font-size: 14px;
+    }
+    
+    .description {
+        font-size: 14px;
+    }
+    
+    .currentPrice {
+        font-size: 24px;
+    }
+    
+    .addToCartButton {
+        font-size: 16px;
+        padding: 10px 14px;
+    }
+}
+
+/* Medium mobile devices (480px - 639px) */
+@media (min-width: 480px) {
+    .productDetailCard {
+        padding: 18px;
+        gap: 18px;
+    }
+    
+    .mainImageContainer {
+        max-height: 350px;
+    }
+    
+    .thumbnailButton {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .productName {
+        font-size: 20px;
+    }
+    
+    .metaInfo p, .description {
+        font-size: 14px;
+    }
+    
+    .currentPrice {
+        font-size: 26px;
+    }
+    
+    .addToCartButton {
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+}
+
+/* Large mobile devices (640px - 767px) */
+@media (min-width: 640px) {
+    .productDetailCard {
+        padding: 20px;
+        gap: 20px;
+    }
+    
+    .mainImageContainer {
+        max-height: 400px;
+    }
+    
+    .thumbnailButton {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .productName {
+        font-size: 22px;
+    }
+    
+    .metaInfo p, .description {
+        font-size: 15px;
+    }
+    
+    .currentPrice {
+        font-size: 28px;
+    }
+    
+    .addToCartButton {
+        font-size: 18px;
+        padding: 12px 18px;
+        width: auto;
+        min-width: 180px;
+        max-width: 200px;
+    }
+}
+
+/* Tablet devices (768px - 1023px) */
+@media (min-width: 768px) {
+    .productDetailCard {
+        grid-template-columns: 1fr 1fr; /* Equal columns for tablet */
+        gap: 25px;
+        padding: 25px;
+        align-items: start;
+    }
+    
+    .galleryContainer {
+        max-width: 100%;
+    }
+    
+    .detailsContainer {
+        width: 100%;
+        min-width: 0; 
+    }
+    
+    .mainImageContainer {
+        max-height: 450px;
+    }
+    
+    .thumbnailButton {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .thumbnailContainer {
+        justify-content: flex-start;
+    }
+    
+    .productName {
+        font-size: 24px;
+    }
+    
+    .metaInfo p, .description {
+        font-size: 15px;
+    }
+    
+    .currentPrice {
+        font-size: 30px;
+    }
+    
+    .addToCartButton {
+        font-size: 18px;
+        padding: 14px 20px;
+        width: auto;
+        min-width: 200px;
+        max-width: 220px;
+    }
+}
+
+/* Small desktop devices (1024px - 1279px) */
+@media (min-width: 1024px) {
+    .productDetailCard {
+        grid-template-columns: minmax(400px, 500px) 1fr;
+        gap: 30px;
+        padding: 30px;
+        max-width: 1493px !important;
+    }
+    
+    .galleryContainer {
+        max-width: 500px;
+    }
+    
+    .detailsContainer {
+        min-width: 400px; /* Ensure minimum width for details container */
+    }
+    
+    .mainImageContainer {
+        max-height: 500px;
+    }
+    
+    .thumbnailButton {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .productName {
+        font-size: 28px;
+        line-height: 1.3;
+    }
+    
+    .metaInfo p, .description {
+        font-size: 16px;
+    }
+    
+    .currentPrice {
+        font-size: 34px;
+    }
+    
+    .addToCartButton {
+        font-size: 20px;
+        padding: 16px 22px;
+        min-width: 220px;
+        max-width: 240px;
+    }
+}
+
+/* Medium desktop devices (1280px - 1439px) */
+@media (min-width: 1280px) {
+    .productDetailCard {
+        grid-template-columns: minmax(450px, 550px) 1fr;
+        gap: 35px;
+        padding: 35px;
+        max-width: 1493px !important;
+    }
+    
+    .galleryContainer {
+        max-width: 550px;
+    }
+    
+    .detailsContainer {
+        min-width: 500px; /* Ensure minimum width for details container */
+    }
+    
+    .mainImageContainer {
+        max-height: 550px;
+    }
+    
+    .productName {
+        font-size: 32px;
+        line-height: 1.3;
+    }
+    
+    .metaInfo p, .description {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    .currentPrice {
+        font-size: 38px;
+    }
+    
+    .addToCartButton {
+        font-size: 22px;
+        padding: 16px 24px;
+        min-width: 240px;
+        max-width: 260px;
+    }
+}
+
+/* Large desktop devices (1440px and above) */
+@media (min-width: 1440px) {
+    .productDetailCard {
+        grid-template-columns: minmax(500px, 600px) 1fr;
+        gap: 40px;
+        padding: 40px;
+        max-width: 1493px !important;
+    }
+    
+    .galleryContainer {
+        max-width: 600px;
+    }
+    
+    .detailsContainer {
+        min-width: 600px; /* Ensure minimum width for details container */
+    }
+    
+    .mainImageContainer {
+        max-height: 600px;
+    }
+    
+    .productName {
+        font-size: 36px;
+        line-height: 1.3;
+    }
+    
+    .metaInfo p, .description {
+        font-size: 17px;
+        line-height: 1.4;
+    }
+    
+    .currentPrice {
+        font-size: 40px;
+        line-height: 1.2;
+    }
+    
+    .addToCartButton {
+        font-size: 24px;
+        padding: 18px 25px;
+        min-width: 260px;
+        max-width: 280px;
+        line-height: 1.4;
+    }
+}

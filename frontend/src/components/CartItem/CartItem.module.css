@@ -1,0 +1,446 @@
+/* --- CartItem styles remain unchanged --- */
+.cartItem {
+  display: flex;
+  border-bottom: 2px solid #B6B6B6;
+  border-right: 2px solid #B6B6B6;
+  border-radius: 0;
+  margin-bottom: 20px;
+  padding: 20px 20px 20px 0px;
+  background-color: #FCFCFC;
+  gap: 20px;
+  transition: border-bottom-color 0.3s ease, border-right-color 0.3s ease;
+}
+
+.cartItem:hover {
+  border-bottom-color: #6B6B6B;
+  border-right-color: #6B6B6B;
+}
+
+@media (min-width: 768px) {
+  .cartItem {
+    border-bottom-width: 4px;
+    border-right-width: 4px;
+  }
+}
+
+/* --- imageContainer: Скрупулёзная адаптация размеров --- */
+.imageContainer  img {
+  min-width: 335px;
+  min-height: 335px;
+  width: 335px;
+  height: 335px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: #F5F5F5; */
+  background-color: #FFFFFF;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* 1440px и меньше — чуть меньше */
+@media (max-width: 1440px) {
+  .imageContainer img {
+    min-width: 280px;
+    min-height: 280px;
+    width: 280px;
+    height: 280px;
+  }
+}
+
+/* 1200px и меньше */
+@media (max-width: 1200px) {
+  .imageContainer img {
+    min-width: 220px;
+    min-height: 220px;
+    width: 220px;
+    height: 220px;
+  }
+}
+
+/* 1050px и меньше */
+@media (max-width: 1050px) {
+  .imageContainer  img {
+    min-width: 170px;
+    min-height: 170px;
+    width: 170px;
+    height: 170px;
+  }
+}
+
+/* 991px и меньше — почти минимальный размер */
+@media (max-width: 991px) {
+  .imageContainer img {
+    min-width: 120px;
+    min-height: 120px;
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* 850px и меньше — ещё меньше, но не скрываем */
+@media (max-width: 850px) {
+  .imageContainer img {
+    min-width: 100px;
+    min-height: 100px;
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* 768px и меньше — полностью скрываем (уже было) */
+@media (max-width: 768px) {
+  .imageContainer img {
+    display: none;
+    min-width: 335px;
+  }
+}
+
+.imageContainer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* --- Остальные стили без изменений --- */
+.detailsContainer {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.productInfo {
+  margin-bottom: 10px;
+}
+
+.productBrand {
+  font-family: 'Rubik', sans-serif; /* From style_JPGXCW */
+  font-weight: 700;
+  font-size: 26px; /* Adjusted */
+  color: #1C1C1C; /* From fill_NE8O66 */
+  margin: 0 0 5px 0;
+}
+
+.productName {
+  font-family: 'Rubik', sans-serif; /* From style_DOLN43 */
+  font-weight: 700; /* From style_DOLN43 */
+  font-size: 26px; /* Adjusted for web readability, Figma 26px is large */
+  line-height: 1.4;
+  color: #1C1C1C; /* From fill_NE8O66 */
+  margin: 0 0 8px 0;
+}
+
+.productDescription {
+  font-family: 'Rubik', sans-serif; /* From style_QLJ3NQ */
+  font-weight: 400;
+  font-size: 18px; /* Adjusted, Figma 17.4px */
+  color: rgba(0, 0, 0, 0.6); /* Adjusted from fill_1H4TOJ for better contrast */
+  margin: 0;
+  line-height: 1.5;
+}
+
+.priceAndStock {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: auto; /* Pushes to the bottom of detailsContainer */
+}
+
+.productPrice {
+  font-family: 'Rubik', sans-serif; /* From style_THJEMN */
+  font-weight: 700;
+  font-size: 26px; /* Adjusted, Figma 26px */
+  color: #E7194A; /* From fill_XK664J */
+  margin: 0;
+}
+
+.stockInfo {
+  font-family: 'Rubik', sans-serif; /* From style_QLJ3NQ */
+  font-weight: 400;
+  font-size: 18px; /* Adjusted */
+  color: #1C1C1C; /* From fill_NE8O66 */
+  margin: 0;
+  text-align: right;
+}
+
+.quantityAndActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 150px; /* Ensure enough space for controls */
+}
+
+.quantityControl {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  /* background-color: #F5F7FA;  */
+  border-radius: 4px;
+  overflow: hidden; /* To make buttons look connected */
+}
+
+.quantityButton {
+  background-color: transparent; 
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #E7194A; /* From fill_XK664J on minus, but applying to both for consistency */
+}
+
+.quantityButton:hover:not(:disabled) {
+  background-color: #E0E0E0;
+}
+
+.quantityButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantityButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.increaseButton {
+   background-color: #E7194A; /* From fill_XK664J on plus button */
+   color: #FCFCFC; /* From fill_28CY5Q on plus button text */
+}
+
+.increaseButton:hover:not(:disabled) {
+  background-color: #c4143f; /* Darker shade of primary */
+}
+
+
+.quantityDisplay {
+  padding: 8px 15px;
+  font-family: 'Rubik', sans-serif; /* From style_T9NFYP */
+  font-weight: 500;
+  font-size: 16px;
+  color: #1C1C1C; /* From fill_NE8O66 */
+  min-width: 30px;
+  text-align: center;
+  border-left: 1px solid #E0E0E0;
+  border-right: 1px solid #E0E0E0;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #757575; /* Softer color for remove */
+  cursor: pointer;
+  font-family: 'Rubik', sans-serif;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.removeButton:hover {
+  color: #E7194A;
+  background-color: #FCE8EC;
+}
+
+.removeButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ADDED GLOBALLY: Hide mobile-specific price by default (on desktop) */
+.mobilePrice {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cartItem {
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    padding: 12px;
+    height: auto; 
+    min-height: 87px;
+    box-shadow: none; /* Removed shadow */
+    width: 100%; 
+    box-sizing: border-box; 
+  }
+
+  .imageContainer {
+    display: none;
+    min-width: 335px;
+  }
+
+  .detailsContainer {
+    width: 65%;
+    text-align: left;
+    padding-left: 12px;
+    box-sizing: border-box; 
+  }
+  
+  .productInfo {
+    margin-bottom: 6px;
+    display: flex; 
+    flex-direction: column; 
+  }
+  
+  .productBrand {
+    font-size: 13px;
+    margin-bottom: 4px;
+    order: 1; 
+  }
+  
+  .productName {
+    font-size: 14px;
+    margin-bottom: 0;
+    white-space: normal; /* Allow wrapping */
+    overflow: visible;   /* Allow overflow if needed for wrapping */
+    text-overflow: clip; /* Remove ellipsis */
+    order: 2; 
+  }
+  
+  .productDescription {
+    display: none;
+    order: 3; 
+  }
+  
+  .detailsContainer .priceAndStock { /* Hiding original price container on mobile */
+    display: none;
+  }
+
+  .productPrice { /* This existing rule will apply for font-size and color */
+    font-size: 20px;
+    color: #E7194A;
+  }
+  
+  /* ADDED: Ensure mobile-specific price is shown on mobile */
+  /* This rule is now inside the main 768px media query */
+  .mobilePrice {
+    font-size: 20px;
+    display: block; 
+  }
+
+  .stockInfo {
+    display: none;
+  }
+
+  .quantityAndActions {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    width: 35%;
+    min-width: auto;
+    box-sizing: border-box; 
+  }
+
+  /* Style for productPrice when it's a direct child of quantityAndActions */
+  /* This targets the <p> with both .productPrice and .mobilePrice classes */
+  /* This rule is now inside the main 768px media query and not duplicated */
+  .quantityAndActions .productPrice {
+    text-align: center; 
+    width: 100%;       
+    margin-bottom: 8px; 
+    font-weight: 700;
+  }
+  
+  /* Consolidated from the later (duplicate) media query */
+  .quantityInput {
+    padding: 4px 8px;
+    font-size: 14px;
+    width: 40px; 
+  }
+
+  /* Consolidated and adjusted quantityControl for better centering */
+  .quantityControl {
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: auto; /* Let it size by content, parent quantityAndActions centers it */
+    margin-bottom: 0; /* Retained from original and duplicate */
+    /* background-color: #F5F7FA; from desktop - if needed also on mobile, it's inherited or can be added here */
+    /* border-radius: 4px; from desktop - if needed also on mobile, it's inherited or can be added here */
+    /* overflow: hidden; from desktop - if needed also on mobile, it's inherited or can be added here */
+  }
+  
+  .quantityButton {
+    padding: 4px 8px;
+  }
+  
+  .quantityDisplay { /* This will be replaced by quantityInput, but keep for reference/fallback */
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+  
+  .removeButton {
+    display: none; /* Original bottom remove button remains hidden on mobile */
+  }
+}
+
+/* Additional breakpoint for smaller mobile devices */
+@media (max-width: 390px) {
+  .cartItem {
+    padding: 8px 0px 8px 0px;
+    gap: 3px;
+    margin-bottom: 10px;
+  }
+  
+  .detailsContainer {
+    width: 60%;
+    padding-left: 0px;
+  }
+  
+  .productBrand {
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  
+  .productName {
+    font-size: 12px;
+  }
+  
+  .productPrice {
+    font-size: 16px;
+  }
+  
+  .quantityAndActions {
+    width: 40%;
+  }
+  
+  .quantityButton {
+    padding: 2px 6px;
+  }
+  
+  .quantityDisplay {
+    padding: 2px 6px;
+    font-size: 12px;
+    min-width: 20px;
+  }
+}
+
+/* Styles for the new quantity input field (GLOBAL STYLES) */
+/* These are the base styles, mobile overrides are above in the 768px media query */
+.quantityInput {
+  padding: 8px 15px 8px 3px;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #1C1C1C;
+  min-width: 30px;
+  text-align: center;
+  border: none; 
+  background-color: transparent; /* Default background for input, may be overridden by .quantityControl */
+  width: 50px; 
+  -moz-appearance: textfield; /* Hide spinners on Firefox */
+}
+
+.quantityInput::-webkit-outer-spin-button,
+.quantityInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0; /* Hide spinners on Chrome, Safari, Edge, Opera */
+}

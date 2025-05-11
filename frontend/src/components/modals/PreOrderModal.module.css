@@ -1,0 +1,165 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #FCFCFC; /* Figma: fill_L5JEHW */
+  padding: 50px;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_W43F75 */
+  position: relative;
+  width: auto;
+  max-width: 928px; /* Figma: Frame 1321315851 width */
+  display: flex;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #1C1C1C;
+}
+
+.content {
+  display: flex;
+  gap: 67px; /* Figma: layout_2E1UWH gap */
+  width: 100%;
+}
+
+.infoSection {
+  width: 401px; /* Figma: Frame 1321315646 width */
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Figma: layout_OKF1SC gap */
+}
+
+.formSection {
+  flex-grow: 1; /* Takes remaining space */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Figma: layout_R61Z3O gap (approximated for form inputs container) */
+  justify-content: space-between; /* Pushes button to bottom */
+}
+
+.formSection form {
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* Inputs manage their own bottom margin/border */
+}
+
+.title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: #1C1C1C; /* Figma: fill_7TNAP4 */
+}
+
+.productName {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: #1C1C1C; /* Figma: fill_7TNAP4 */
+  margin: 0;
+}
+
+.productDescription, .availabilityNote {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: #1C1C1C; /* Figma: fill_7TNAP4 */
+  margin: 0;
+}
+
+.input {
+  background-color: rgba(255, 255, 255, 0.35); /* Figma: fill_98IFPR */
+  border: none;
+  border-bottom: 2px solid #B6B6B6; /* Figma: stroke_XM7NKW (default bottom) */
+  padding: 10px 8px 10px 0px; /* Figma: layout_7L0EVW padding */
+  font-family: 'Rubik', sans-serif;
+  font-weight: 300;
+  font-size: 24px;
+  color: #1C1C1C;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: #B6B6B6; /* Figma: fill_U9YD1R */
+  text-align: right;
+}
+
+/* Specific borders from Figma */
+.formSection form input:nth-child(1) {
+  border-top: 2px solid #B6B6B6; /* Figma: stroke_NPEVM7 */
+  border-bottom: none;
+}
+
+.formSection form input:nth-child(2) {
+  border-top: 2px solid #B6B6B6; /* Figma: stroke_UK0L3C */
+  border-bottom: none;
+}
+
+.textarea {
+  min-height: 80px; /* Adjust as needed */
+  resize: vertical;
+  border-bottom: 2px solid #B6B6B6;
+}
+
+.submitButton {
+  background-color: #E7194A; /* Figma: fill_GDFYHX */
+  color: #FCFCFC; /* Figma: fill_L5JEHW */
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  padding: 10px 24px; /* Figma: layout_WEYLOG padding */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: stretch;
+  margin-top: 31px; /* Figma: layout_V9VLP7 gap */
+  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_W43F75 */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal, .content {
+    flex-direction: column;
+    padding: 20px;
+    gap: 30px;
+  }
+
+  .infoSection, .formSection {
+    width: 100%;
+  }
+
+  .title, .productName {
+    font-size: 32px;
+  }
+
+  .input, .productDescription, .availabilityNote, .submitButton {
+    font-size: 18px;
+  }
+  .textarea {
+    font-size: 18px;
+  }
+} 

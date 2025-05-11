@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
@@ -212,25 +213,33 @@ const ProductCard = ({ product, onAddToCart }) => {
     console.log(`Add to cart clicked: ${id}, Available: ${isAvailable}`);
   };
 
+  const validProductLink = productLink && typeof productLink === 'string' && productLink.startsWith('/') 
+                           ? productLink 
+                           : `/catalog/unknown/unknown/${id}`;
+
   return (
     <CardWrapper>
       {badge && <Badge>{badge}</Badge>}
 
-      <ImageLinkWrapper href={productLink}>
-        <CardImageContainer>
-          {imageUrl ? (
-            <CardImage src={imageUrl} alt={name} loading="lazy" />
-          ) : (
-            <span style={{ color: COLORS.gray400 }}>Image</span>
-          )}
-        </CardImageContainer>
-      </ImageLinkWrapper>
+      <Link href={validProductLink} passHref legacyBehavior>
+        <ImageLinkWrapper>
+          <CardImageContainer>
+            {imageUrl ? (
+              <CardImage src={imageUrl} alt={name} loading="lazy" />
+            ) : (
+              <span style={{ color: COLORS.gray400 }}>Image</span>
+            )}
+          </CardImageContainer>
+        </ImageLinkWrapper>
+      </Link>
 
       <TextContent>
-        <BrandLinkWrapper href={productLink}>
-          {brand && <Brand>{brand}</Brand>}
-          <Name title={name}>{name}</Name>
-        </BrandLinkWrapper>
+        <Link href={validProductLink} passHref legacyBehavior>
+          <BrandLinkWrapper>
+            {brand && <Brand>{brand}</Brand>}
+            <Name title={name}>{name}</Name>
+          </BrandLinkWrapper>
+        </Link>
         <Price>{formatPrice(price)}</Price>
       </TextContent>
 

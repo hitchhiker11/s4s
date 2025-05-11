@@ -1,0 +1,92 @@
+.tabsContainer {
+  display: flex;
+  justify-content: center; /* Center the tabs */
+  gap: 200px; /* Add space between tabs, adjust as needed */
+  margin-bottom: 20px;
+  /* border-bottom: 1px solid #e0e0e0; */
+  width: 100%;
+}
+
+.tabButton {
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px; /* Adjusted from Figma's 26px for better proportion */
+  font-weight: 700;
+  color: rgba(128, 128, 128, 0.8); /* From Figma fill_8KT0ZI */
+  background-color: transparent;
+  border: none;
+  /* padding: 15px 25px; */
+  padding: 40px 0px 15px 0px; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 3px solid transparent; /* For active state indicator */
+  transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.tabButton:hover {
+  color: #1C1C1C;
+}
+
+.tabButton.active {
+  color: #1C1C1C; /* From Figma fill_AA6S12 */
+}
+
+.tabButton svg, .tabButton span /* For placeholder icons */ {
+  margin-right: 8px;
+}
+
+/* Styles for labels */
+.fullLabel {
+  font-size: 26px;
+  display: inline; /* Or inline-block if you need more control */
+}
+
+.shortLabel {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  .tabsContainer {
+    gap: 100px; 
+  }
+  /* .fullLabel {
+    font-size: 20px;
+  } */
+}
+
+@media (max-width: 900px) {
+  .tabsContainer {
+    gap: 80px; 
+  }
+  /* .fullLabel {
+    font-size: 20px;
+  } */
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 835px) {
+  .tabsContainer {
+    overflow-x: auto; 
+    white-space: nowrap;
+    gap: 40px; 
+    justify-content: center;
+  }
+  .tabButton {
+    font-size: 14px;
+    padding: 12px 15px;
+    gap: 5px; /* Adjust gap between short label and icon */
+  }
+  .fullLabel {
+    display: none; /* Hide full label on mobile */
+    font-size: 24px;
+  }
+  .shortLabel {
+    display: inline; /* Show short label on mobile */
+    font-weight: 700; /* Keep it bold if needed */
+  }
+  .tabButton svg {
+    margin-right: 0; /* Remove extra margin if shortLabel handles spacing */
+  }
+} 

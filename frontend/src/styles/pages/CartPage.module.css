@@ -1,0 +1,122 @@
+.cartPageContainer {
+  max-width: 1493px;
+  margin: 0 auto;
+  /* padding: 20px; */
+  font-family: 'Rubik', sans-serif;
+}
+
+.mainTitle {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #1C1C1C;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.cartLayout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start; /* Align items to the top */
+}
+
+.cartItemsSection {
+  flex-grow: 1; /* Takes up available space */
+}
+
+/* New styles for the content section when tabs are active */
+.contentSection {
+  flex-grow: 1; /* Takes up available space, similar to cartItemsSection */
+  /* Styles for this section will be largely determined by its children (DeliveryInfoForm, etc.) */
+  /* You might add padding or a background if needed here */
+}
+
+.orderDetailsSection {
+  width: 300px; /* Fixed width for the summary */
+  flex-shrink: 0; /* Prevents shrinking */
+  position: sticky; /* Makes the order summary sticky */
+  top: 20px; /* Adjust as needed, considers header height or other elements */
+}
+
+/* Placeholder for payment content */
+.placeholderContent {
+  border: 2px dashed #d0d0d0;
+  padding: 40px 20px;
+  text-align: center;
+  color: #757575;
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  min-height: 200px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.emptyCartMessage {
+  font-family: 'Rubik', sans-serif;
+  font-size: 18px;
+  color: #555;
+  text-align: center;
+  padding: 40px 0;
+  background-color: #f9f9f9;
+  border: 1px dashed #ddd;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1500px) {
+
+  .cartPageContainer {
+    padding: 0 40px 40px 40px;
+  }
+}
+
+@media (max-width: 1200px) {
+
+  .cartPageContainer {
+    padding: 0 40px 40px 40px;
+  }
+}
+
+@media (max-width: 992px) {
+
+  .mainTitle {
+    font-size: 20px;
+  }
+  .cartLayout {
+    flex-direction: column;
+  }
+
+  .orderDetailsSection {
+    width: 100%; /* Full width on smaller screens */
+    margin-top: 30px;
+    position: static; /* Remove stickiness on smaller screens */
+  }
+  
+  .mainTitle {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cartPageContainer {
+    padding: 0 15px 15px 15px;
+  }
+  .mainTitle {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 20px;
+  }
+  .emptyCartMessage {
+    font-size: 16px;
+    padding: 20px;
+  }
+} 

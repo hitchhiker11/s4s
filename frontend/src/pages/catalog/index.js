@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import { dehydrate, QueryClient } from 'react-query';
-
+import ResponsiveProductSection from '../../components/ResponsiveProductSection';
 import { catalogApi } from '../../lib/api';
 import { loadBitrixCore } from '../../lib/auth';
 import Header from '../../components/Header';
@@ -13,7 +13,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import CategoryCard from '../../components/CategoryCard';
 import ProductCard from '../../components/ProductCard';
 import SubscriptionForm from '../../components/SubscriptionForm';
-import { SIZES, COLORS, mediaQueries } from '../../styles/tokens';
+import { SIZES, COLORS, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
 // Стилизованные компоненты
 const Container = styled.div`
@@ -57,25 +57,25 @@ const CategoriesGrid = styled.div`
   width: 100%;
   margin-bottom: 24px;
   
-  /* Default to 3 columns for the desired layout, even on smaller screens */
+  /* Mobile layout with 3 columns and special handling for last items */
   grid-template-columns: repeat(3, 1fr); 
-  gap: 12px; /* Start with a mobile-first gap */
+  gap: 12px;
   
- 
   ${mediaQueries.sm} { 
     gap: 16px;
     margin-bottom: 32px;
   }
   
   ${mediaQueries.md} { 
-    /* On desktop, use auto-fill to allow cards to flow naturally without special handling */
-    grid-template-columns: repeat(4, 1fr); 
+    /* Simple 4-column grid for desktop with auto-fill */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-bottom: 40px;
     
-    /* Override the CategoryCardWrapper's special handling for desktop */
-    & > div[style*="grid-column: 1 / -1"] {
-      display: contents !important; /* This makes the children act as direct children of the parent grid */
+    /* Remove any special styling from mobile view */
+    & > div {
+      grid-column: auto !important;
     }
   }
   
@@ -138,6 +138,64 @@ const LoadingState = styled.div`
   padding: 50px;
   color: #666;
 `;
+
+
+
+const mockRecentlyViewedProducts = [
+  // Populate with product data similar to ProductGrid's expected format
+  {
+    id: 'rv1',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv1',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv2',
+    imageUrl: '/images/new-products/aim2.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv2',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv3',
+    imageUrl: '/images/new-products/aim3.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv3',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv4',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv4',
+    CATALOG_AVAILABLE: 'Y'
+  },
+];
+
+  // Placeholder add to cart handler
+  const handleAddToCartRecentlyViewed = (productId) => {
+    console.log(`Adding product ${productId} to cart (from HomePage)`);
+    // Add actual cart logic here later
+  };
+
+  const renderRecentlyViewedProductCard = (product) => (
+    <ProductCard 
+      key={product.id} 
+      product={product} // Pass the whole product object
+      onAddToCart={handleAddToCartRecentlyViewed} 
+    />
+  );
+
+
 
 // Wrapper component for category cards to handle the last row layout
 const CategoryCardWrapper = ({ categories }) => {
@@ -227,6 +285,7 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
             Произошла ошибка при загрузке каталога. Пожалуйста, попробуйте позже.
           </EmptyState>
         </Container>
+
         <Footer />
       </>
     );
@@ -286,6 +345,14 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
           </RecentlyViewedSection>
         )}
         
+        <ResponsiveProductSection 
+          title="Новые поступления"
+          subtitle=""
+          viewAllLink="/catalog?filter=new"
+          showViewAllLink={false}
+          items={mockRecentlyViewedProducts} // Use 'items' prop name
+        />
+
         <SubscriptionForm />
 
       </Container>

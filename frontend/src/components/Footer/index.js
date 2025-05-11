@@ -38,13 +38,16 @@ const MainFooter = styled.div`
 const LogoContainer = styled.div`
   width: 100%;
   max-width: 320px;
-  
+  display: none;
+
   ${mediaQueries.md} {
     width: 25%;
+    display: block;
   }
   
   ${mediaQueries.lg} {
     width: 20%;
+    display: block;
   }
 `;
 
@@ -55,18 +58,22 @@ const Logo = styled.a`
 
 const NavSections = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: ${SPACING["2xl"]};
-  
+  padding: 12px 12px;
+
   ${mediaQueries.md} {
+    padding: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     width: 70%;
     gap: ${SPACING["3xl"]};
+    grid-template-columns: none; /* reset grid for flex */
   }
-  
+
   ${mediaQueries.lg} {
+  padding: 0;
     flex-wrap: nowrap;
     gap: ${SPACING["4xl"]};
     width: 50%;
@@ -167,13 +174,14 @@ const BrandLogo = styled.img`
 
 const BottomFooter = styled.div`
   background-color: ${COLORS.gray300};
-  padding: 16px 60px;
+  padding: 12px 12px;
   display: grid;
   grid-template-columns: 1fr;
   gap: ${SPACING.md};
   
   ${mediaQueries.md} {
     display: flex;
+    padding: 16px 60px;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;

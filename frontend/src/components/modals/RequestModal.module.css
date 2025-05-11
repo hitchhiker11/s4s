@@ -1,0 +1,166 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #FCFCFC; /* Figma: fill_KGRBW9 */
+  padding: 50px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px 0px rgba(129, 129, 129, 0.25); /* Figma: effect_AKWE6P */
+  position: relative;
+  width: auto;
+  max-width: 928px; /* Figma: Frame 1321315851 width */
+  display: flex;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #1C1C1C;
+}
+
+.content {
+  display: flex;
+  gap: 67px; /* Figma: layout_HCF7UW gap */
+  width: 100%;
+}
+
+.infoSection {
+  width: 401px; /* Figma: Frame 1321315646 width */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Figma: layout_3RBFS5 justify-content */
+  gap: 24px; /* Figma: layout_3RBFS5 gap (used for general spacing too) */
+}
+
+.formSection {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Pushes button to bottom if form is short */
+  gap: 15px; /* Figma: layout_C2BSB4 gap (approximated for form inputs container) */
+}
+
+.formSection form {
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* Inputs manage their own bottom margin/border */
+}
+
+.title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: #1C1C1C; /* Figma: fill_G3893Y */
+}
+
+.description {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: #1C1C1C; /* Figma: fill_G3893Y */
+  margin: 0;
+}
+
+.input {
+  background-color: rgba(255, 255, 255, 0.35); /* Figma: fill_O214YB */
+  border: none;
+  border-bottom: 2px solid #B6B6B6; /* Figma: stroke_CKD663 (default bottom) */
+  padding: 10px 8px 10px 0px; /* Figma: layout_YAQRHB padding */
+  font-family: 'Rubik', sans-serif;
+  font-weight: 300;
+  font-size: 24px;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: #B6B6B6; /* Figma: fill_BZFVW5 for first two, but PHJ1P9 for others. Using B6B6B6 for consistency */
+  text-align: right;
+}
+
+/* Specific border for the first input as per Figma */
+.formSection form input:nth-child(1) {
+  border-top: 2px solid #B6B6B6; /* Figma: stroke_I49PPA */
+  border-bottom: none;
+}
+
+/* Specific border for the second input as per Figma */
+.formSection form input:nth-child(2) {
+  border-top: 2px solid #B6B6B6; /* Figma: stroke_TKSYHF */
+  border-bottom: none;
+}
+
+
+.input[placeholder="Номер телефона"], .input[placeholder="Почта"], .textarea {
+  color: #1C1C1C; /* Default text color */
+}
+
+.input[placeholder="Номер телефона"]::placeholder, 
+.input[placeholder="Почта"]::placeholder, 
+.textarea::placeholder {
+  color: rgba(0, 0, 0, 0.35); /* Figma: fill_PHJ1P9 */
+}
+
+
+.textarea {
+  min-height: 100px; /* Adjust as needed, Figma shows more lines */
+  resize: vertical;
+  padding-top: 10px; /* Align text better with other inputs */
+  border-bottom: 2px solid #B6B6B6; /* Figma: stroke_CKD663 */
+}
+
+.submitButton {
+  background-color: #E7194A; /* Figma: fill_U5YW8Q */
+  color: #FCFCFC; /* Figma: fill_KGRBW9 */
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  padding: 10px 24px; /* Figma: layout_6LWP93 padding */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: stretch;
+  margin-top: 31px; /* Figma: layout_P4HRIX gap */
+  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_ZR0EVZ */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal, .content {
+    flex-direction: column;
+    padding: 20px;
+    gap: 30px;
+  }
+
+  .infoSection, .formSection {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .input, .description, .submitButton, .textarea {
+    font-size: 18px;
+  }
+} 

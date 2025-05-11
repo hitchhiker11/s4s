@@ -19,9 +19,9 @@ const SubscriptionContainer = styled.div`
   max-width: ${SIZES.containerMaxWidth || '1254px'}; // Use token or fallback
   margin: 0 auto;
   gap: 35px;
-  padding: 0 ${SPACING.md}; // Default padding
+  // padding: 0 ${SPACING.lg}; 
 
-  ${mediaQueries.sm} {
+  ${mediaQueries.md} {
     padding: 0 ${SPACING.lg};
   }
 `;
@@ -44,23 +44,23 @@ const ContentWrapper = styled.div`
 `;
 
 const SubscriptionImageContainer = styled.div`
-  background: rgba(252, 252, 252, 0.1); // From original image styles
+  background: rgba(252, 252, 252, 0.1); 
   display: flex;
   justify-content: center;
   align-items: center;
-  // max-height: 187px; // From original
-  // max-width: 118px;  // From original
-  width: 118px; // Fixed width based on screenshot
-  height: 187px; // Fixed height based on screenshot
+  // max-height: 187px; 
+  // max-width: 118px;  
+  width: 118px; 
+  height: 187px; 
   padding: ${SPACING.md}; // Padding around the image itself
 
   ${mediaQueries.md} {
-    // box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); // From original
-    margin-bottom: 0; // No margin-bottom on desktop if side-by-side
+    // box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); 
+    margin-bottom: 0; 
   }
 
   img {
-    filter: invert(1); // From original
+    filter: invert(1); 
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
@@ -71,6 +71,7 @@ const SubscriptionText = styled.p`
   font-family: 'Montserrat', sans-serif;
   font-weight: ${TYPOGRAPHY.weight.bold};
   font-size: ${TYPOGRAPHY.size.lg}; // Mobile first font size
+  text-align: left;
   line-height: 1.3;
   color: ${COLORS.black};
   margin-bottom: ${SPACING.sm}; // Mobile: space below text before form

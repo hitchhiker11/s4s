@@ -34,6 +34,69 @@ const mockData = {
   searchResults: [
     { id: 1, name: 'Товар 1', price: 1200, image: '/images/product1.jpg' },
     { id: 2, name: 'Товар 2', price: 2500, image: '/images/product2.jpg' },
+  ],
+  // Моковые товары с подкатегориями, соответствующими реальным подкатегориям из структуры каталога
+
+  // Для "Тюнинг оружия" (tuning)
+  subCategoryProducts: [
+    // Внешний тюнинг карабинов
+    { id: 'sca-ssa1-001', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Коллиматорный прицел EIGER TAC RedDot', price: 8500, productLink: '/catalog/tuning/optics-carbine/sca-ssa1-001', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'optics-carbine' },
+    { id: 'sca-ssa1-002', imageUrl: '/images/heats/aim2.png', brand: 'Magpul', name: 'Тактическое цевье Magpul MOE M-LOK', price: 4200, productLink: '/catalog/tuning/external-carbine/sca-ssa1-002', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'external-carbine' },
+    { id: 'sca-ssa1-003', imageUrl: '/images/heats/aim3.png', brand: 'Fab Defense', name: 'Приклад Fab Defense GL-CORE', price: 6700, productLink: '/catalog/tuning/external-carbine/sca-ssa1-003', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'external-carbine' },
+    { id: 'sca-ssa1-004', imageUrl: '/images/heats/aim4.png', brand: 'Vector Optics', name: 'Оптический прицел Vector Maverick 1-6x24', price: 12500, productLink: '/catalog/tuning/optics-carbine/sca-ssa1-004', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'optics-carbine' },
+    { id: 'sca-ssa1-005', imageUrl: '/images/heats/aim.png', brand: 'Leapers UTG', name: 'Сошки Leapers UTG Recon Flex M-LOK', price: 3200, productLink: '/catalog/tuning/external-carbine/sca-ssa1-005', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'external-carbine' },
+
+    // Внутренний тюнинг, детали для карабинов/пистолетов
+    { id: 'sca-ssa2-001', imageUrl: '/images/heats/aim2.png', brand: 'Prometheus', name: 'Усиленный поршень Prometheus Hard Piston', price: 2100, productLink: '/catalog/tuning/parts-rifle-carbine/sca-ssa2-001', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'parts-rifle-carbine' },
+    { id: 'sca-ssa2-002', imageUrl: '/images/heats/aim3.png', brand: 'Guarder', name: 'Пружина Guarder SP120', price: 950, productLink: '/catalog/tuning/parts-rifle-carbine/sca-ssa2-002', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'parts-rifle-carbine' },
+    { id: 'sca-ssa2-003', imageUrl: '/images/heats/aim4.png', brand: 'LayLax', name: 'Стволик LayLax Nine Ball 6.03mm', price: 3800, productLink: '/catalog/tuning/parts-rifle-carbine/sca-ssa2-003', CATALOG_AVAILABLE: 'Y', category: 'tuning', subCategory: 'parts-rifle-carbine' },
+
+    // Для "Экипировка" (equipment)
+    // Подсумки, стрелковая одежда, защита, сумки и т.д. - распределяем по смыслу
+    { id: 'scb-ssb1-001', imageUrl: '/images/heats/aim.png', brand: 'Ars Arma', name: 'Плитник Ars Arma A-18 Skanda', price: 15500, productLink: '/catalog/equipment/for-carbine-shooting/scb-ssb1-001', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'for-carbine-shooting' },
+    { id: 'scb-ssb1-002', imageUrl: '/images/heats/aim2.png', brand: 'Wartech', name: 'Нагрудник Wartech TV-110', price: 7800, productLink: '/catalog/equipment/for-carbine-shooting/scb-ssb1-002', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'for-carbine-shooting' },
+    { id: 'scb-ssb1-003', imageUrl: '/images/heats/aim3.png', brand: 'ANA Tactical', name: 'Поясной ремень ANA M2', price: 4300, productLink: '/catalog/equipment/shooting-apparel/scb-ssb1-003', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'shooting-apparel' },
+    { id: 'scb-ssb1-004', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-004', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-005', imageUrl: '/images/heats/aim.png', brand: 'SRVV', name: 'Разгрузочный жилет SRVV Centurion', price: 9900, productLink: '/catalog/equipment/for-carbine-shooting/scb-ssb1-005', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'for-carbine-shooting' },
+    { id: 'scb-ssb1-006', imageUrl: '/images/heats/aim2.png', brand: 'Mordor Tac.', name: 'Пояс Варбелт Mordor Tac. UMTBS', price: 6500, productLink: '/catalog/equipment/shooting-apparel/scb-ssb1-006', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'shooting-apparel' },
+    { id: 'scb-ssb1-007', imageUrl: '/images/heats/aim3.png', brand: 'Ars Arma', name: 'Подсумок гранатный Ars Arma', price: 900, productLink: '/catalog/equipment/pouches/scb-ssb1-007', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-008', imageUrl: '/images/heats/aim4.png', brand: 'Wartech', name: 'Административный подсумок Wartech UP-104', price: 1500, productLink: '/catalog/equipment/pouches/scb-ssb1-008', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-009', imageUrl: '/images/heats/aim.png', brand: 'ANA Tactical', name: 'Подсумок для радиостанции ANA', price: 1100, productLink: '/catalog/equipment/pouches/scb-ssb1-009', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-010', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Панель MOLLE набедренная EIGER TAC', price: 2800, productLink: '/catalog/equipment/pouches/scb-ssb1-010', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-011', imageUrl: '/images/heats/aim3.png', brand: 'SRVV', name: 'Подсумок медицинский отрывной SRVV', price: 3200, productLink: '/catalog/equipment/pouches/scb-ssb1-011', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-012', imageUrl: '/images/heats/aim4.png', brand: 'Mordor Tac.', name: 'Подсумок для сброса магазинов Mordor Tac.', price: 1800, productLink: '/catalog/equipment/pouches/scb-ssb1-012', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-013', imageUrl: '/images/heats/aim.png', brand: 'Ars Arma', name: 'Камербанд скелетный Ars Arma', price: 3500, productLink: '/catalog/equipment/shooting-apparel/scb-ssb1-013', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'shooting-apparel' },
+    { id: 'scb-ssb1-014', imageUrl: '/images/heats/aim2.png', brand: 'Wartech', name: 'Плечевые накладки Wartech TV-108', price: 1300, productLink: '/catalog/equipment/shooting-apparel/scb-ssb1-014', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'shooting-apparel' },
+    { id: 'scb-ssb1-015', imageUrl: '/images/heats/aim3.png', brand: 'ANA Tactical', name: 'Подсумок утилитарный ANA малый', price: 950, productLink: '/catalog/equipment/pouches/scb-ssb1-015', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-016', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Быстросбросы для плитника EIGER TAC', price: 2100, productLink: '/catalog/equipment/equipment-accessories/scb-ssb1-016', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'equipment-accessories' },
+    { id: 'scb-ssb1-017', imageUrl: '/images/heats/aim.png', brand: 'SRVV', name: 'Кобура набедренная SRVV', price: 2900, productLink: '/catalog/equipment/equipment-accessories/scb-ssb1-017', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'equipment-accessories' },
+    { id: 'scb-ssb1-018', imageUrl: '/images/heats/aim2.png', brand: 'Mordor Tac.', name: 'Подсумок двойной для пистолетных магазинов Mordor Tac.', price: 1400, productLink: '/catalog/equipment/pouches/scb-ssb1-018', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-019', imageUrl: '/images/heats/aim3.png', brand: 'Ars Arma', name: 'Паховый модуль Ars Arma', price: 4800, productLink: '/catalog/equipment/equipment-accessories/scb-ssb1-019', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'equipment-accessories' },
+    { id: 'scb-ssb1-020', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-020', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-021', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-021', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-022', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-022', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-023', imageUrl: '/images/heats/aim3.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-023', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-024', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-024', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-025', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-025', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-026', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-026', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-027', imageUrl: '/images/heats/aim3.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-027', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-028', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-028', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-029', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-029', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-030', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-030', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-031', imageUrl: '/images/heats/aim3.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-031', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-032', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-032', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-033', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-033', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-034', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-034', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-035', imageUrl: '/images/heats/aim3.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-035', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-036', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-036', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-037', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-037', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-038', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-038', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-039', imageUrl: '/images/heats/aim3.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-039', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-040', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-040', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-041', imageUrl: '/images/heats/aim.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-041', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-042', imageUrl: '/images/heats/aim2.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-042', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-043', imageUrl: '/images/heats/aim3.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-043', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
+    { id: 'scb-ssb1-044', imageUrl: '/images/heats/aim4.png', brand: 'EIGER TAC', name: 'Подсумок для магазина АК быстрый', price: 1200, productLink: '/catalog/equipment/pouches/scb-ssb1-044', CATALOG_AVAILABLE: 'Y', category: 'equipment', subCategory: 'pouches' },
   ]
 };
 
@@ -114,6 +177,97 @@ export const catalogApi = {
         return data;
       },
       mockData.searchResults
+    );
+  },
+
+  // Получение товаров подкатегории
+  getProductsBySubCategory: async (categoryCode, subCategoryCode, page = 1, limit = 10) => {
+    // Mapping for user-friendly names using actual URL slugs as keys
+    const categoryNameMap = {
+      'tuning': 'Тюнинг Оружия',
+      'equipment': 'Экипировка и Снаряжение',
+      'maintenance': 'Обслуживание и Уход',
+      'reloading': 'Релоадинг',
+      'other': 'Прочее',
+      // Add other main category slugs if they exist
+    };
+    const subCategoryNameMap = {
+      // Subcategories for 'tuning'
+      'external-carbine': 'Внешний тюнинг карабина',
+      'optics-carbine': 'Оптика для карабинов',
+      'parts-rifle-carbine': 'ЗИП и внутренний тюнинг (Винтовки/Карабины)',
+      'external-pistol': 'Внешний тюнинг пистолета',
+      'optics-pistol': 'Оптика для пистолетов',
+      'parts-pistol': 'ЗИП и внутренний тюнинг (Пистолеты)',
+      
+      // Subcategories for 'equipment'
+      'for-carbine-shooting': 'Для стрельбы из карабина',
+      'shooting-apparel': 'Стрелковая одежда',
+      'pouches': 'Подсумки',
+      'equipment-accessories': 'Аксессуары для экипировки',
+      'ballistic-protection': 'Баллистическая защита',
+      'bags-and-cases': 'Сумки и чехлы',
+      
+      // Add other subcategory slugs and their Cyrillic names as needed
+    };
+
+    const currentCategoryName = categoryNameMap[categoryCode] || categoryCode;
+    const currentSubCategoryName = subCategoryNameMap[subCategoryCode] || subCategoryCode;
+
+    return withErrorHandling(
+      async () => {
+        // Здесь должен быть реальный запрос к /ajax/catalog/getSubCategoryProducts.php или аналогичному
+        // const { data } = await api.post('/ajax/catalog/getSubCategoryProducts.php', { categoryCode, subCategoryCode, page, limit });
+        // return data;
+        
+        // Временный мок для разработки
+        console.log(`Fetching subcategory products for ${categoryCode}/${subCategoryCode}, page ${page}`);
+        const allSubCategoryProducts = mockData.subCategoryProducts.filter(
+          p => p.category === categoryCode && p.subCategory === subCategoryCode
+        );
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const paginatedProducts = allSubCategoryProducts.slice(startIndex, endIndex);
+        
+        return {
+          ITEMS: paginatedProducts,
+          NAV_PARAMS: { // Пример параметров пагинации
+            CURRENT_PAGE: page,
+            TOTAL_PAGES: Math.ceil(allSubCategoryProducts.length / limit),
+            TOTAL_ITEMS: allSubCategoryProducts.length
+          },
+          SEO: { // Пример SEO данных with Cyrillic names
+            TITLE: `Товары: ${currentSubCategoryName} - ${currentCategoryName}`,
+            DESCRIPTION: `Купить ${currentSubCategoryName} в категории ${currentCategoryName}`,
+            CATEGORY_NAME: currentCategoryName,
+            SUBCATEGORY_NAME: currentSubCategoryName
+          }
+        };
+      },
+      // Возвращаем отфильтрованные и пагинированные моковые данные при ошибке в dev режиме
+      (() => {
+        console.warn(`Mocking subcategory products for ${categoryCode}/${subCategoryCode}, page ${page}`);
+        const allSubCategoryProducts = mockData.subCategoryProducts.filter(
+          p => p.category === categoryCode && p.subCategory === subCategoryCode
+        );
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const paginatedProducts = allSubCategoryProducts.slice(startIndex, endIndex);
+        return {
+          ITEMS: paginatedProducts,
+          NAV_PARAMS: {
+            CURRENT_PAGE: page,
+            TOTAL_PAGES: Math.ceil(allSubCategoryProducts.length / limit),
+            TOTAL_ITEMS: allSubCategoryProducts.length
+          },
+           SEO: { // Fallback SEO with Cyrillic names
+            TITLE: `Мок: ${currentSubCategoryName} - ${currentCategoryName}`,
+            DESCRIPTION: `Мок: Купить ${currentSubCategoryName} в ${currentCategoryName}`,
+            CATEGORY_NAME: currentCategoryName,
+            SUBCATEGORY_NAME: currentSubCategoryName
+          }
+        };
+      })()
     );
   },
 };

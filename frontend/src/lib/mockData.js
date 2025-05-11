@@ -12,7 +12,7 @@ export const mockCategories = [
     id: 'cat-2',
     title: 'Экипировка',
     imageUrl: '/images/categories/equipment.jpg',
-    link: '/catalog/gear',
+    link: '/catalog/equipment',
     showTitle: true
   },
   {
@@ -173,6 +173,7 @@ export const categoryData = {
       { name: "Оптика для карабинов", code: "optics-carbine", imageUrl: "/images/subcategories/tuning-carbine-optics.jpg" },
       { name: "Оптика для пистолетов", code: "optics-pistol", imageUrl: "/images/subcategories/tuning-pistol-optics.jpg" },
       { name: "Фонари и ЛЦУ", code: "lights-lasers", imageUrl: "/images/subcategories/tuning-lights-lasers.jpg" },
+      { name: "Фонари и ЛЦУ", code: "lights-lasers", imageUrl: "/images/subcategories/tuning-lights-lasers.jpg" },
     ],
   },
   equipment: {
@@ -198,6 +199,7 @@ export const categoryData = {
       { name: "Инструмент для чистки и ухода", code: "cleaning-tools", imageUrl: "/images/subcategories/maint-tools.jpg" },
       { name: "Обслуживание", code: "general-maintenance", imageUrl: "/images/subcategories/maint-general.jpg" }, // Consider a more specific name if possible
       { name: "Средства для чистки и ухода", code: "cleaning-supplies", imageUrl: "/images/subcategories/maint-supplies.jpg" },
+      // { name: "Средства для чистки и ухода", code: "cleaning-supplies", imageUrl: "/images/subcategories/maint-supplies.jpg" },
     ],
   },
   reloading: {

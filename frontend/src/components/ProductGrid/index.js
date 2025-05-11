@@ -101,6 +101,7 @@ const SubtitleContainer = styled.div`
   ${mediaQueries.md} {
     max-height: 45px;
     border-bottom-width: 4px;
+    align-items: center; 
   }
 `;
 
@@ -225,18 +226,28 @@ const ProductGrid = ({
   viewAllLink = "#", 
   viewAllText = "Смотреть все",
   onAddToCart,
-  useGradientTitle = false
+  useGradientTitle = false,
+  sectionClassName = '',
+  gridContainerClassName = '',
+  // New props for customization and control
+  showTitleRow = true,
+  showViewAllLink = true,
+  gridContainerStyle = {},
+  preOrderWrapperProps = {},
+  productCardProps = {},
 }) => {
   // Ensure products is an array
   const productItems = Array.isArray(products) ? products : [];
   
   return (
-    <GridSection>
+    <GridSection className={sectionClassName}>
       <HeaderContainer>
-        <TitleRow>
-          <Title useGradient={useGradientTitle}>{title}</Title>
-          {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
-        </TitleRow>
+        {showTitleRow && (
+          <TitleRow>
+            <Title useGradient={useGradientTitle}>{title}</Title>
+            {showViewAllLink && viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+          </TitleRow>
+        )}
         {subtitle && (
           <>
             <HeaderDivider />
@@ -248,15 +259,22 @@ const ProductGrid = ({
       </HeaderContainer>
       
       {productItems.length > 0 ? (
-        <GridContainer>
+        <GridContainer 
+          className={gridContainerClassName} 
+          style={gridContainerStyle}
+        >
           {productItems.map((product, index) => (
-            <PreOrderWrapper key={product.id || index}>
+            <PreOrderWrapper 
+              key={product.id || index} 
+              {...preOrderWrapperProps}
+            >
               {product.preOrder && (
                 <PreOrderBadge>ПРЕДЗАКАЗ</PreOrderBadge>
               )}
               <ProductCard
                 product={product}
                 onAddToCart={onAddToCart}
+                {...productCardProps}
               />
             </PreOrderWrapper>
           ))}
@@ -287,7 +305,15 @@ ProductGrid.propTypes = {
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
   onAddToCart: PropTypes.func,
-  useGradientTitle: PropTypes.bool
+  useGradientTitle: PropTypes.bool,
+  sectionClassName: PropTypes.string,
+  gridContainerClassName: PropTypes.string,
+  // New propTypes
+  showTitleRow: PropTypes.bool,
+  showViewAllLink: PropTypes.bool,
+  gridContainerStyle: PropTypes.object,
+  preOrderWrapperProps: PropTypes.object,
+  productCardProps: PropTypes.object,
 };
 
-export default ProductGrid; 
+export default ProductGrid;

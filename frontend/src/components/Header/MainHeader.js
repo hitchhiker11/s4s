@@ -77,7 +77,7 @@ const MainHeaderWrapper = styled.div`
   z-index: 10;
   background-color: ${COLORS.white};
   border-bottom: 1px solid ${HEADER_COLORS.lightGray};
-  box-shadow: ${SHADOWS.sm};
+  // box-shadow: ${SHADOWS.sm};
   min-height: ${HEADER_SIZES.headerHeight};
   display: flex;
   align-items: center;
@@ -106,7 +106,7 @@ const NavGroup = styled.div`
   ${mediaQuery.min.lg} {
     display: flex;
     align-items: center;
-    gap: 70px; /* Matching Figma gap between nav items */
+    gap: 70px; 
   }
 `;
 
@@ -166,7 +166,7 @@ const LogoWrapper = styled.div`
 
   @media (max-width: 600px) {
     width: 147px;
-    height: 67px;
+    height: 70px;
     position: absolute;
     left: 50%;
     transform: translateX(-80%);
