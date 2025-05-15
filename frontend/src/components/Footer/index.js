@@ -39,6 +39,8 @@ const LogoContainer = styled.div`
   width: 100%;
   max-width: 320px;
   display: none;
+  position: relative;
+  height: 100%;
 
   ${mediaQueries.md} {
     width: 25%;
@@ -52,8 +54,17 @@ const LogoContainer = styled.div`
 `;
 
 const Logo = styled.a`
-  display: block;
-  max-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 `;
 
 const MobileGrid = styled.div`

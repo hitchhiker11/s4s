@@ -180,12 +180,13 @@
   /* background-color: #F5F7FA;  */
   border-radius: 4px;
   overflow: hidden; /* To make buttons look connected */
+  padding: 2px; /* Slightly larger control on desktop */
 }
 
 .quantityButton {
   background-color: transparent; 
   border: none;
-  padding: 8px 12px;
+  padding: 10px 14px; /* Increased padding for larger buttons on desktop */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -203,8 +204,8 @@
 }
 
 .quantityButton svg {
-  width: 16px;
-  height: 16px;
+  width: 18px; /* Slightly larger icons */
+  height: 18px;
 }
 
 .increaseButton {
@@ -218,12 +219,12 @@
 
 
 .quantityDisplay {
-  padding: 8px 15px;
+  padding: 10px 18px; /* Increased padding for larger display on desktop */
   font-family: 'Rubik', sans-serif; /* From style_T9NFYP */
   font-weight: 500;
-  font-size: 16px;
+  font-size: 18px; /* Slightly larger font */
   color: #1C1C1C; /* From fill_NE8O66 */
-  min-width: 30px;
+  min-width: 35px; /* Slightly wider */
   text-align: center;
   border-left: 1px solid #E0E0E0;
   border-right: 1px solid #E0E0E0;
@@ -363,6 +364,7 @@
     justify-content: center; 
     width: auto; /* Let it size by content, parent quantityAndActions centers it */
     margin-bottom: 0; /* Retained from original and duplicate */
+    padding: 0; /* Reset padding for mobile */
     /* background-color: #F5F7FA; from desktop - if needed also on mobile, it's inherited or can be added here */
     /* border-radius: 4px; from desktop - if needed also on mobile, it's inherited or can be added here */
     /* overflow: hidden; from desktop - if needed also on mobile, it's inherited or can be added here */
@@ -372,9 +374,15 @@
     padding: 4px 8px;
   }
   
+  .quantityButton svg {
+    width: 16px; /* Reset to original size for mobile */
+    height: 16px;
+  }
+  
   .quantityDisplay { /* This will be replaced by quantityInput, but keep for reference/fallback */
     padding: 4px 8px;
     font-size: 14px;
+    min-width: 30px; /* Reset to original size for mobile */
   }
   
   .removeButton {
@@ -396,12 +404,12 @@
   }
   
   .productBrand {
-    font-size: 11px;
+    font-size: 14px;
     margin-bottom: 2px;
   }
   
   .productName {
-    font-size: 12px;
+    font-size: 14px;
   }
   
   .productPrice {
@@ -426,16 +434,16 @@
 /* Styles for the new quantity input field (GLOBAL STYLES) */
 /* These are the base styles, mobile overrides are above in the 768px media query */
 .quantityInput {
-  padding: 8px 15px 8px 3px;
+  padding: 10px 18px 10px 3px; /* Increased padding to match larger quantityDisplay */
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 18px; /* Slightly larger font to match quantityDisplay */
   color: #1C1C1C;
-  min-width: 30px;
+  min-width: 35px; /* Slightly wider to match quantityDisplay */
   text-align: center;
   border: none; 
   background-color: transparent; /* Default background for input, may be overridden by .quantityControl */
-  width: 50px; 
+  width: 60px; /* Slightly wider for desktop */
   -moz-appearance: textfield; /* Hide spinners on Firefox */
   outline: none; /* Remove focus outline/border */
 }
