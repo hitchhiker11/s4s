@@ -1,0 +1,35 @@
+/* Custom CSS module for product grid responsive styles */
+
+.productGridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Default 2 columns for mobile */
+  grid-gap: 10px;
+  row-gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Tablet and above */
+@media (min-width: 768px) {
+  .productGridContainer {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+    row-gap: 30px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 992px) {
+  .productGridContainer {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+    row-gap: 30px;
+  }
+}
+
+/* Responsive pre-order wrapper */
+.preOrderWrapper {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+} 

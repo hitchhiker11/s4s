@@ -10,15 +10,18 @@ const GridSection = styled.section`
   background-color: ${COLORS.white};
 
   ${mediaQueries.sm} {
-    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
+    // padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
+    padding: 0px;
   }
 
   ${mediaQueries.md} {
-    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+    // padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+    padding: 0px;
   }
 
   ${mediaQueries.lg} {
-    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING.lg} ${SPACING['3xl']};
+    // padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING.lg} ${SPACING['3xl']};
+    padding: 0px;
   }
 `;
 
@@ -139,7 +142,7 @@ const ViewAllLink = styled.a`
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+  grid-template-columns: repeat(2, 1fr); /* Mobile: Always 2 columns max */
   gap: ${SPACING.md};
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
@@ -147,7 +150,6 @@ const GridContainer = styled.div`
   justify-content: space-between;
 
   ${mediaQueries.sm} {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
     gap: ${SPACING.lg};
   }
 
@@ -161,33 +163,10 @@ const GridContainer = styled.div`
     gap: 30px;
   }
 
-  @media (max-width: ${BREAKPOINTS.lg - 1}px) {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: ${SPACING.md};
-    gap: ${SPACING.md};
-
-    ::-webkit-scrollbar {
-      display: none;
-    }
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-
-    grid-template-columns: unset;
-    justify-content: flex-start;
-
-    & > * {
-      flex-shrink: 0;
-      width: 70%;
-      scroll-snap-align: start;
-      height: auto;
-      align-self: flex-start;
-
-      ${mediaQueries.xs} {
-         width: 75%;
-      }
-    }
+  @media (max-width: ${BREAKPOINTS.md}px) {
+    /* Keep grid layout for small screens, but limit to 2 columns */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 `;
 

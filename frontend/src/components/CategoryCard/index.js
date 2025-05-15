@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
@@ -16,6 +16,7 @@ const CardLink = styled.a`
   min-height: 120px;
   max-width: 100%;
   width: 100%;
+  ${props => props.additionalStyles && css(props.additionalStyles)};
 
   &:hover {
     border-right-color: ${COLORS.gray500};
@@ -24,10 +25,10 @@ const CardLink = styled.a`
 
   ${mediaQueries.md} {
     /* Унификация размеров карточек на десктопе */
-    width: 330px;
-    height: 300px;
-    min-width: 330px;
-    max-width: 330px;
+    width: ${props => (props.additionalStyles && props.additionalStyles.maxWidth) ? props.additionalStyles.maxWidth : '330px'};
+    height: 300px; /* Assuming height is not intended to be overridden by this specific maxWidth prop */
+    min-width: ${props => (props.additionalStyles && props.additionalStyles.maxWidth) ? props.additionalStyles.maxWidth : '330px'};
+    max-width: ${props => (props.additionalStyles && props.additionalStyles.maxWidth) ? props.additionalStyles.maxWidth : '330px'};
     min-height: 300px;
     max-height: 300px;
     border-right: 4px solid ${COLORS.gray400};
@@ -35,11 +36,7 @@ const CardLink = styled.a`
 
     /* Для выравнивания содержимого по высоте */
     justify-content: flex-start;
-
-    &:hover {
-      border-right-color: ${COLORS.gray500};
-      border-bottom-color: ${COLORS.gray500};
-    }
+    
   }
 `;
 
@@ -50,7 +47,7 @@ const CardTitle = styled.h3`
   color: ${COLORS.black};
   text-align: left;
   line-height: 1.2;
-  padding: ${SPACING.sm} ${SPACING.sm}; /* Smaller padding for mobile */
+  padding: ${SPACING.sm} ${SPACING.sm}; 
   padding-bottom: 0;
   width: 100%;
   margin: 0;
@@ -106,7 +103,7 @@ const CardImage = styled.img`
   `};
 `;
 
-const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation }) => {
+const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation, additionalStyles }) => {
   const isBrandLogo = !showTitle;
 
   const imageRotation = useMemo(() => {
@@ -116,7 +113,7 @@ const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation 
   }, [rotation, showTitle]);
 
   return (
-    <CardLink href={link}>
+    <CardLink href={link} additionalStyles={additionalStyles}>
       {showTitle && <CardTitle>{title}</CardTitle>}
       <CardImageContainer showTitle={showTitle} isBrandLogo={isBrandLogo}>
         {imageUrl ? (
@@ -141,6 +138,7 @@ CategoryCard.propTypes = {
   link: PropTypes.string,
   showTitle: PropTypes.bool,
   rotation: PropTypes.number,
+  additionalStyles: PropTypes.object,
 };
 
 export default CategoryCard;

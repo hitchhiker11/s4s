@@ -34,7 +34,7 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1001;
+  z-index: 1003;
   background-color: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(25px);
   opacity: 0;

@@ -54,14 +54,15 @@ const slideOutTop = keyframes`
 `;
 
 const MobileMenuContainer = styled.div`
-  position: fixed;
-  top: ${HEADER_SIZES.headerHeight}; // Position right below the header
+  position: absolute;
+  top: 100%;
   left: 0;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.65);
   z-index: 1002;
   box-shadow: 0px 4px 4px 0px rgba(129, 129, 129, 0.25);
   transform: translateY(-100%);
+  visibility: ${props => (props.$isOpen ? 'visible' : 'hidden')};
   animation: ${props => (props.$isOpen ? slideInTop : slideOutTop)} ${ANIMATION.duration} ${ANIMATION.timing} forwards;
   display: flex;
   flex-direction: column;
@@ -210,11 +211,7 @@ const MobileMenu = ({
     }
   };
 
-  // If menu is not open, don't render it at all
-  if (!isOpen) {
-    return null;
-  }
-
+  // Always render the menu but control its visibility with animations
   return (
     <MobileMenuContainer 
       $isOpen={isOpen}

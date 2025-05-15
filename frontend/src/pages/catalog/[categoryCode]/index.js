@@ -42,33 +42,27 @@ const PageTitle = styled.h1`
   }
 `;
 
-// Copied CategoriesGrid from /catalog/index.js for consistent layout
+// Update the CategoriesGrid for proper mobile layout
 const CategoriesGrid = styled.div`
   max-width: ${SIZES.containerMaxWidth};
   display: grid;
   width: 100%;
   margin-bottom: 24px;
   
-  /* Default to 3 columns for the desired layout, even on smaller screens */
+  /* Default to 3 columns for mobile layout, matching the screenshot */
   grid-template-columns: repeat(3, 1fr); 
-  gap: 12px; /* Start with a mobile-first gap */
+  gap: 12px;
   
- 
   ${mediaQueries.sm} { 
     gap: 16px;
     margin-bottom: 32px;
   }
   
   ${mediaQueries.md} { 
-    /* On desktop, use auto-fill to allow cards to flow naturally without special handling */
-    grid-template-columns: repeat(4, 1fr); 
+    /* For desktop, use auto-fill for dynamic layout */
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 20px;
     margin-bottom: 40px;
-    
-    /* Override the CategoryCardWrapper's special handling for desktop */
-    & > div[style*="grid-column: 1 / -1"] {
-      display: contents !important; /* This makes the children act as direct children of the parent grid */
-    }
   }
   
   ${mediaQueries.lg} { 
@@ -188,46 +182,87 @@ const mockRecentlyViewedProducts = [
     />
   );
 
-// Copied CategoryCardWrapper from /catalog/index.js
+// Create styled wrappers for the special last row cards
+const SingleCardWrapper = styled.div`
+  grid-column: 1 / -1; /* Make it span all 3 columns on mobile */
+  
+  ${mediaQueries.md} {
+    grid-column: auto; /* Reset for desktop */
+  }
+`;
+
+const DoubleCardWrapperFirst = styled.div`
+  grid-column: 1 / 3; /* First card spans 2 columns on mobile */
+  
+  ${mediaQueries.md} {
+    grid-column: auto; /* Reset for desktop */
+  }
+`;
+
+const DoubleCardWrapperSecond = styled.div`
+  grid-column: 3 / 4; /* Second card spans 1 column on mobile */
+  
+  ${mediaQueries.md} {
+    grid-column: auto; /* Reset for desktop */
+  }
+`;
+
+// Replace the CategoryCardWrapper with a version that handles both mobile and desktop
 const CategoryCardWrapper = ({ categories }) => {
+  // For mobile layout, we need special handling for the last row
   const totalCards = categories.length;
   const remainder = totalCards % 3;
-
-  const fullRowsCount = Math.floor(totalCards / 3);
-  const standardCardsCount = fullRowsCount * 3;
-  const standardRowCategories = categories.slice(0, standardCardsCount);
+  
+  // If remainder is 1 or 2, we need special handling for the last 1 or 2 cards in mobile view
+  const standardCardsCount = remainder === 0 ? totalCards : totalCards - remainder;
+  const standardCategories = categories.slice(0, standardCardsCount);
   const lastRowCategories = categories.slice(standardCardsCount);
 
   return (
     <CategoriesGrid>
-      {/* Render full rows normally */}
-      {standardRowCategories.map(category => (
+      {/* Standard cards render normally in both mobile and desktop */}
+      {standardCategories.map(category => (
         <CategoryCard 
           key={category.id}
           title={category.title} 
-          imageUrl={category.imageUrl} // Pass null/undefined imageUrl here
+          imageUrl={category.imageUrl}
           link={category.link}
+          additionalStyles={{ maxWidth: '260px' }} 
         />
       ))}
 
-      {/* Handle the last row specially if it's not a full row of 3 and not empty */}
-      {remainder > 0 && (
-        <div style={{
-          gridColumn: '1 / -1', // Make this div span all columns of the parent CategoriesGrid
-          display: 'grid',
-          // If 1 card in last row, it's 1fr. If 2 cards, they are 1fr 1fr.
-          gridTemplateColumns: `repeat(${lastRowCategories.length}, 1fr)`,
-          gap: 'inherit' // Use the same gap as the parent CategoriesGrid
-        }}>
-          {lastRowCategories.map(category => (
+      {/* For mobile: Special handling for last 1 or 2 cards to match the design */}
+      {lastRowCategories.length === 1 && (
+        <SingleCardWrapper>
+          <CategoryCard 
+            key={lastRowCategories[0].id}
+            title={lastRowCategories[0].title} 
+            imageUrl={lastRowCategories[0].imageUrl}
+            link={lastRowCategories[0].link}
+            additionalStyles={{ maxWidth: '260px' }} 
+          />
+        </SingleCardWrapper>
+      )}
+      
+      {lastRowCategories.length === 2 && (
+        <>
+          <DoubleCardWrapperFirst>
             <CategoryCard 
-              key={category.id}
-              title={category.title} 
-              imageUrl={category.imageUrl} // Pass null/undefined imageUrl here
-              link={category.link}
+              key={lastRowCategories[0].id}
+              title={lastRowCategories[0].title} 
+              imageUrl={lastRowCategories[0].imageUrl}
+              link={lastRowCategories[0].link}
             />
-          ))}
-        </div>
+          </DoubleCardWrapperFirst>
+          <DoubleCardWrapperSecond>
+            <CategoryCard 
+              key={lastRowCategories[1].id}
+              title={lastRowCategories[1].title} 
+              imageUrl={lastRowCategories[1].imageUrl}
+              link={lastRowCategories[1].link}
+            />
+          </DoubleCardWrapperSecond>
+        </>
       )}
     </CategoriesGrid>
   );

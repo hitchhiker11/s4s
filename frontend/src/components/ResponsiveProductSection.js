@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ResponsiveContainer from './ResponsiveContainer';
 import ProductGrid from './ProductGrid';
 import ProductSlider from './ProductSlider';
+import productGridStyles from '../styles/ProductGridResponsive.module.css'; // Import CSS module
 
 /**
  * ResponsiveProductSection - Renders either ProductGrid (desktop) or ProductSlider (mobile)
@@ -26,8 +27,9 @@ const ResponsiveProductSection = ({ items, renderItem, onAddToCart, ...props }) 
   const productGridProps = {
     ...props,
     products: items, // Pass items as products
-    onAddToCart // Pass handler directly
-    // renderItem is not needed by ProductGrid if it maps internally
+    onAddToCart, // Pass handler directly
+    gridContainerClassName: productGridStyles.productGridContainer, // Add responsive grid class
+    preOrderWrapperProps: { className: productGridStyles.preOrderWrapper } // Add responsive wrapper class
   };
 
   // We need to check if ProductGrid actually uses renderItem or maps internally.

@@ -15,6 +15,7 @@ import Pagination from '../../../../components/Pagination'; // Adjusted path
 import SubscriptionForm from '../../../../components/SubscriptionForm'; // Import the new component
 
 import { SIZES, COLORS, mediaQueries } from '../../../../styles/tokens'; // Adjusted path
+import styles from '../../../../styles/ProductGridResponsive.module.css'; // Import new CSS module
 
 // Styled components for this page (can be adjusted or extended)
 const Container = styled.div`
@@ -141,20 +142,12 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
     console.log('Added to cart (from subCategoryProducts page):', product);
   };
 
-  const gridContainerStyle = {
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gridGap: '20px',
-    rowGap: '30px',
-    alignItems: 'start' // Выравнивание элементов по верхнему краю
-  };
+  // Use CSS module class instead of inline styles
+  const gridContainerClassName = styles.productGridContainer;
   
   // Добавьте эти пропсы для PreOrderWrapper
   const preOrderWrapperProps = {
-    style: {
-      height: 'auto', // Автоматическая высота вместо растягивания
-      display: 'flex',
-      flexDirection: 'column'
-    }
+    className: styles.preOrderWrapper
   };
 
   return (
@@ -176,7 +169,7 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
             showTitleRow={false}
             products={products}
             onAddToCart={handleAddToCart}
-            gridContainerStyle={gridContainerStyle}
+            gridContainerClassName={gridContainerClassName}
             preOrderWrapperProps={preOrderWrapperProps}
           />
         ) : (

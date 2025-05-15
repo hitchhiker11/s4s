@@ -54,6 +54,7 @@ const CardImageContainer = styled.div`
   padding: ${SPACING.xs};
 
   ${mediaQueries.md} {
+  
     padding: ${SPACING.lg};
   }
 `;

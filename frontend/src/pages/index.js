@@ -51,23 +51,39 @@ const HeroSection = styled.section`
   padding: 0 16px;
 
   ${mediaQueries.sm} {
-    padding: 0 24px;
+    padding: 0px;
   }
 
   ${mediaQueries.md} {
-    padding: 0 48px;
+    padding: 0px;
   }
 
   ${mediaQueries.lg} {
-    padding: 0 40px;
+    padding: 0px;
   }
 
   ${mediaQueries.xl} {
-    padding: 0 40px;
+    padding: 0px;
   }
 
+  // ${mediaQueries.sm} {
+  //   padding: 0 24px;
+  // }
+
+  // ${mediaQueries.md} {
+  //   padding: 0 48px;
+  // }
+
+  // ${mediaQueries.lg} {
+  //   padding: 0 40px;
+  // }
+
+  // ${mediaQueries.xl} {
+  //   padding: 0 40px;
+  // }
+
   ${mediaQueries.xxl} {
-    padding: 0 40px;
+    // padding: 0 40px;
     max-width: 1493px;
     margin-left: auto;
     margin-right: auto;
@@ -159,18 +175,20 @@ const HomePage = () => {
   };
 
   // Define render functions for cards
-  const renderCategoryCard = (category) => (
+  const renderCategoryCard = (category, cardStyle) => (
     <CategoryCard 
       key={category.id} 
-      {...category} // Spread category props (title, imageUrl, link, showTitle)
+      {...category} // Spread category props
+      additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
     />
   );
 
-  const renderProductCard = (product) => (
+  const renderProductCard = (product, cardStyle) => (
     <ProductCard 
       key={product.id} 
       product={product} // Pass the whole product object
-      onAddToCart={handleAddToCart} 
+      onAddToCart={handleAddToCart}
+      additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
     />
   );
 
@@ -193,44 +211,49 @@ const HomePage = () => {
         <SearchBar />
         
         {/* Categories Section using Responsive Wrapper */}
-        <ResponsiveCategorySection 
-          title="Каталог товаров" 
-          viewAllLink="/catalog"
-          items={mockCategories} // Use 'items' prop name
-          renderItem={renderCategoryCard} // Pass the render function
-        />
-
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+          <ResponsiveCategorySection 
+            title="Каталог товаров" 
+            viewAllLink="/catalog"
+            items={mockCategories} // Use 'items' prop name
+            renderItem={renderCategoryCard} // Pass the render function
+          />
+        </div>
         {/* New Arrivals Section using Responsive Wrapper */}
-         <ResponsiveProductSection 
-          title="Новые поступления"
-          subtitle="посмотрите наши новинки"
-          viewAllLink="/catalog?filter=new"
-          items={mockNewArrivals} // Use 'items' prop name
-          renderItem={renderProductCard} // Pass the render function
-          onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
-        />
-
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+          <ResponsiveProductSection 
+            title="Новые поступления"
+            subtitle="посмотрите наши новинки"
+            viewAllLink="/catalog?filter=new"
+            items={mockNewArrivals} // Use 'items' prop name
+            renderItem={renderProductCard} // Pass the render function
+            onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+          />
+       </div>
         {/* Our Brands Section using Responsive Wrapper */}
-        <ResponsiveCategorySection 
-          title="Наши бренды"
-          subtitle="если хотите пополнить коллекцию"
-          viewAllLink="/brands"
-          items={mockBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
-          renderItem={renderCategoryCard} // Pass the render function
-        />
-
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+          <ResponsiveCategorySection 
+            title="Наши бренды"
+            subtitle="если хотите пополнить коллекцию"
+            viewAllLink="/brands"
+            items={mockBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
+            renderItem={renderCategoryCard} // Pass the render function
+            cardStyle={{ maxWidth: '280px' }}
+          />
+        </div>
         
         {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}
-        <ResponsiveProductSection 
-          title="Хиты продаж 🔥"
-          subtitle="посмотрите самые популярные продукты"
-          viewAllLink="/catalog?filter=bestsellers"
-          items={mockBestsellers} // Use 'items' prop name
-          renderItem={renderProductCard} // Pass the render function
-          useGradientTitle={true}
-          onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
-        />
-
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+            <ResponsiveProductSection 
+              title="Хиты продаж 🔥"
+              subtitle="посмотрите самые популярные продукты"
+            viewAllLink="/catalog?filter=bestsellers"
+            items={mockBestsellers} // Use 'items' prop name
+            renderItem={renderProductCard} // Pass the render function
+            useGradientTitle={true}
+            onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+          />
+        </div>
         {/* Featured Brand Section */}
         <BrandFeature brandData={hardcodedFeaturedBrandData} />
 

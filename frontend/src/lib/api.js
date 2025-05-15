@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { mockCategories, mockNewArrivals, mockBrands, mockBestsellers } from './mockData';
 
 // Создаем экземпляр axios с базовыми настройками
 const api = axios.create({
@@ -265,6 +266,104 @@ export const catalogApi = {
             DESCRIPTION: `Мок: Купить ${currentSubCategoryName} в ${currentCategoryName}`,
             CATEGORY_NAME: currentCategoryName,
             SUBCATEGORY_NAME: currentSubCategoryName
+          }
+        };
+      })()
+    );
+  },
+
+  // Получение товаров бренда
+  getProductsByBrand: async (brandCode, page = 1, limit = 10) => {
+    // Similar approach as getProductsBySubCategory
+    return withErrorHandling(
+      async () => {
+        // Here should be a real request to /ajax/catalog/getBrandProducts.php or similar
+        // const { data } = await api.post('/ajax/catalog/getBrandProducts.php', { brandCode, page, limit });
+        // return data;
+        
+        // Temporary mock for development
+        console.log(`Fetching brand products for ${brandCode}, page ${page}`);
+        
+        // Get the brand name from mockBrands
+        const brand = mockBrands.find(b => {
+          // Extract code from link (e.g., /brands/fab-defense -> fab-defense)
+          const linkParts = b.link.split('/');
+          const code = linkParts[linkParts.length - 1];
+          return code === brandCode;
+        });
+        
+        // Create filtered products based on brand name
+        const brandName = brand ? brand.title : brandCode;
+        
+        // Mock products with the brand name
+        const mockBrandProducts = Array.from({ length: 36 }, (_, index) => ({
+          id: `${brandCode}-${index + 1}`,
+          imageUrl: `/images/heats/aim${index % 4 || ''}.png`,
+          brand: brandName,
+          name: `Товар бренда ${brandName} #${index + 1}`,
+          price: 2000 + (index * 100),
+          productLink: `/product/${brandCode}-product-${index + 1}`,
+          CATALOG_AVAILABLE: index % 5 === 0 ? 'N' : 'Y',
+        }));
+        
+        // Paginate the results
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const paginatedProducts = mockBrandProducts.slice(startIndex, endIndex);
+        
+        return {
+          ITEMS: paginatedProducts,
+          NAV_PARAMS: {
+            CURRENT_PAGE: page,
+            TOTAL_PAGES: Math.ceil(mockBrandProducts.length / limit),
+            TOTAL_ITEMS: mockBrandProducts.length
+          },
+          SEO: {
+            TITLE: `Товары бренда ${brandName}`,
+            DESCRIPTION: `Купить товары бренда ${brandName} в нашем магазине`,
+            BRAND_NAME: brandName
+          }
+        };
+      },
+      // Return filtered mocked data in case of error in dev mode
+      (() => {
+        console.warn(`Mocking brand products for ${brandCode}, page ${page}`);
+        
+        // Get the brand name
+        const brand = mockBrands.find(b => {
+          const linkParts = b.link.split('/');
+          const code = linkParts[linkParts.length - 1];
+          return code === brandCode;
+        });
+        const brandName = brand ? brand.title : brandCode;
+        
+        // Mock products with the brand name
+        const mockBrandProducts = Array.from({ length: 36 }, (_, index) => ({
+          id: `${brandCode}-${index + 1}`,
+          imageUrl: `/images/heats/aim${index % 4 || ''}.png`,
+          brand: brandName,
+          name: `Товар бренда ${brandName} #${index + 1}`,
+          price: 2000 + (index * 100),
+          productLink: `/product/${brandCode}-product-${index + 1}`,
+          CATALOG_AVAILABLE: index % 5 === 0 ? 'N' : 'Y',
+        }));
+        
+        // Paginate the results
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const paginatedProducts = mockBrandProducts.slice(startIndex, endIndex);
+        
+        return {
+          ITEMS: paginatedProducts,
+          NAV_PARAMS: {
+            CURRENT_PAGE: page,
+            TOTAL_PAGES: Math.ceil(mockBrandProducts.length / limit),
+            TOTAL_ITEMS: mockBrandProducts.length
+          },
+          SEO: {
+            TITLE: `Товары бренда ${brandName}`,
+            DESCRIPTION: `Купить товары бренда ${brandName} в нашем магазине`,
+            BRAND_NAME: brandName
           }
         };
       })()

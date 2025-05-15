@@ -14,6 +14,7 @@ import CategoryCard from '../../components/CategoryCard';
 import ProductCard from '../../components/ProductCard';
 import SubscriptionForm from '../../components/SubscriptionForm';
 import { SIZES, COLORS, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
+import productGridStyles from '../../styles/ProductGridResponsive.module.css'; // Import CSS module
 
 // Стилизованные компоненты
 const Container = styled.div`
@@ -110,18 +111,19 @@ const SectionTitle = styled.h2`
 
 const ProductsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Default 2 columns for smallest screens */
   gap: 9px;
   width: 100%;
   padding: 12px;
   
+  &.${productGridStyles.productGridContainer} {
+    /* Use the CSS module class */
+  }
+  
   ${mediaQueries.sm} {
-    grid-template-columns: repeat(3, 1fr);
     padding: 16px;
   }
   
   ${mediaQueries.md} {
-    grid-template-columns: repeat(4, 1fr);
     padding: 22px;
   }
 `;
@@ -234,6 +236,7 @@ const CategoryCardWrapper = ({ categories }) => {
               title={category.title} 
               imageUrl={category.imageUrl} 
               link={category.link}
+              
             />
           ))}
         </div>
@@ -337,7 +340,7 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
               <SectionTitle>Недавно просмотренные</SectionTitle>
             </SectionHeader>
             
-            <ProductsGrid>
+            <ProductsGrid className={productGridStyles.productGridContainer}>
               {recentlyViewed.map(product => (
                 <ProductCard key={product.ID} product={product} />
               ))}

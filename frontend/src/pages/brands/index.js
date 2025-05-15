@@ -57,26 +57,20 @@ const CategoriesGrid = styled.div`
   width: 100%;
   margin-bottom: 24px;
   
-  /* Default to 3 columns for the desired layout, even on smaller screens */
+  /* Mobile layout with 3 columns */
   grid-template-columns: repeat(3, 1fr); 
-  gap: 12px; /* Start with a mobile-first gap */
+  gap: 12px;
   
- 
   ${mediaQueries.sm} { 
     gap: 16px;
     margin-bottom: 32px;
   }
   
   ${mediaQueries.md} { 
-    /* On desktop, use auto-fill to allow cards to flow naturally without special handling */
-    grid-template-columns: repeat(4, 1fr); 
+    /* Always 4 columns for desktop */
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-bottom: 40px;
-    
-    /* Override the CategoryCardWrapper's special handling for desktop */
-    & > div[style*="grid-column: 1 / -1"] {
-      display: contents !important; /* This makes the children act as direct children of the parent grid */
-    }
   }
   
   ${mediaQueries.lg} { 
@@ -309,49 +303,6 @@ const LoadingState = styled.div`
   color: #666;
 `;
 
-// Wrapper component for category cards to handle the last row layout
-// Обертка для карточек брендов (без title, только imageUrl и link)
-const BrandCardWrapper = ({ brands }) => {
-  const totalCards = brands.length;
-  const remainder = totalCards % 3;
-
-  const fullRowsCount = Math.floor(totalCards / 3);
-  const standardCardsCount = fullRowsCount * 3;
-  const standardRowBrands = brands.slice(0, standardCardsCount);
-  const lastRowBrands = brands.slice(standardCardsCount);
-
-  return (
-    <CategoriesGrid>
-      {/* Render full rows normally */}
-      {standardRowBrands.map(brand => (
-        <CategoryCard 
-          key={brand.id}
-          imageUrl={brand.imageUrl} 
-          link={brand.link}
-        />
-      ))}
-
-      {/* Handle the last row specially if it's not a full row of 3 and not empty */}
-      {remainder > 0 && (
-        <div style={{
-          gridColumn: '1 / -1',
-          display: 'grid',
-          gridTemplateColumns: `repeat(${lastRowBrands.length}, 1fr)`,
-          gap: 'inherit'
-        }}>
-          {lastRowBrands.map(brand => (
-            <CategoryCard 
-              key={brand.id}
-              imageUrl={brand.imageUrl} 
-              link={brand.link}
-            />
-          ))}
-        </div>
-      )}
-    </CategoriesGrid>
-  );
-};
-
 /**
  * Страница брендов по дизайну из Figma
  */
@@ -412,8 +363,16 @@ const BrandsPage = ({ seo }) => {
       <Container>
         <Title>Бренды Shop4Shoot</Title>
         
-        {/* Обертка для брендов */}
-        <BrandCardWrapper brands={brands} />
+        {/* Сетка брендов - всегда максимум 4 колонки */}
+        <CategoriesGrid>
+          {brands.map(brand => (
+            <CategoryCard 
+              key={brand.id}
+              imageUrl={brand.imageUrl} 
+              link={brand.link}
+            />
+          ))}
+        </CategoriesGrid>
         
         {/* Недавно просмотренные товары (на брендах обычно не показываем, но структура сохранена) */}
         {recentlyViewed.length > 0 && (

@@ -7,16 +7,17 @@ const SubscriptionContainer = styled.section`
   margin-bottom: ${SPACING["4xl"]};
   border-top: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
-  padding: ${SPACING.lg};
+  // padding: ${SPACING.lg};
 
   ${mediaQueries.md} {
     border-top-width: 4px;
     border-bottom-width: 4px;
-    padding: ${SPACING.xl};
+    // padding: ${SPACING.xl};
   }
 
   ${mediaQueries.lg} {
-    padding: ${SPACING["2xl"]} 40px;
+    // padding: ${SPACING["2xl"]} 40px;
+    // padding-top: 10px;
   }
 
   ${mediaQueries.xxl} {
@@ -40,6 +41,7 @@ const FormContainer = styled.div`
   flex-direction: column;
   background-color: ${COLORS.white};
   width: 100%;
+  padding: ${SPACING.lg};
 
   ${mediaQueries.md} {
     width: 50%;

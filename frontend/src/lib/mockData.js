@@ -40,41 +40,41 @@ export const mockCategories = [
 export const mockNewArrivals = [
   {
     id: 'prod-101',
-    imageUrl: '/images/new-products/baseball-hat.png', // Replace
+    imageUrl: '/images/new-products/baseball-hat.png',
     brand: 'EIGER TAC',
-    name: 'Бейсболка с липучкой рип-стоп A-TACS FsdfsdfsdfG', // Example long name
+    name: 'Бейсболка с липучкой рип-стоп',
     price: 2100,
     productLink: '/product/eiger-tac-cap-atacs-fg',
-    CATALOG_AVAILABLE: 'Y', // Add availability flag
-    badge: 'new', // Add badge property
+    CATALOG_AVAILABLE: 'Y',
+    badge: 'new',
   },
-   {
+  {
     id: 'prod-102',
-    imageUrl: '/images/new-products/aim.png', // Replace
+    imageUrl: '/images/new-products/aim.png',
     brand: 'DECIBULLZ',
-    name: 'Беруши CUSTOM MOLDED EARPLUGS зеленые',
+    name: 'Беруши CUSTOM MOLDED EARPLUGS',
     price: 3450,
     productLink: '/product/decibullz-earplugs-green',
-    CATALOG_AVAILABLE: 'Y', // Add availability flag
+    CATALOG_AVAILABLE: 'Y',
   },
-   {
+  {
     id: 'prod-103',
-    imageUrl: '/images/new-products/aim2.png', // Replace
+    imageUrl: '/images/new-products/aim2.png',
     brand: 'EIGER TAC',
-    name: 'Кронштейн магнитный для фонаря Olight X-WM03', 
-    price: 2100, // Example duplicate price
+    name: 'Кронштейн магнитный для фонаря',
+    price: 2100,
     productLink: '/product/eiger-tac-mount-x-wm03',
-    CATALOG_AVAILABLE: 'Y', // Add availability flag
-    badge: 'sale', // Example sale badge
+    CATALOG_AVAILABLE: 'Y',
+    badge: 'sale',
   },
-   {
+  {
     id: 'prod-104',
-    imageUrl: '/images/new-products/aim3.png', // Replace
+    imageUrl: '/images/new-products/aim3.png',
     brand: 'EIGER TAC',
-    name: 'Ресивер нижний Eiger Tac ET-15 GEN3 stripped', 
-    price: 2100, // Example duplicate price
+    name: 'Ресивер нижний Eiger Tac ET-15',
+    price: 2100,
     productLink: '/product/eiger-tac-lower-gen3',
-    CATALOG_AVAILABLE: 'N', // Example unavailable product
+    CATALOG_AVAILABLE: 'N',
   },
   // Add more products as needed
 ];
@@ -173,7 +173,7 @@ export const categoryData = {
       { name: "Оптика для карабинов", code: "optics-carbine", imageUrl: "/images/subcategories/tuning-carbine-optics.jpg" },
       { name: "Оптика для пистолетов", code: "optics-pistol", imageUrl: "/images/subcategories/tuning-pistol-optics.jpg" },
       { name: "Фонари и ЛЦУ", code: "lights-lasers", imageUrl: "/images/subcategories/tuning-lights-lasers.jpg" },
-      { name: "Фонари и ЛЦУ", code: "lights-lasers", imageUrl: "/images/subcategories/tuning-lights-lasers.jpg" },
+      // { name: "Фонари и ЛЦУ", code: "lights-lasers", imageUrl: "/images/subcategories/tuning-lights-lasers.jpg" },
     ],
   },
   equipment: {
@@ -188,7 +188,7 @@ export const categoryData = {
       { name: "Подсумки", code: "pouches", imageUrl: "/images/subcategories/equip-pouches.jpg" },
       { name: "Стрелковая одежда", code: "shooting-apparel", imageUrl: "/images/subcategories/equip-apparel.jpg" },
       { name: "Сумки, чехлы, боксы", code: "bags-cases-boxes", imageUrl: "/images/subcategories/equip-bags.jpg" },
-      { name: "Таймеры", code: "timers", imageUrl: "/images/subcategories/equip-timers.jpg" },
+      // { name: "Таймеры", code: "timers", imageUrl: "/images/subcategories/equip-timers.jpg" },
     ],
   },
   maintenance: {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-
+import { SPACING } from '../styles/tokens';
 /**
  * Custom hook to detect viewport size and determine if we're in mobile view
  */
@@ -62,7 +62,7 @@ const ViewportIndicator = ({ isMobile, width }) => {
 const ResponsiveWrapper = styled.div`
   display: block;
   margin: 0;
-  padding: 0;
+  // padding: 0 ${SPACING.md};
   box-sizing: border-box;
   overflow: visible;
   height: auto;

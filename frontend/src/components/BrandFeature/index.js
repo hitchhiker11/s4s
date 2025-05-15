@@ -4,10 +4,10 @@ import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
 
 const FeatureContainer = styled.section`
   width: 100%;
-  padding-right: ${SPACING.lg};
+  // padding-right: ${SPACING.lg};
 
   ${mediaQueries.md} {
-  padding: ${SPACING['2xl']};
+  // padding: ${SPACING['2xl']};
   }
   
   ${mediaQueries.xxl} {

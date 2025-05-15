@@ -17,7 +17,7 @@ const GridSection = styled.section`
   }
 
   ${mediaQueries.lg} {
-    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING.lg} ${SPACING['3xl']};
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
   }
 `;
 
@@ -210,51 +210,47 @@ const ItemGrid = ({
   viewAllLink = "#",
   viewAllText = "Смотреть все",
   useGradientTitle = false,
-  renderItem
+  renderItem,
+  cardStyle
 }) => {
-  const displayItems = Array.isArray(items) ? items : [];
-  
-  if (!renderItem) {
-    console.error("ItemGrid requires a renderItem prop function.");
-    return <EmptyMessage>Configuration error: renderItem is missing.</EmptyMessage>;
+  if (!items || items.length === 0) {
+    return <EmptyMessage>Нет элементов для отображения.</EmptyMessage>;
   }
 
   return (
     <GridSection>
-      <HeaderContainer>
-        <TitleRow>
-          <Title useGradient={useGradientTitle}>{title}</Title>
-          {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
-        </TitleRow>
-        {subtitle && (
-          <>
-            <HeaderDivider />
-            <SubtitleContainer>
-              <Subtitle>{subtitle}</Subtitle>
-            </SubtitleContainer>
-          </>
-        )}
-      </HeaderContainer>
-      
-      {displayItems.length > 0 ? (
-        <GridContainer>
-          {displayItems.map((item, index) => renderItem(item, index))}
-        </GridContainer>
-      ) : (
-        <EmptyMessage>Нет доступных элементов</EmptyMessage>
+      {(title || viewAllLink) && (
+        <HeaderContainer>
+          <TitleRow>
+            {title && <Title useGradient={useGradientTitle}>{title}</Title>}
+            {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+          </TitleRow>
+          {subtitle && (
+            <>
+              <HeaderDivider />
+              <SubtitleContainer>
+                <Subtitle>{subtitle}</Subtitle>
+              </SubtitleContainer>
+            </>
+          )}
+        </HeaderContainer>
       )}
+      <GridContainer>
+        {items.map(item => renderItem(item, cardStyle))}
+      </GridContainer>
     </GridSection>
   );
 };
 
 ItemGrid.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.any).isRequired,
-  renderItem: PropTypes.func.isRequired,
+  items: PropTypes.array.isRequired,
   title: PropTypes.string,
   subtitle: PropTypes.string,
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
-  useGradientTitle: PropTypes.bool
+  useGradientTitle: PropTypes.bool,
+  renderItem: PropTypes.func.isRequired,
+  cardStyle: PropTypes.object,
 };
 
 export default ItemGrid; 

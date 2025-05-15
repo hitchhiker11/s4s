@@ -96,9 +96,14 @@ const BreadcrumbText = styled.span`
   padding: 4px 8px;
   border-radius: 8px;
   cursor: pointer;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   ${mediaQueries.md} {
     font-size: 20px;
+    max-width: 220px;
   }
 `;
 

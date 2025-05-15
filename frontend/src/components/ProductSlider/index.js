@@ -23,7 +23,7 @@ const HeaderContainer = styled.div`
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto ${SPACING.lg};
-  padding: 0 ${SPACING.md};
+  // padding: 0 ${SPACING.md};
 
   ${mediaQueries.sm} {
     padding: 0 ${SPACING.lg};
@@ -36,7 +36,7 @@ const TitleRow = styled.div`
   align-items: center;
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
-  padding: ${SPACING.sm} 0;
+  padding: ${SPACING.sm} ${SPACING.sm};
   max-height: 28px;
   ${mediaQueries.sm} {
   max-height: 45px;
@@ -83,8 +83,8 @@ const SwiperContainer = styled.div`
   /* Override Swiper's default height calculation */
   .swiper {
     position: relative;
-    padding-left: ${SPACING.md};
-    padding-right: ${SPACING.md};
+    // padding-left: ${SPACING.md};
+    // padding-right: ${SPACING.md};
     overflow: visible;
     
     ${mediaQueries.sm} {

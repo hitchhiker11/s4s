@@ -46,7 +46,7 @@ const ImageContainer = styled.div`
   // padding: ${SPACING.sm};
 
   @media (min-width: 768px) {
-    height: 240px;
+    height: 400px; // увеличиваем высоту контейнера для десктопа
     // padding: ${SPACING.md};
   }
 `;
@@ -55,6 +55,11 @@ const Image = styled.img`
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+
+  @media (min-width: 768px) {
+    max-width: 90%;
+    max-height: 90%;
+  }
 `;
 
 const Content = styled.div`

@@ -24,7 +24,7 @@ const HeaderContainer = styled.div`
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto ${SPACING.lg};
-  padding: 0 ${SPACING.md}; /* Add horizontal padding */
+  // padding: 0 ${SPACING.md}; /* Add horizontal padding */
 
   ${mediaQueries.sm} {
     padding: 0 ${SPACING.lg};
@@ -37,7 +37,7 @@ const TitleRow = styled.div`
   align-items: center;
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
-  padding: ${SPACING.sm} 0;
+  padding: ${SPACING.sm} ${SPACING.sm};
 
   max-height: 28px;
   ${mediaQueries.sm} {
@@ -83,8 +83,8 @@ const SwiperContainer = styled.div`
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
   .swiper {
-    padding-left: ${SPACING.md};
-    padding-right: ${SPACING.md};
+    // padding-left: ${SPACING.md};
+    // padding-right: ${SPACING.md};
 
     ${mediaQueries.sm} {
       padding-left: ${SPACING.lg};
@@ -118,7 +118,8 @@ const CategorySlider = ({
   categories = [],
   title = "Categories",
   viewAllLink = "#",
-  viewAllText = "Смотреть все"
+  viewAllText = "Смотреть все",
+  cardStyle
 }) => {
   const displayCategories = Array.isArray(categories) ? categories : [];
   const spaceBetweenValue = parseInt(SPACING.sm.replace('px', ''), 10); // Use smaller spacing for mobile
@@ -144,7 +145,10 @@ const CategorySlider = ({
           >
             {displayCategories.map((category) => (
               <SwiperSlide key={category.id}>
-                <CategoryCard {...category} style={{ height: '100%', width: '100%' }} />
+                <CategoryCard 
+                  {...category} 
+                  additionalStyles={{ height: '100%', width: '100%', ...cardStyle }}
+                />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -171,6 +175,7 @@ CategorySlider.propTypes = {
   title: PropTypes.string,
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
+  cardStyle: PropTypes.object,
 };
 
 export default CategorySlider; 
