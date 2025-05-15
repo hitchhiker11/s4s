@@ -26,7 +26,7 @@ const hardcodedFeaturedBrandData = {
   logoImage: '/images/brands/eiger_tac_logo.jpg',
   description: `Компания EIGER основана в 1989 году индонезийцем Ронни Лукито и начала свое триумфальное шествие с производства бивачного снаряжения.
 
-Всего через десять лет продукция компании завоевала уверенную нишу в сетях туристических магазинов Вьетнама, Китая, Тайваня, Гон Конга, Южной Кореи, Франции, Германии и США.
+Всего через десять лет продукция компании завоевала уверенную нишу в сетях туристических магазинов Вьетнама, Китая, Тайваня, Гонконга, Южной Кореи, Франции, Германии и США.
 
 Eiger Adventure изначально ориентировалась на восхождения и горный туризм, однако с 2016 обратила свое внимание на хайкинг, треккинг и тропический климат, открыв линейку Tropical.
 
@@ -84,7 +84,7 @@ const HeroSection = styled.section`
 
   ${mediaQueries.xxl} {
     // padding: 0 40px;
-    max-width: 1493px;
+    max-width: 1920px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -92,7 +92,7 @@ const HeroSection = styled.section`
 
 const HeroContent = styled.div`
   width: 100%;
-  max-width: var(--container-width, 1493px);
+  max-width: var(--container-width, 1920px);
   margin: 0 auto;
   text-align: left;
   display: flex;
@@ -121,6 +121,24 @@ const HeroTitle = styled.h1`
   color: ${COLORS.black};
   margin: 0;
   padding: 0;
+
+  ${mediaQueries.sm} {
+    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
+  }
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+  }
+
+  ${mediaQueries.lg} {
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+  }
+  ${mediaQueries.xl} {
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+  }
+  ${mediaQueries.xxxl} {
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} 0;
+  }
 
   ${mediaQueries.sm} {
     font-size: clamp(60px, 8vw, 107px);
@@ -208,8 +226,10 @@ const HomePage = () => {
             </HeroTitle>
           </HeroContent>
         </HeroSection>
+        
         <SearchBar />
         
+
         {/* Categories Section using Responsive Wrapper */}
         <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
           <ResponsiveCategorySection 
@@ -217,6 +237,8 @@ const HomePage = () => {
             viewAllLink="/catalog"
             items={mockCategories} // Use 'items' prop name
             renderItem={renderCategoryCard} // Pass the render function
+            
+            // cardStyle={{ maxWidth: '250px' }}
           />
         </div>
         {/* New Arrivals Section using Responsive Wrapper */}
@@ -238,7 +260,7 @@ const HomePage = () => {
             viewAllLink="/brands"
             items={mockBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
             renderItem={renderCategoryCard} // Pass the render function
-            cardStyle={{ maxWidth: '280px' }}
+            // cardStyle={{ maxWidth: '280px' }}
           />
         </div>
         

@@ -11,13 +11,14 @@ import ContactsModal from '../../components/modals/ContactsModal';
 
 const SearchSection = styled.section`
   width: 100%;
-  padding: 12px; /* Mobile padding */
+  padding: 12px; 
   background-color: ${COLORS.white};
   position: relative; /* Needed for ResultsContainer positioning */
 
   ${mediaQueries.md} {
     padding: 29px 40px; /* Desktop padding */
   }
+
 `;
 
 const SearchWrapper = styled.div`
@@ -67,7 +68,7 @@ const StyledInput = styled.input`
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(14px, 3vw, 30px); /* Responsive font size */
+  font-size: clamp(14px, 3vw, 30px);
   color: ${COLORS.black};
   padding: 5px 0;
   width: 100%;
@@ -138,7 +139,7 @@ const StyledLink = styled.a`
   color: ${COLORS.primary};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: 14px;
+  font-size: clamp(14px, 3vw, 30px);
   text-decoration: none;
   white-space: nowrap;
   display: block; // Ensure it behaves predictably
@@ -149,7 +150,8 @@ const StyledLink = styled.a`
   }
 
   ${mediaQueries.md} {
-    font-size: 16px; // Slightly larger font on desktop
+    font-size: 30px; /* Fixed desktop font size */
+    padding: 7px 0;
   }
 `;
 

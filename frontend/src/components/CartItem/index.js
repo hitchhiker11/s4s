@@ -10,12 +10,11 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
     return null;
   }
 
-  // No longer needed as decrease button is now remove
-  // const handleDecreaseQuantity = () => {
-  //   if (item.quantity > 1) {
-  //     onQuantityChange(item.id, item.quantity - 1);
-  //   }
-  // };
+  const handleDecreaseQuantity = () => {
+    if (item.quantity > 1) {
+      onQuantityChange(item.id, item.quantity - 1);
+    }
+  };
 
   const handleIncreaseQuantity = () => {
     onQuantityChange(item.id, item.quantity + 1);
@@ -73,13 +72,23 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
         <p className={`${styles.productPrice} ${styles.mobilePrice}`}>{`₽${item.price.toLocaleString('ru-RU')}`}</p>
         
         <div className={styles.quantityControl}>
-          <button 
-            onClick={() => onRemove(item.id)} // Changed to onRemove
-            className={`${styles.quantityButton} ${styles.removeIconButton}`}
-            aria-label="Удалить товар"
-          >
-            <TrashIcon /> {/* Using TrashIcon */}
-          </button>
+          {item.quantity === 1 ? (
+            <button 
+              onClick={() => onRemove(item.id)}
+              className={`${styles.quantityButton} ${styles.removeIconButton}`}
+              aria-label="Удалить товар"
+            >
+              <TrashIcon />
+            </button>
+          ) : (
+            <button 
+              onClick={handleDecreaseQuantity}
+              className={`${styles.quantityButton} ${styles.decreaseButton}`}
+              aria-label="Уменьшить количество"
+            >
+              <span>-</span>
+            </button>
+          )}
           <input 
             type="number"
             className={styles.quantityInput}
@@ -95,7 +104,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
             aria-label="Увеличить количество"
             // disabled={item.quantity >= item.stock} // Optional: disable if quantity reaches stock
           >
-            <span>+</span> {/* Placeholder for PlusIcon - or use PlusIcon if available and imported */}
+            <span>+</span>
           </button>
         </div>
         {/* Original remove button is hidden by CSS on mobile, so it won't appear there. 

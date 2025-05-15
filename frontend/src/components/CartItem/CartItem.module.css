@@ -437,10 +437,15 @@
   background-color: transparent; /* Default background for input, may be overridden by .quantityControl */
   width: 50px; 
   -moz-appearance: textfield; /* Hide spinners on Firefox */
+  outline: none; /* Remove focus outline/border */
 }
 
 .quantityInput::-webkit-outer-spin-button,
 .quantityInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0; /* Hide spinners on Chrome, Safari, Edge, Opera */
+}
+
+.quantityInput:focus {
+  outline: none; /* Remove focus outline when clicked */
 }

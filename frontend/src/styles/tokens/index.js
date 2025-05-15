@@ -71,7 +71,7 @@ export const SPACING = {
 export const SIZES = {
   headerHeight: "84px",
   headerHeightScrolled: "64px",
-  containerMaxWidth: "1493px",
+  containerMaxWidth: "1920px",
   
   // Иконки
   iconSize: "24px",
@@ -111,7 +111,8 @@ export const BREAKPOINTS = {
   md: "768px",
   lg: "992px",
   xl: "1200px",
-  xxl: "1400px"
+  xxl: "1400px",
+  xxxl: "1920px"
 };
 
 // Медиа-запросы
@@ -122,5 +123,6 @@ export const mediaQueries = {
   lg: `@media (min-width: ${BREAKPOINTS.lg})`,
   xl: `@media (min-width: ${BREAKPOINTS.xl})`,
   xxl: `@media (min-width: ${BREAKPOINTS.xxl})`,
+  xxxl: `@media (min-width: ${BREAKPOINTS.xxxl})`,
   hover: `@media (hover: hover)`
 }; 

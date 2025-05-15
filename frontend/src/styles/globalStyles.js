@@ -61,7 +61,7 @@ const GlobalStyles = createGlobalStyle`
     text-decoration: none;
     
     &:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
 

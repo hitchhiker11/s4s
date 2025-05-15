@@ -16,7 +16,8 @@ const SubscriptionContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  max-width: ${SIZES.containerMaxWidth || '1254px'}; // Use token or fallback
+  // max-width: ${SIZES.containerMaxWidth || '1254px'}; // Use token or fallback
+  max-width: 1680px;
   margin: 0 auto;
   gap: 35px;
   // padding: 0 ${SPACING.lg}; 
@@ -33,6 +34,7 @@ const ContentWrapper = styled.div`
   align-items: center;
   gap: ${SPACING.lg};
   text-align: center;
+  
 
   ${mediaQueries.md} {
     flex-direction: row; // Desktop: image beside text

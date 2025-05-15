@@ -11,18 +11,11 @@ const BreadcrumbsContainer = styled.div`
   border-top: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
 
-  &:hover {
-    border-top: 2px solid ${COLORS.gray500};
-    border-bottom: 2px solid ${COLORS.gray500};
-  }
 
   ${mediaQueries.md} {
     border-top: 4px solid ${COLORS.gray400};
     border-bottom: 4px solid ${COLORS.gray400};
-    &:hover {
-      border-top: 4px solid ${COLORS.gray500};
-      border-bottom: 4px solid ${COLORS.gray500};
-    }
+
   }
 
 `;
@@ -32,7 +25,7 @@ const BreadcrumbsWrapper = styled.div`
   justify-content: stretch;
   align-items: stretch;
   gap: 12px;
-  max-width: 1392px;
+  max-width: 1840px;
   margin: 0 auto;
   width: 100%;
   ${mediaQueries.md} {

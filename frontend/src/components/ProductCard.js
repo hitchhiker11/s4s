@@ -9,10 +9,9 @@ const Card = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: ${COLORS.white};
-
   overflow: hidden;
-  height: 70%;
   width: 100%;
+  height: 100%; /* Fill the entire grid cell */
   transition: ${ANIMATION.transitionBase};
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
@@ -28,8 +27,6 @@ const Card = styled.div`
   }
 
   ${mediaQueries.md} {
-    // padding: ${SPACING.lg};
-    min-height: 240px;
     border-right-width: 4px;
     border-bottom-width: 4px;
   }
@@ -43,11 +40,10 @@ const ImageContainer = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  // padding: ${SPACING.sm};
+  flex-shrink: 0; /* Prevent container from shrinking */
 
   @media (min-width: 768px) {
-    height: 400px; // увеличиваем высоту контейнера для десктопа
-    // padding: ${SPACING.md};
+    height: 250px; /* Reduced from 330px for more consistent sizing */
   }
 `;
 
@@ -72,38 +68,53 @@ const Content = styled.div`
   gap: 4px;
   width: 100%;
   text-align: center;
-  flex-grow: 1;
+  // height: 150px; 
+  overflow: hidden;
 
   @media (min-width: 600px) {
-    padding: ${SPACING.xl} ${SPACING.lg};
-    gap: ${SPACING.lg};
+    height: 180px; /* Slightly taller on larger screens */
+    padding: ${SPACING.md} ${SPACING.lg};
+    gap: ${SPACING.md};
   }
 `;
 
 const BrandTitle = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(10px, 3vw, 27.5px);
+  font-size: clamp(10px, 3vw, 18px);
   line-height: 1.05;
   color: ${COLORS.primary};
   text-transform: uppercase;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   @media (min-width: 1024px) {
-    font-size: 23.27px;
+    font-size: 18px;
   }
 `;
 
 const ProductTitle = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(10px, 3vw, 27.5px);
-  line-height: 1;
+  font-size: clamp(10px, 3vw, 18px);
+  line-height: 1.2;
   color: ${COLORS.black};
   margin: 0;
   text-align: center;
+  width: 100%;
+  
+  /* Limit to 2 lines with ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 2.4em; /* 2 lines × line-height */
 
   @media (min-width: 1024px) {
-    font-size: 23.27px;
+    font-size: 18px;
   }
 `;
 
@@ -113,14 +124,11 @@ const Price = styled.div`
   font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size["3xl"]});
   line-height: 0.9;
   color: ${COLORS.primary};
-  margin-top: ${SPACING.xs};
+  margin-top: auto; /* Push to bottom of flex container */
+  padding-top: ${SPACING.xs};
 
   @media (min-width: 1024px) {
     font-size: ${TYPOGRAPHY.size["3xl"]};
-  }
-
-  @media (min-width: 600px) {
-    margin-top: ${SPACING.sm};
   }
 `;
 
@@ -129,6 +137,7 @@ const DividerLine = styled.hr`
   border-top: 2px dashed rgba(0, 0, 0, 0.25);
   width: 100%;
   margin: 0;
+  flex-shrink: 0; /* Prevent from shrinking */
 
   @media (min-width: 1024px) {
     border-top-width: 2px;
@@ -140,31 +149,31 @@ const CartActionArea = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #FEFEFE;
-  padding: 8px 38px 8px 38px;
+  padding: 8px 38px;
   width: 100%;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Prevent from shrinking */
 
   &:hover {
     background-color: ${COLORS.gray100};
   }
 
   @media (min-width: 600px) {
-    padding: ${SPACING.lg} ${SPACING.xl}  ${SPACING.lg} ${SPACING.xl};
+    padding: ${SPACING.md} ${SPACING.xl};
   }
 `;
 
 const AddToCartText = styled.span`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(10px, 3vw, 27.5px);
-  margin-bottom: 8px;
+  font-size: clamp(10px, 3vw, 18px);
   line-height: 1;
   color: ${COLORS.primary};
   text-transform: uppercase;
 
   @media (min-width: 1024px) {
-    font-size: 23.27px;
+    font-size: 18px;
   }
 `;
 

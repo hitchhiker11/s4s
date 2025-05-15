@@ -8,7 +8,7 @@ const FooterContainer = styled.footer`
   background-color: ${COLORS.white};
   
   ${mediaQueries.xxl} {
-    max-width: 1493px;
+    max-width: 1920px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -31,7 +31,7 @@ const MainFooter = styled.div`
   ${mediaQueries.lg} {
     flex-wrap: nowrap;
     justify-content: space-between;
-    padding: ${SPACING["3xl"]} 40px 0 0;
+    padding: 0 40px 0 0;
   }
 `;
 
@@ -53,30 +53,49 @@ const LogoContainer = styled.div`
 
 const Logo = styled.a`
   display: block;
-  
+  max-height: 240px;
 `;
 
-const NavSections = styled.div`
+const MobileGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-areas: 
+    "catalog info"
+    "media brands";
   gap: ${SPACING["2xl"]};
   padding: 12px 12px;
 
   ${mediaQueries.md} {
-    padding: 0;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    padding: 0;
     width: 70%;
-    gap: ${SPACING["3xl"]};
-    grid-template-columns: none; /* reset grid for flex */
+    grid-template-areas: none;
   }
 
   ${mediaQueries.lg} {
-  padding: 0;
+    width: 80%;
+    padding: 37px 40px 0 0;
+    justify-content: space-between;
+  }
+`;
+
+const NavSections = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${SPACING["2xl"]};
+
+  ${mediaQueries.md} {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: ${SPACING["3xl"]};
+  }
+
+  ${mediaQueries.lg} {
     flex-wrap: nowrap;
     gap: ${SPACING["4xl"]};
-    width: 50%;
+    width: 65%;
   }
 `;
 
@@ -94,6 +113,18 @@ const NavSection = styled.div`
   ${mediaQueries.lg} {
     width: auto;
   }
+`;
+
+const CatalogSection = styled(NavSection)`
+  grid-area: catalog;
+`;
+
+const InfoSection = styled(NavSection)`
+  grid-area: info;
+`;
+
+const MediaSection = styled(NavSection)`
+  grid-area: media;
 `;
 
 const SectionTitle = styled.h3`
@@ -132,12 +163,15 @@ const NavLink = styled.a`
 `;
 
 const BrandsContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
+  grid-area: brands;
+  display: flex;
+  flex-direction: column;
   gap: ${SPACING.md};
+  align-self: start;
+  justify-self: start;
   
   ${mediaQueries.md} {
-    display: flex;
+    grid-area: none;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
@@ -155,7 +189,7 @@ const BrandsContainer = styled.div`
 `;
 
 const BrandLogo = styled.img`
-  max-width: 160px;
+  max-width: 130px;
   height: auto;
   margin-bottom: ${SPACING.sm};
   
@@ -239,43 +273,43 @@ const Footer = ({ showMainSection = true }) => {
             </Link>
           </LogoContainer>
           
-          <NavSections>
-            <NavSection>
+          <MobileGrid>
+            <CatalogSection>
               <SectionTitle>Каталог</SectionTitle>
               <NavLinks>
                 <NavLink href="/catalog">Все товары</NavLink>
                 <NavLink href="/catalog?filter=new">Новые поступления</NavLink>
                 <NavLink href="/catalog?filter=sale">Большие скидки</NavLink>
               </NavLinks>
-            </NavSection>
+            </CatalogSection>
             
-            <NavSection>
+            <InfoSection>
               <SectionTitle>Информация</SectionTitle>
               <NavLinks>
                 <NavLink href="/delivery">Доставка</NavLink>
                 <NavLink href="/offer">Договор-оферта</NavLink>
                 <NavLink href="/contacts">Контакты</NavLink>
               </NavLinks>
-            </NavSection>
+            </InfoSection>
             
-            <NavSection>
+            <MediaSection>
               <SectionTitle>Медиа</SectionTitle>
               <NavLinks>
                 <NavLink href="https://t.me/shop4shoot" target="_blank" rel="noopener noreferrer">Наш телеграм канал</NavLink>
                 <NavLink href="/blog">Блог</NavLink>
                 <NavLink href="/partnership">Сотрудничество</NavLink>
               </NavLinks>
-            </NavSection>
-          </NavSections>
-          
-          <BrandsContainer>
-            <BrandLogo
-              src="/images/footer/culture_logo.jpg"
-              alt="Культура оружия"
-              style={{ filter: 'invert(1)' }}
-            />
-            <BrandLogo src="/images/footer/eiger_tac_text.jpg" alt="Eiger TAC" />
-          </BrandsContainer>
+            </MediaSection>
+            
+            <BrandsContainer>
+              <BrandLogo
+                src="/images/footer/culture_logo.jpg"
+                alt="Культура оружия"
+                style={{ filter: 'invert(1)' }}
+              />
+              <BrandLogo src="/images/footer/eiger_tac_text.jpg" alt="Eiger TAC" />
+            </BrandsContainer>
+          </MobileGrid>
         </MainFooter>
       )}
       

@@ -21,7 +21,7 @@ const mockProductData = {
   brand: 'Glock',
   article: 'FX-JSDGFJFSG',
   availability: 'В наличии: 150 шт.',
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa qae ab ilio.',
+  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ',
   price: 2100,
   images: [
     { id: 'img1', url: '/images/new-products/aim.png', alt: 'Product image 1' },
@@ -189,6 +189,7 @@ const ProductPage = ({ productData = mockProductData }) => { // Receive productD
         showViewAllLink={false}
         renderItem={renderRecentlyViewedProductCard}
         onAddToCart={handleAddToCartRecentlyViewed}
+        
       />
       <Footer />
     </>

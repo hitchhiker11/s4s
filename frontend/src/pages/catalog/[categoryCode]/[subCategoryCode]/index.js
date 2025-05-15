@@ -19,7 +19,7 @@ import styles from '../../../../styles/ProductGridResponsive.module.css'; // Imp
 
 // Styled components for this page (can be adjusted or extended)
 const Container = styled.div`
-  max-width: 1392px;
+  max-width: 1920px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -190,6 +190,7 @@ const SubCategoryProductsPage = ({ initialData, categoryCode, subCategoryCode, s
             items={recentlyViewed}
             title="Недавно просмотренные"
             onAddToCart={handleAddToCart}
+            gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
           />
         )}
         

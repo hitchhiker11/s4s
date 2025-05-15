@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 import styles from './ProductDetailCard.module.css';
@@ -11,6 +11,12 @@ const ProductDetailCard = ({ product, onAddToCart }) => {
 
   const [selectedImage, setSelectedImage] = useState(product.images[0] || { url: '/images/placeholder.png', alt: 'Placeholder' });
   const [quantity, setQuantity] = useState(1);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const mainImageRef = useRef(null);
+
+  // Minimum swipe distance (in pixels)
+  const minSwipeDistance = 50;
 
   const handleThumbnailClick = (image) => {
     setSelectedImage(image);
@@ -35,13 +41,52 @@ const ProductDetailCard = ({ product, onAddToCart }) => {
     }
   };
 
+  // Touch event handlers for swipe functionality
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe || isRightSwipe) {
+      const currentIndex = product.images.findIndex(img => img.id === selectedImage.id);
+      if (currentIndex !== -1) {
+        let newIndex;
+        if (isLeftSwipe) {
+          // Next image (swipe left)
+          newIndex = (currentIndex + 1) % product.images.length;
+        } else {
+          // Previous image (swipe right)
+          newIndex = (currentIndex - 1 + product.images.length) % product.images.length;
+        }
+        setSelectedImage(product.images[newIndex]);
+      }
+    }
+  };
+
   const currentPrice = product.discountPrice || product.price;
   const oldPrice = product.discountPrice ? product.price : null;
 
   return (
     <div className={styles.productDetailCard}>
       <div className={styles.galleryContainer}>
-        <div className={styles.mainImageContainer}>
+        <div 
+          className={styles.mainImageContainer}
+          ref={mainImageRef}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           <Image 
             src={selectedImage.url} 
             alt={selectedImage.alt}
@@ -50,7 +95,7 @@ const ProductDetailCard = ({ product, onAddToCart }) => {
             className={styles.mainImage}
             priority // Prioritize loading of the main product image
           />
-          {product.recommended && <span className={styles.recommendedBadge}>Рекомендуем этот товар</span>}
+          {/* {product.recommended && <span className={styles.recommendedBadge}>Рекомендуем этот товар</span>} */}
         </div>
         <div className={styles.thumbnailContainer}>
           {product.images.map((image) => (

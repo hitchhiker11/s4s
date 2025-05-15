@@ -13,11 +13,14 @@ import Footer from '../../components/Footer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import CategoryCard from '../../components/CategoryCard';
 import ProductCard from '../../components/ProductCard';
+import SubscriptionForm from '../../components/SubscriptionForm';
+import ResponsiveProductSection from '../../components/ResponsiveProductSection';
 import { SIZES, COLORS, mediaQueries } from '../../styles/tokens';
+import productGridStyles from '../../styles/ProductGridResponsive.module.css';
 
 // Стилизованные компоненты
 const Container = styled.div`
-  max-width: 1392px;
+  max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -57,7 +60,7 @@ const CategoriesGrid = styled.div`
   width: 100%;
   margin-bottom: 24px;
   
-  /* Mobile layout with 3 columns */
+  /* Mobile layout with 3 columns and special handling for last items */
   grid-template-columns: repeat(3, 1fr); 
   gap: 12px;
   
@@ -66,11 +69,17 @@ const CategoriesGrid = styled.div`
     margin-bottom: 32px;
   }
   
-  ${mediaQueries.md} { 
-    /* Always 4 columns for desktop */
+  ${mediaQueries.xl} { 
+    /* Simple 4-column grid for desktop with auto-fill */
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-bottom: 40px;
+    
+    /* Remove any special styling from mobile view */
+    & > div {
+      grid-column: auto !important;
+    }
   }
   
   ${mediaQueries.lg} { 
@@ -104,18 +113,19 @@ const SectionTitle = styled.h2`
 
 const ProductsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Default 2 columns for smallest screens */
   gap: 9px;
   width: 100%;
   padding: 12px;
   
+  &.${productGridStyles.productGridContainer} {
+    
+  }
+  
   ${mediaQueries.sm} {
-    grid-template-columns: repeat(3, 1fr);
     padding: 16px;
   }
   
   ${mediaQueries.md} {
-    grid-template-columns: repeat(4, 1fr);
     padding: 22px;
   }
 `;
@@ -123,6 +133,8 @@ const ProductsGrid = styled.div`
 const SubscriptionSection = styled.div`
   width: 100%;
   margin-bottom: 40px;
+  margin-top: 70px;
+
 `;
 
 const SubscriptionContainer = styled.div`
@@ -130,7 +142,7 @@ const SubscriptionContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  max-width: 1254px;
+  max-width: 1680px;
   margin: 0 auto;
   gap: 35px;
   
@@ -303,6 +315,46 @@ const LoadingState = styled.div`
   color: #666;
 `;
 
+const mockRecentlyViewedProducts = [
+  // Populate with product data similar to ProductGrid's expected format
+  {
+    id: 'rv1',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv1',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv2',
+    imageUrl: '/images/new-products/aim2.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv2',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv3',
+    imageUrl: '/images/new-products/aim3.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv3',
+    CATALOG_AVAILABLE: 'Y'
+  },
+  {
+    id: 'rv4',
+    imageUrl: '/images/new-products/aim.png',
+    brand: 'БРЕНД',
+    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
+    price: 2100,
+    productLink: '/product/rv4',
+    CATALOG_AVAILABLE: 'Y'
+  },
+];
+
 /**
  * Страница брендов по дизайну из Figma
  */
@@ -342,8 +394,22 @@ const BrandsPage = ({ seo }) => {
   // Массив брендов для отображения
   const brands = mockBrands;
 
-  // Нет недавно просмотренных товаров на странице брендов
-  const recentlyViewed = [];
+  // Недавно просмотренные товары
+  const recentlyViewed = mockRecentlyViewedProducts;
+
+  // Placeholder add to cart handler
+  const handleAddToCartRecentlyViewed = (productId) => {
+    console.log(`Adding product ${productId} to cart (from HomePage)`);
+    // Add actual cart logic here later
+  };
+
+  const renderRecentlyViewedProductCard = (product) => (
+    <ProductCard 
+      key={product.id} 
+      product={product} // Pass the whole product object
+      onAddToCart={handleAddToCartRecentlyViewed} 
+    />
+  );
 
   return (
     <>
@@ -370,31 +436,42 @@ const BrandsPage = ({ seo }) => {
               key={brand.id}
               imageUrl={brand.imageUrl} 
               link={brand.link}
+              disableRotation={true}
             />
           ))}
         </CategoriesGrid>
         
-        {/* Недавно просмотренные товары (на брендах обычно не показываем, но структура сохранена) */}
-        {recentlyViewed.length > 0 && (
+        {/* Недавно просмотренные товары */}
+        {/* {recentlyViewed.length > 0 && (
           <RecentlyViewedSection>
             <SectionHeader>
               <SectionTitle>Недавно просмотренные</SectionTitle>
             </SectionHeader>
             
-            <ProductsGrid>
+            <ProductsGrid className={productGridStyles.productGridContainer}>
               {recentlyViewed.map(product => (
-                <ProductCard key={product.ID} product={product} />
+                <ProductCard key={product.id} product={product} />
               ))}
             </ProductsGrid>
           </RecentlyViewedSection>
-        )}
+        )} */}
         
-        {/* Секция подписки */}
-        <SubscriptionSection>
+        <ResponsiveProductSection 
+          title="Недавно просмотренные"
+          subtitle=""
+          viewAllLink="/catalog?filter=new"
+          showViewAllLink={false}
+          items={mockRecentlyViewedProducts} // Use 'items' prop name
+          gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;" // Styles for the outer section
+        />
+
+        <SubscriptionForm />
+          {/* Секция подписки */}
+          {/* <SubscriptionSection>
           <SubscriptionContainer>
             <ContentWrapper>
               <SubscriptionImage>
-                {/* Изображение из фигмы */}
+
                 <img src="/images/footer/culture_logo.jpg" alt="Subscription" style={{filter: 'invert(1)', padding: '22px'}}/>
               </SubscriptionImage>
               
@@ -444,7 +521,7 @@ const BrandsPage = ({ seo }) => {
               </FormContainer>
             </form>
           </SubscriptionContainer>
-        </SubscriptionSection>
+        </SubscriptionSection> */}
       </Container>
       
       <Footer />

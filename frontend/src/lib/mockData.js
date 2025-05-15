@@ -4,7 +4,7 @@ export const mockCategories = [
   {
     id: 'cat-1',
     title: 'Тюнинг',
-    imageUrl: '/images/categories/tuning.jpg',
+    imageUrl: '/images/categories/image_2025-05-15_19-42-25.png',
     link: '/catalog/tuning',
     showTitle: true
   },
@@ -29,6 +29,9 @@ export const mockCategories = [
     link: '/catalog/reloading',
     showTitle: true
   },
+  { id: 5, title: 'Прочее', imageUrl: '/images/categories/other.jpg', link: '/catalog/other', showTitle: true },
+  { id: 6, title: 'Новинки', imageUrl: '/images/categories/new.svg', link: '/catalog/new/all-products', showTitle: true  },
+  { id: 7, title: 'Хиты продаж', imageUrl: '/images/categories/hits.svg', link: '/catalog/hits/all-products', showTitle: true }
   // {
   //   id: 5,
   //   title: 'Прочее',
@@ -116,6 +119,21 @@ export const mockBrands = [
     link: '/brands/helikon-tex',
     showTitle: false
   },
+  {
+    id: 'brand-5',
+    title: 'HELIKON-TEX',
+    imageUrl: '/images/brands/helikon.png',
+    link: '/brands/helikon-tex',
+    showTitle: false
+  },
+  {
+    id: 'brand-5',
+    title: 'HELIKON-TEX',
+    imageUrl: '/images/brands/helikon.png',
+    link: '/brands/helikon-tex',
+    showTitle: false
+  },
+
 ];
 
 // Mock bestseller products data

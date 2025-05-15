@@ -7,11 +7,11 @@ const FeatureContainer = styled.section`
   // padding-right: ${SPACING.lg};
 
   ${mediaQueries.md} {
-  // padding: ${SPACING['2xl']};
+    padding-top: ${SPACING['2xl']};
   }
   
   ${mediaQueries.xxl} {
-    max-width: 1493px;
+    max-width: 1920px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -122,7 +122,12 @@ const BrandFeature = ({ brandData }) => {
         <TextContainer>
           <BrandLogo src={logoImage} alt="Brand logo" />
           <BrandDescription>
-            {description}
+            {typeof description === 'string' && description.includes('<') 
+              ? <div dangerouslySetInnerHTML={{ __html: description }} />
+              : description.split('\n').map((text, i) => 
+                  text.trim() ? <p key={i}>{text}</p> : <br key={i} />
+                )
+            }
           </BrandDescription>
         </TextContainer>
       </FeatureContent>

@@ -6,7 +6,7 @@
     padding: 20px 0px 20px 0px;
     background-color: #FCFCFC; /* From Figma image container */
     width: 100%;
-    max-width: 1493px !important; /* Exact width from requirements with !important */
+    max-width: 1920px !important; /* Exact width from requirements with !important */
     margin-left: auto;
     margin-right: auto;
     font-family: 'Rubik', sans-serif; /* Consistent font */
@@ -182,13 +182,15 @@
         background-color 0.2s ease-in-out,
         border-bottom-color 0.3s ease,
         border-right-color 0.3s ease;
-    width: 100%; /* Full width on mobile */
+    width: 100%; 
     text-align: center;
     margin-top: 10px;
     align-self: flex-start; /* Align button to the start of the flex container */
 }
 
 .addToCartButton:hover {
+    background-color: #E7194A;
+    color: #FFFFFF;
     border-bottom-color: #6B6B6B;
     border-right-color: #6B6B6B;
 }
@@ -307,9 +309,9 @@
     .addToCartButton {
         font-size: 18px;
         padding: 12px 18px;
-        width: auto;
-        min-width: 180px;
-        max-width: 200px;
+        width: 100%;
+        /* min-width: 180px;
+        max-width: 200px; */
     }
 }
 
@@ -359,9 +361,9 @@
     .addToCartButton {
         font-size: 18px;
         padding: 14px 20px;
-        width: auto;
-        min-width: 200px;
-        max-width: 220px;
+        width: 100%;
+        /* min-width: 200px;
+        max-width: 220px; */
     }
 }
 
@@ -371,7 +373,7 @@
         grid-template-columns: minmax(400px, 500px) 1fr;
         gap: 30px;
         padding: 30px;
-        max-width: 1493px !important;
+        max-width: 1920px !important;
     }
     
     .galleryContainer {
@@ -407,8 +409,9 @@
     .addToCartButton {
         font-size: 20px;
         padding: 16px 22px;
-        min-width: 220px;
-        max-width: 240px;
+        width: 100%;
+        /* min-width: 220px;
+        max-width: 240px; */
     }
 }
 
@@ -418,7 +421,7 @@
         grid-template-columns: minmax(450px, 550px) 1fr;
         gap: 35px;
         padding: 35px;
-        max-width: 1493px !important;
+        max-width: 1920px !important;
     }
     
     .galleryContainer {
@@ -450,8 +453,9 @@
     .addToCartButton {
         font-size: 22px;
         padding: 16px 24px;
-        min-width: 240px;
-        max-width: 260px;
+        width: 100%;
+        /* min-width: 240px;
+        max-width: 260px; */
     }
 }
 
@@ -461,7 +465,7 @@
         grid-template-columns: minmax(500px, 600px) 1fr;
         gap: 40px;
         padding: 40px;
-        max-width: 1493px !important;
+        max-width: 1920px !important;
     }
     
     .galleryContainer {
@@ -494,8 +498,9 @@
     .addToCartButton {
         font-size: 24px;
         padding: 18px 25px;
-        min-width: 260px;
-        max-width: 280px;
+        width: 100%;
+        /* min-width: 260px;
+        max-width: 280px; */
         line-height: 1.4;
     }
 }

@@ -17,7 +17,7 @@ import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens'; /
 
 // Styled components (can be reused or adapted from other catalog pages)
 const Container = styled.div`
-  max-width: 1392px;
+  max-width: 1920px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -260,6 +260,7 @@ const CategoryCardWrapper = ({ categories }) => {
               title={lastRowCategories[1].title} 
               imageUrl={lastRowCategories[1].imageUrl}
               link={lastRowCategories[1].link}
+
             />
           </DoubleCardWrapperSecond>
         </>
@@ -351,6 +352,7 @@ const CategoryDetailPage = ({ category, subCategories, seo }) => {
           items={mockRecentlyViewedProducts} // Use 'items' prop name
           renderItem={renderRecentlyViewedProductCard} // Pass the render function
           onAddToCart={handleAddToCartRecentlyViewed} // Still needed for ProductCard via renderItem
+          gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
         />
         <SubscriptionForm />
 

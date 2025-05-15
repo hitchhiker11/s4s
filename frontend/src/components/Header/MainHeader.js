@@ -95,7 +95,7 @@ const MainHeaderContent = styled(Container)`
   
   ${mediaQuery.min.lg} {
     justify-content: center;
-    gap: 70px; /* Matching Figma gap between elements (70px) */
+    gap: clamp(20px, 4vw, 70px); /* Responsive gap that scales with viewport width */
     padding: 0;
   }
 `;
@@ -106,7 +106,7 @@ const NavGroup = styled.div`
   ${mediaQuery.min.lg} {
     display: flex;
     align-items: center;
-    gap: 70px; 
+    gap: clamp(20px, 3vw, 70px); /* Responsive gap between nav items */
   }
 `;
 
@@ -115,8 +115,8 @@ const LogoWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${COLORS.primary};
-  width: clamp(180px, 32vw, 390px);
-  height: clamp(80px, 16vw, 200px);
+  width: clamp(150px, 25vw, 390px); /* More responsive width */
+  height: clamp(70px, 12vw, 200px); /* More responsive height */
   min-width: 120px;
   min-height: 60px;
   max-width: 420px;
@@ -149,6 +149,16 @@ const LogoWrapper = styled.div`
 
     img, svg {
       transform: scale(1.08);
+    }
+  }
+
+  ${mediaQuery.max.xl} {
+    width: clamp(120px, 20vw, 220px);
+    height: clamp(60px, 10vw, 120px);
+
+    img, svg {
+      max-width: 200px;
+      max-height: 100px;
     }
   }
 
@@ -187,22 +197,28 @@ const LogoWrapper = styled.div`
 
 const HeaderNavItem = styled.span`
   position: relative;
-  font-size: 24px;
+  font-size: clamp(16px, 1.5vw, 24px); /* Responsive font size */
   font-weight: ${TYPOGRAPHY.weight.semiBold};
   color: ${COLORS.black};
   cursor: pointer;
   transition: color ${ANIMATION.duration} ${ANIMATION.timing};
-  padding: 1.28em 0.7em;
+  padding: 1.28em 0.5em; /* Reduced horizontal padding */
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1.2;
+  white-space: nowrap; /* Prevent text wrapping */
 
   ${navLinesMixin} // Apply the shared line mixin
 
+  ${mediaQuery.max.xl} {
+    font-size: clamp(14px, 1.2vw, 20px);
+    padding: 1.2em 0.4em;
+  }
+
   @media (max-width: 900px) {
     font-size: 18px;
-    padding: 1em 0.5em;
+    padding: 1em 0.3em;
   }
 
   @media (max-width: 600px) {
@@ -215,6 +231,10 @@ const HeaderActions = styled.div`
   display: flex;
   align-items: center;
   gap: ${HEADER_SPACING.regular};
+
+  ${mediaQuery.max.xl} {
+    gap: ${HEADER_SPACING.small};
+  }
 
   ${mediaQuery.max.sm} {
     gap: ${HEADER_SPACING.medium};
@@ -257,6 +277,14 @@ const ActionButton = styled.button`
   }
 
   ${navLinesMixin}
+
+  ${mediaQuery.max.xl} {
+    padding: 1em 0.5em;
+    ${HeaderIconStyles} {
+      width: 22px;
+      height: 22px;
+    }
+  }
 
   @media (max-width: 900px) {
     padding: 12px 7px;
@@ -421,7 +449,7 @@ const DesktopSearchInputWrapper = styled.div`
   display: flex;
   align-items: center;
   overflow: hidden;
-  width: ${props => props.$isOpen ? '600px' : '0'};
+  width: ${props => props.$isOpen ? 'clamp(300px, 30vw, 600px)' : '0'}; /* Responsive width */
   max-width: 600px;
   opacity: ${props => props.$isOpen ? '1' : '0'};
   z-index: 1001;
@@ -436,7 +464,7 @@ const DesktopSearchInput = styled.input`
   background: transparent;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: 400;
-  font-size: 24px;
+  font-size: clamp(16px, 1.5vw, 24px); /* Responsive font size */
   line-height: 1.185em;
   color: ${COLORS.black};
   width: 100%;
@@ -452,7 +480,7 @@ const DesktopResultsContainer = styled.div`
   position: absolute;
   top: calc(100% + 25px); /* Position below the header, accounting for search button height */
   left: calc(100% + 10px); /* Align with search input */
-  width: 300px;
+  width: clamp(250px, 25vw, 300px); /* Responsive width */
   z-index: 1001;
   background-color: #FFFFFF;
   box-shadow: 0px 3px 3px 0px #B6B6B6;

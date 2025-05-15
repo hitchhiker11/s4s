@@ -4,13 +4,13 @@ import { COLORS, TYPOGRAPHY, SPACING, mediaQueries, SHADOWS } from '../../styles
 
 const SubscriptionContainer = styled.section`
   width: 100%;
-  margin-bottom: ${SPACING["4xl"]};
-  border-top: 2px solid ${COLORS.gray400};
+  // margin-bottom: ${SPACING["4xl"]};
+  // border-top: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
   // padding: ${SPACING.lg};
 
   ${mediaQueries.md} {
-    border-top-width: 4px;
+    // border-top-width: 4px;
     border-bottom-width: 4px;
     // padding: ${SPACING.xl};
   }
@@ -21,7 +21,7 @@ const SubscriptionContainer = styled.section`
   }
 
   ${mediaQueries.xxl} {
-    max-width: 1493px;
+    max-width: 1920px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -33,6 +33,7 @@ const ContentWrapper = styled.div`
 
   ${mediaQueries.md} {
     flex-direction: row;
+    // align-items: stretch; // This is the default, so ImageContainer should stretch
   }
 `;
 
@@ -145,19 +146,21 @@ const SubmitButton = styled.button`
 `;
 
 const ImageContainer = styled.div`
-  display: none;
+  display: none; // Hidden on small screens by default
 
   ${mediaQueries.md} {
-    display: block;
+    display: block; // Becomes a flex item in ContentWrapper on medium screens and up
     width: 50%;
-    height: 100%;
+    // height: 100%; // Removed: Rely on flexbox's align-items: stretch (default on ContentWrapper)
+                     // This makes ImageContainer take the full height of the ContentWrapper row.
   }
 `;
 
 const Image = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  display: block; // Ensures image behaves as a block element, removing potential bottom space
+  width: 100%;    // Image takes full width of ImageContainer
+  height: 100%;   // Image takes full height of ImageContainer
+  object-fit: cover; // Image maintains aspect ratio, covers the container, may be cropped
 `;
 
 const ClubSubscription = () => {

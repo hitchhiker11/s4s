@@ -8,28 +8,28 @@ const GridSection = styled.section`
   width: 100%;
   padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   background-color: ${COLORS.white};
+  
 
   ${mediaQueries.sm} {
-    // padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
-    padding: 0px;
+    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
   }
 
   ${mediaQueries.md} {
-    // padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
-    padding: 0px;
+    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
   }
 
   ${mediaQueries.lg} {
-    // padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING.lg} ${SPACING['3xl']};
-    padding: 0px;
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
   }
+
+  ${props => props.customStyles}
 `;
 
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: ${SIZES.containerMaxWidth};
+  max-width: 1920px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: ${SPACING.xl};
@@ -37,6 +37,8 @@ const HeaderContainer = styled.div`
   ${mediaQueries.md} {
     margin-bottom: ${SPACING.xl};
   }
+
+  ${props => props.customStyles}
 `;
 
 const TitleRow = styled.div`
@@ -57,6 +59,8 @@ const TitleRow = styled.div`
     border-top-width: 4px;
     max-height: 45px;
   }
+
+  ${props => props.customStyles}
 `;
 
 const HeaderDivider = styled.hr`
@@ -69,16 +73,22 @@ const HeaderDivider = styled.hr`
   ${mediaQueries.md} {
     height: 4px;
   }
+
+  ${props => props.customStyles}
 `;
 
 const Title = styled.h2`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size.xl});
+  font-size: clamp(1.25rem, 6vw, ${TYPOGRAPHY.size["2xl"]});
   color: ${props => props.useGradient ? 'transparent' : COLORS.black};
   margin: 0;
   line-height: 1.16;
 
+  ${mediaQueries.md} {
+    font-size: ${TYPOGRAPHY.size["2xl"]};
+  }
+  
   ${props => props.useGradient && `
     background: linear-gradient(91.3deg, #E7194A 1.11%, #FFAA00 138.8%);
     -webkit-background-clip: text;
@@ -106,6 +116,8 @@ const SubtitleContainer = styled.div`
     border-bottom-width: 4px;
     align-items: center; 
   }
+
+  ${props => props.customStyles}
 `;
 
 const Subtitle = styled.p`
@@ -119,6 +131,8 @@ const Subtitle = styled.p`
   ${mediaQueries.md} {
     font-size: ${TYPOGRAPHY.size["2xl"]};
   }
+
+  ${props => props.customStyles}
 `;
 
 const ViewAllLink = styled.a`
@@ -138,40 +152,35 @@ const ViewAllLink = styled.a`
   ${mediaQueries.md} {
     font-size: ${TYPOGRAPHY.size["2xl"]};
   }
+
+  ${props => props.customStyles}
 `;
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Mobile: Always 2 columns max */
-  gap: ${SPACING.md};
   width: 100%;
-  max-width: ${SIZES.containerMaxWidth};
+  max-width: 1920px;
   margin: 0 auto;
-  justify-content: space-between;
 
-  ${mediaQueries.sm} {
-    gap: ${SPACING.lg};
-  }
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 
   ${mediaQueries.md} {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-    gap: ${SPACING.xl};
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
   }
 
-  ${mediaQueries.lg} {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 30px;
+  ${mediaQueries.xxl} {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
   }
 
-  @media (max-width: ${BREAKPOINTS.md}px) {
-    /* Keep grid layout for small screens, but limit to 2 columns */
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
+  ${props => props.customStyles}
 `;
 
 const PreOrderWrapper = styled.div`
   position: relative;
+  ${props => props.customStyles}
 `;
 
 const PreOrderBadge = styled.div`
@@ -188,6 +197,8 @@ const PreOrderBadge = styled.div`
   text-transform: uppercase;
   font-size: ${TYPOGRAPHY.size.xs};
   z-index: 10;
+
+  ${props => props.customStyles}
 `;
 
 const EmptyMessage = styled.div`
@@ -196,6 +207,8 @@ const EmptyMessage = styled.div`
   font-family: ${TYPOGRAPHY.fontFamily};
   color: ${COLORS.gray400};
   width: 100%;
+
+  ${props => props.customStyles}
 `;
 
 const ProductGrid = ({ 
@@ -214,24 +227,37 @@ const ProductGrid = ({
   gridContainerStyle = {},
   preOrderWrapperProps = {},
   productCardProps = {},
+  // Custom styles for each styled component
+  gridSectionStyles = '',
+  headerContainerStyles = '',
+  titleRowStyles = '',
+  headerDividerStyles = '',
+  titleStyles = '',
+  subtitleContainerStyles = '',
+  subtitleStyles = '',
+  viewAllLinkStyles = '',
+  gridContainerStyles = '',
+  preOrderWrapperStyles = '',
+  preOrderBadgeStyles = '',
+  emptyMessageStyles = '',
 }) => {
   // Ensure products is an array
   const productItems = Array.isArray(products) ? products : [];
   
   return (
-    <GridSection className={sectionClassName}>
-      <HeaderContainer>
+    <GridSection className={sectionClassName} customStyles={gridSectionStyles}>
+      <HeaderContainer customStyles={headerContainerStyles}>
         {showTitleRow && (
-          <TitleRow>
-            <Title useGradient={useGradientTitle}>{title}</Title>
-            {showViewAllLink && viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+          <TitleRow customStyles={titleRowStyles}>
+            <Title useGradient={useGradientTitle} customStyles={titleStyles}>{title}</Title>
+            {showViewAllLink && viewAllLink && <ViewAllLink href={viewAllLink} customStyles={viewAllLinkStyles}>{viewAllText}</ViewAllLink>}
           </TitleRow>
         )}
         {subtitle && (
           <>
-            <HeaderDivider />
-            <SubtitleContainer>
-              <Subtitle>{subtitle}</Subtitle>
+            <HeaderDivider customStyles={headerDividerStyles} />
+            <SubtitleContainer customStyles={subtitleContainerStyles}>
+              <Subtitle customStyles={subtitleStyles}>{subtitle}</Subtitle>
             </SubtitleContainer>
           </>
         )}
@@ -241,14 +267,16 @@ const ProductGrid = ({
         <GridContainer 
           className={gridContainerClassName} 
           style={gridContainerStyle}
+          customStyles={gridContainerStyles}
         >
           {productItems.map((product, index) => (
             <PreOrderWrapper 
               key={product.id || index} 
+              customStyles={preOrderWrapperStyles}
               {...preOrderWrapperProps}
             >
               {product.preOrder && (
-                <PreOrderBadge>ПРЕДЗАКАЗ</PreOrderBadge>
+                <PreOrderBadge customStyles={preOrderBadgeStyles}>ПРЕДЗАКАЗ</PreOrderBadge>
               )}
               <ProductCard
                 product={product}
@@ -259,7 +287,7 @@ const ProductGrid = ({
           ))}
         </GridContainer>
       ) : (
-        <EmptyMessage>Нет доступных товаров</EmptyMessage>
+        <EmptyMessage customStyles={emptyMessageStyles}>Нет доступных товаров</EmptyMessage>
       )}
     </GridSection>
   );
@@ -293,6 +321,19 @@ ProductGrid.propTypes = {
   gridContainerStyle: PropTypes.object,
   preOrderWrapperProps: PropTypes.object,
   productCardProps: PropTypes.object,
+  // Custom styles propTypes
+  gridSectionStyles: PropTypes.string,
+  headerContainerStyles: PropTypes.string,
+  titleRowStyles: PropTypes.string,
+  headerDividerStyles: PropTypes.string,
+  titleStyles: PropTypes.string,
+  subtitleContainerStyles: PropTypes.string,
+  subtitleStyles: PropTypes.string,
+  viewAllLinkStyles: PropTypes.string,
+  gridContainerStyles: PropTypes.string,
+  preOrderWrapperStyles: PropTypes.string,
+  preOrderBadgeStyles: PropTypes.string,
+  emptyMessageStyles: PropTypes.string,
 };
 
 export default ProductGrid;

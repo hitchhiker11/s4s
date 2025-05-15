@@ -88,7 +88,7 @@ const SwiperContainer = styled.div`
     overflow: visible;
     
     ${mediaQueries.sm} {
-      padding-left: ${SPACING.lg};
+      // padding-left: ${SPACING.lg};
       padding-right: ${SPACING.lg};
     }
   }

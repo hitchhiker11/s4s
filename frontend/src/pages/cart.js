@@ -80,7 +80,7 @@ const mockRecentlyViewedProducts = [
 const breadcrumbItems = [
   { href: '/', label: 'Главная' },
   { href: '/cart', label: 'Корзина' },
-  { href: `/cart/`, label: 'Моя корзина' } 
+  // { href: `/cart/`, label: 'Моя корзина' } 
 ];
 
 const CartPage = () => {

@@ -142,28 +142,26 @@ const ViewAllLink = styled.a`
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
   gap: ${SPACING.md};
   width: 100%;
 
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
-  justify-content: space-between;
+  justify-content: start;
 
   ${mediaQueries.sm} {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
     gap: ${SPACING.lg};
   }
 
   ${mediaQueries.md} {
-    
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
     gap: ${SPACING.lg};
   }
 
   ${mediaQueries.lg} {
-  
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
     gap: 30px;
   }
 

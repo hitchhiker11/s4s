@@ -15,10 +15,11 @@ import Pagination from '../../../components/Pagination';
 import SubscriptionForm from '../../../components/SubscriptionForm';
 
 import { SIZES, COLORS, mediaQueries } from '../../../styles/tokens';
+import styles from '../../../styles/ProductGridResponsive.module.css';
 
 // Styled components for this page
 const Container = styled.div`
-  max-width: 1392px;
+  max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -147,19 +148,12 @@ const BrandProductsPage = ({ initialData, brandCode, seo }) => {
     console.log('Added to cart (from brand products page):', product);
   };
 
-  const gridContainerStyle = {
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gridGap: '20px',
-    rowGap: '30px',
-    alignItems: 'start'
-  };
+  // Use CSS module class for responsive grid
+  const gridContainerClassName = styles.productGridContainer;
   
+  // Use CSS module class for preOrderWrapper for consistency
   const preOrderWrapperProps = {
-    style: {
-      height: 'auto',
-      display: 'flex',
-      flexDirection: 'column'
-    }
+    className: styles.preOrderWrapper
   };
 
   return (
@@ -181,8 +175,9 @@ const BrandProductsPage = ({ initialData, brandCode, seo }) => {
             showTitleRow={false}
             products={products}
             onAddToCart={handleAddToCart}
-            gridContainerStyle={gridContainerStyle}
+            gridContainerClassName={gridContainerClassName}
             preOrderWrapperProps={preOrderWrapperProps}
+            gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
           />
         ) : (
           <EmptyState>У этого бренда пока нет товаров.</EmptyState>
@@ -202,6 +197,7 @@ const BrandProductsPage = ({ initialData, brandCode, seo }) => {
             items={recentlyViewed}
             title="Недавно просмотренные"
             onAddToCart={handleAddToCart}
+            
           />
         )}
         

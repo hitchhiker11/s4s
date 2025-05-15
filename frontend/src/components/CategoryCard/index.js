@@ -14,8 +14,8 @@ const CardLink = styled.a`
   border-bottom: 2px solid ${COLORS.gray400};
   position: relative;
   min-height: 120px;
+  width: 100%; /* Always fill parent width */
   max-width: 100%;
-  width: 100%;
   ${props => props.additionalStyles && css(props.additionalStyles)};
 
   &:hover {
@@ -25,10 +25,10 @@ const CardLink = styled.a`
 
   ${mediaQueries.md} {
     /* Унификация размеров карточек на десктопе */
-    width: ${props => (props.additionalStyles && props.additionalStyles.maxWidth) ? props.additionalStyles.maxWidth : '330px'};
-    height: 300px; /* Assuming height is not intended to be overridden by this specific maxWidth prop */
-    min-width: ${props => (props.additionalStyles && props.additionalStyles.maxWidth) ? props.additionalStyles.maxWidth : '330px'};
-    max-width: ${props => (props.additionalStyles && props.additionalStyles.maxWidth) ? props.additionalStyles.maxWidth : '330px'};
+    width: 100%; /* Fill parent width */
+    height: 300px;
+    min-width: 0; /* Remove min-width constraint to allow full width */
+    max-width: 100%; /* Allow card to fill full width of parent */
     min-height: 300px;
     max-height: 300px;
     border-right: 4px solid ${COLORS.gray400};
@@ -36,7 +36,6 @@ const CardLink = styled.a`
 
     /* Для выравнивания содержимого по высоте */
     justify-content: flex-start;
-    
   }
 `;
 
@@ -67,15 +66,15 @@ const CardTitle = styled.h3`
 
 const CardImageContainer = styled.div`
   display: flex;
-  align-items: end;
-  justify-content: end;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   overflow: hidden;
   flex-grow: 1;
   width: 100%; /* Ensure image container fills the full width */
   max-height: 90px; /* Slightly shorter for smaller screens */
-  padding: ${SPACING.xs}; /* Add small padding in mobile */
-
+  padding: ${SPACING.xs} 0 0; /* Add small padding in mobile */
+  
   ${mediaQueries.md} {
     padding: ${SPACING.lg};
     max-height: 250px;
@@ -103,14 +102,15 @@ const CardImage = styled.img`
   `};
 `;
 
-const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation, additionalStyles }) => {
+const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation, additionalStyles, disableRotation = false }) => {
   const isBrandLogo = !showTitle;
 
   const imageRotation = useMemo(() => {
+    if (disableRotation) return 0;
     if (typeof rotation === 'number') return rotation;
     if (showTitle) return getRandomRotation();
     return 0;
-  }, [rotation, showTitle]);
+  }, [rotation, showTitle, disableRotation]);
 
   return (
     <CardLink href={link} additionalStyles={additionalStyles}>
@@ -139,6 +139,7 @@ CategoryCard.propTypes = {
   showTitle: PropTypes.bool,
   rotation: PropTypes.number,
   additionalStyles: PropTypes.object,
+  disableRotation: PropTypes.bool,
 };
 
 export default CategoryCard;

@@ -18,7 +18,7 @@ import productGridStyles from '../../styles/ProductGridResponsive.module.css'; /
 
 // Стилизованные компоненты
 const Container = styled.div`
-  max-width: 1392px;
+  max-width: 1920px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -67,7 +67,7 @@ const CategoriesGrid = styled.div`
     margin-bottom: 32px;
   }
   
-  ${mediaQueries.md} { 
+  ${mediaQueries.xl} { 
     /* Simple 4-column grid for desktop with auto-fill */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -116,7 +116,7 @@ const ProductsGrid = styled.div`
   padding: 12px;
   
   &.${productGridStyles.productGridContainer} {
-    /* Use the CSS module class */
+    
   }
   
   ${mediaQueries.sm} {
@@ -349,11 +349,13 @@ const CatalogPage = ({ initialData, sectionId, seo }) => {
         )}
         
         <ResponsiveProductSection 
-          title="Новые поступления"
+          title="Недавно просмотренные"
           subtitle=""
           viewAllLink="/catalog?filter=new"
           showViewAllLink={false}
           items={mockRecentlyViewedProducts} // Use 'items' prop name
+          gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
+          
         />
 
         <SubscriptionForm />
