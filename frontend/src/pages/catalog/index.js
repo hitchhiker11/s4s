@@ -57,10 +57,46 @@ const CategoriesGrid = styled.div`
   display: grid;
   width: 100%;
   margin-bottom: 24px;
+  overflow: hidden;
   
   /* Mobile layout with 3 columns and special handling for last items */
   grid-template-columns: repeat(3, 1fr); 
   gap: 12px;
+  
+  /* Styling for image positioning */
+  & > a [class^="CategoryCard__CardImageContainer"] {
+    justify-content: flex-end !important;  /* Align to right */
+    align-items: flex-end !important;  /* Align to bottom */
+    overflow: hidden;  /* Ensure overflow is hidden */
+  }
+
+  & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+    max-width: 130% !important;  /* Make images larger to allow partial overflow */
+    max-height: 130% !important;
+    transform: translateX(17%) translateY(20%) !important;  
+    object-fit: contain !important;
+    object-position: bottom right !important;
+  }
+
+  & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+    max-width: 130% !important;
+    max-height: 130% !important;
+    transform: translateX(-45%) translateY(-20%) !important;  
+    object-fit: contain !important;
+    object-position: top left !important;
+  }
+
+  @media (max-width: ${BREAKPOINTS.lg - 1}px) {
+    & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+      max-width: 120% !important;
+      transform: translateX(-10%) translateY(10%) !important;
+    }
+    
+    & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+      max-width: 120% !important;
+      transform: translateX(-25%) translateY(-20%) !important;
+    }
+  }
   
   ${mediaQueries.sm} { 
     gap: 16px;
@@ -83,6 +119,10 @@ const CategoriesGrid = styled.div`
   ${mediaQueries.lg} { 
     column-gap: 23px;
     row-gap: 23px;
+  }
+  
+  & > a {
+    overflow: hidden;
   }
 `;
 

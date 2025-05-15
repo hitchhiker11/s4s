@@ -24,15 +24,7 @@ const hardcodedFeaturedBrandData = {
   name: 'Eiger',
   featureImage: '/images/brands/eiger_img_8048.jpg',
   logoImage: '/images/brands/eiger_tac_logo.jpg',
-  description: `Компания EIGER основана в 1989 году индонезийцем Ронни Лукито и начала свое триумфальное шествие с производства бивачного снаряжения.
-
-Всего через десять лет продукция компании завоевала уверенную нишу в сетях туристических магазинов Вьетнама, Китая, Тайваня, Гонконга, Южной Кореи, Франции, Германии и США.
-
-Eiger Adventure изначально ориентировалась на восхождения и горный туризм, однако с 2016 обратила свое внимание на хайкинг, треккинг и тропический климат, открыв линейку Tropical.
-
-В 2020 применила свой многолетний опыт для входа на рынок тактического и спортивного снаряжения, создав линейки Eiger TAC и Eiger Practical – тем самым обеспечив потребности местных силовиков и практических стрелков.
-
-Сегодня компания Eiger - это 35 лет экспертизы в проектировании одежды и снаряжения для различных климатических условий.`
+  description: "Компания EIGER основана в 1989 году индонезийцем Ронни Лукито и начала свое триумфальное шествие с производства бивачного снаряжения.\n\nВсего через десять лет продукция компании завоевала уверенную нишу в сетях туристических магазинов Вьетнама, Китая, Тайваня, Гонконга, Южной Кореи, Франции, Германии и США.\n\nEiger Adventure изначально ориентировалась на восхождения и горный туризм, однако с 2016 обратила свое внимание на хайкинг, треккинг и тропический климат, открыв линейку Tropical.\n\nВ 2020 применила свой многолетний опыт для входа на рынок тактического и спортивного снаряжения, создав линейки Eiger TAC и Eiger Practical – тем самым обеспечив потребности местных силовиков и практических стрелков.\n\nСегодня компания Eiger - это 35 лет экспертизы в проектировании одежды и снаряжения для различных климатических условий."
 };
 
 // Стилизованные компоненты для главной страницы
@@ -235,10 +227,50 @@ const HomePage = () => {
           <ResponsiveCategorySection 
             title="Каталог товаров" 
             viewAllLink="/catalog"
-            items={mockCategories} // Use 'items' prop name
+            items={mockCategories.map(category => ({...category, disableRotation: true}))} // Disable rotation
             renderItem={renderCategoryCard} // Pass the render function
-            
-            // cardStyle={{ maxWidth: '250px' }}
+            containerStyle={`
+              /* Styling for image positioning */
+              & > a [class^="CategoryCard__CardImageContainer"] {
+                justify-content: flex-end !important;  /* Align to right */
+                align-items: flex-end !important;  /* Align to bottom */
+                overflow: hidden;  /* Ensure overflow is hidden */
+              }
+
+              & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+                max-width: 130% !important;  /* Make images larger to allow partial overflow */
+                max-height: 130% !important;
+                transform: translateX(17%) translateY(20%) !important;  
+                object-fit: contain !important;
+                object-position: bottom right !important;
+              }
+
+              & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+                max-width: 130% !important;
+                max-height: 130% !important;
+                transform: translateX(-45%) translateY(-20%) !important;  
+                object-fit: contain !important;
+                object-position: top left !important;
+              }
+
+              @media (max-width: ${BREAKPOINTS.lg - 1}px) {
+                & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+                  max-width: 120% !important;
+                  transform: translateX(-10%) translateY(10%) !important;
+                }
+                
+                & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+                  max-width: 120% !important;
+                  transform: translateX(-25%) translateY(-20%) !important;
+                }
+              }
+            `}
+            sectionStyle={`
+              overflow: hidden;
+            `}
+            cardStyle={{ 
+              overflow: 'hidden',
+            }}
           />
         </div>
         {/* New Arrivals Section using Responsive Wrapper */}

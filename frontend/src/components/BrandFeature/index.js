@@ -83,7 +83,7 @@ const BrandLogo = styled.img`
   align-self: flex-start;
 `;
 
-const BrandDescription = styled.p`
+const BrandDescription = styled.div`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
   font-size: 14px;
@@ -113,6 +113,20 @@ const BrandFeature = ({ brandData }) => {
     description
   } = brandData;
 
+  // Convert description to a stable format regardless of environment
+  const processedDescription = React.useMemo(() => {
+    if (typeof description !== 'string') return [];
+    
+    // If it contains HTML, use dangerouslySetInnerHTML
+    if (description.includes('<')) {
+      return { __html: description };
+    }
+    
+    // Split by newlines but preserve empty lines
+    // This creates an array where empty strings represent blank lines
+    return description.split('\n');
+  }, [description]);
+
   return (
     <FeatureContainer>
       <FeatureContent>
@@ -122,12 +136,15 @@ const BrandFeature = ({ brandData }) => {
         <TextContainer>
           <BrandLogo src={logoImage} alt="Brand logo" />
           <BrandDescription>
-            {typeof description === 'string' && description.includes('<') 
-              ? <div dangerouslySetInnerHTML={{ __html: description }} />
-              : description.split('\n').map((text, i) => 
-                  text.trim() ? <p key={i}>{text}</p> : <br key={i} />
-                )
-            }
+            {/* Render HTML content if that's what we have */}
+            {typeof processedDescription === 'object' && '__html' in processedDescription ? (
+              <div dangerouslySetInnerHTML={processedDescription} />
+            ) : (
+              /* Render each line with proper handling of empty lines */
+              processedDescription.map((line, i) => 
+                line.trim() ? <p key={i}>{line}</p> : <br key={i} />
+              )
+            )}
           </BrandDescription>
         </TextContainer>
       </FeatureContent>

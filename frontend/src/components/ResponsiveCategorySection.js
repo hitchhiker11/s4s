@@ -8,7 +8,14 @@ import CategorySlider from './CategorySlider';
  * ResponsiveCategorySection - Renders either ItemGrid (desktop) or CategorySlider (mobile)
  * based on the current viewport size
  */
-const ResponsiveCategorySection = ({ items, renderItem, cardStyle, ...props }) => {
+const ResponsiveCategorySection = ({ 
+  items, 
+  renderItem, 
+  cardStyle, 
+  containerStyle, 
+  sectionStyle, 
+  ...props 
+}) => {
   const categorySliderProps = {
     ...props,
     categories: items,
@@ -21,6 +28,8 @@ const ResponsiveCategorySection = ({ items, renderItem, cardStyle, ...props }) =
     items,
     renderItem,
     cardStyle,
+    containerStyle,
+    sectionStyle,
   };
 
   return (
@@ -51,6 +60,8 @@ ResponsiveCategorySection.propTypes = {
   viewAllText: PropTypes.string,
   useGradientTitle: PropTypes.bool,
   cardStyle: PropTypes.object,
+  containerStyle: PropTypes.string,
+  sectionStyle: PropTypes.string,
 };
 
 ResponsiveCategorySection.defaultProps = {

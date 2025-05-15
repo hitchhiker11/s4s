@@ -4,7 +4,7 @@ export const mockCategories = [
   {
     id: 'cat-1',
     title: 'Тюнинг',
-    imageUrl: '/images/categories/image_2025-05-15_19-42-25.png',
+    imageUrl: '/images/categories/tuning.jpg',
     link: '/catalog/tuning',
     showTitle: true
   },

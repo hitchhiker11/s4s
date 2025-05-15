@@ -19,6 +19,8 @@ const GridSection = styled.section`
   ${mediaQueries.lg} {
     padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
   }
+  
+  ${props => props.customStyles}
 `;
 
 const HeaderContainer = styled.div`
@@ -191,6 +193,8 @@ const GridContainer = styled.div`
       }
     }
   }
+  
+  ${props => props.customStyles}
 `;
 
 const EmptyMessage = styled.div`
@@ -209,14 +213,16 @@ const ItemGrid = ({
   viewAllText = "Смотреть все",
   useGradientTitle = false,
   renderItem,
-  cardStyle
+  cardStyle,
+  containerStyle,
+  sectionStyle
 }) => {
   if (!items || items.length === 0) {
     return <EmptyMessage>Нет элементов для отображения.</EmptyMessage>;
   }
 
   return (
-    <GridSection>
+    <GridSection customStyles={sectionStyle}>
       {(title || viewAllLink) && (
         <HeaderContainer>
           <TitleRow>
@@ -233,7 +239,7 @@ const ItemGrid = ({
           )}
         </HeaderContainer>
       )}
-      <GridContainer>
+      <GridContainer customStyles={containerStyle}>
         {items.map(item => renderItem(item, cardStyle))}
       </GridContainer>
     </GridSection>
@@ -249,6 +255,8 @@ ItemGrid.propTypes = {
   useGradientTitle: PropTypes.bool,
   renderItem: PropTypes.func.isRequired,
   cardStyle: PropTypes.object,
+  containerStyle: PropTypes.string,
+  sectionStyle: PropTypes.string
 };
 
 export default ItemGrid; 
