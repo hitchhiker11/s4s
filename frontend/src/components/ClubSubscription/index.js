@@ -44,9 +44,11 @@ const FormContainer = styled.div`
   width: 100%;
   padding: ${SPACING.lg};
 
+
+
   ${mediaQueries.md} {
     width: 50%;
-    padding-right: ${SPACING["3xl"]};
+    padding: ${SPACING.lg} ${SPACING['3xl']} ${SPACING.lg} ${SPACING['3xl']};
   }
 `;
 

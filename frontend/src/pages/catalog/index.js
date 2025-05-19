@@ -22,7 +22,7 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  padding: 0 12px; /* Add default padding for smaller screens */
+  padding: 0 12px;
   
   ${mediaQueries.sm} {
     padding: 0 16px;
@@ -62,41 +62,39 @@ const CategoriesGrid = styled.div`
   /* Mobile layout with 3 columns and special handling for last items */
   grid-template-columns: repeat(3, 1fr); 
   gap: 12px;
-  
-  /* Styling for image positioning */
-  & > a [class^="CategoryCard__CardImageContainer"] {
-    justify-content: flex-end !important;  /* Align to right */
-    align-items: flex-end !important;  /* Align to bottom */
-    overflow: hidden;  /* Ensure overflow is hidden */
-  }
-
-  & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
-    max-width: 130% !important;  /* Make images larger to allow partial overflow */
-    max-height: 130% !important;
-    transform: translateX(17%) translateY(20%) !important;  
-    object-fit: contain !important;
-    object-position: bottom right !important;
-  }
-
+  //ДЛЯ NEW
+  /* This selector only targets direct children links with SVG images */
   & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
-    max-width: 130% !important;
-    max-height: 130% !important;
-    transform: translateX(-45%) translateY(-20%) !important;  
+    transform: translateX(1%) translateY(5%) !important;  
+    scale: 0.7 !important;
     object-fit: contain !important;
     object-position: top left !important;
   }
 
-  @media (max-width: ${BREAKPOINTS.lg - 1}px) {
-    & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
-      max-width: 120% !important;
-      transform: translateX(-10%) translateY(10%) !important;
-    }
+
+  // ДЛЯ HITS
+  /* Special rule for the full-width bottom row (green highlighted area) 
+     This row likely has a different structure or is wrapped in another container */
+  & > div:last-child {
+    grid-column: 1 / -1; /* Make the last item span all columns */
     
-    & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
-      max-width: 120% !important;
-      transform: translateX(-25%) translateY(-20%) !important;
+    & [class^="CategoryCard__CardImage"][src$="hits.svg"] {
+      /* Override the default SVG transformation for this specific case */
+      transform: translateX(250%) translateY(5%) !important;  
+      scale: 0.5 !important;
+      object-fit: contain !important;
+      object-position: center !important;
     }
   }
+  
+  /* Mobile image positioning with smaller percentages */
+  & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+    transform: translateX(15%) translateY(17%) !important;
+    object-fit: contain !important;
+    object-position: bottom right !important;
+  }
+
+
   
   ${mediaQueries.sm} { 
     gap: 16px;
@@ -113,6 +111,56 @@ const CategoriesGrid = styled.div`
     /* Remove any special styling from mobile view */
     & > div {
       grid-column: auto !important;
+    }
+
+    /* Styling for image positioning */
+    & > a [class^="CategoryCard__CardImageContainer"] {
+      justify-content: flex-end !important;  /* Align to right */
+      align-items: flex-end !important;  /* Align to bottom */
+      overflow: hidden;  /* Ensure overflow is hidden */
+    }
+
+    & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+      max-width: 130% !important;  /* Make images larger to allow partial overflow */
+      max-height: 130% !important;
+      transform: translateX(17%) translateY(20%) !important;  
+      object-fit: contain !important;
+      object-position: bottom right !important;
+    }
+
+    & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+      max-width: 130% !important;
+      max-height: 130% !important;
+      transform: translateX(-45%) translateY(-20%) !important;  
+      object-fit: contain !important;
+      object-position: top left !important;
+    }
+
+    @media (max-width: ${BREAKPOINTS.lg - 1}px) {
+      & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+        max-width: 120% !important;
+        transform: translateX(-10%) translateY(10%) !important;
+      }
+      
+      & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+        max-width: 120% !important;
+        transform: translateX(-25%) translateY(-20%) !important;
+      }
+    }
+
+    /* Override the mobile last-child styling for desktop view */
+    & > div:last-child {
+      grid-column: auto !important; /* Reset to auto for desktop */
+      
+      & [class^="CategoryCard__CardImage"][src$=".svg"] {
+        /* Using calc() for adaptive transformations based on viewport width */
+        transform: translateX(calc(80% + 25vw * 0.1)) translateY(calc(15% + 5vw * 0.1)) !important;
+        scale: 1 !important;
+        max-width: calc(120% + 10vw * 0.1) !important;
+        max-height: calc(120% + 10vw * 0.1) !important;
+        object-fit: contain !important;
+        object-position: top left !important;
+      }
     }
   }
   

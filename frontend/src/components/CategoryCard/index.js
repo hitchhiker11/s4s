@@ -91,12 +91,15 @@ const CardImage = styled.img`
   max-height: 90%;
   object-fit: contain;
   transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
+  scale: 0.95;
+
   
   /* Specific styles for brand logos */
   ${props => props.isBrandLogo && `
     padding: ${SPACING.xs};
     
     ${mediaQueries.md} {
+      scale: 1;
       padding: ${SPACING.lg};
     }
   `};
