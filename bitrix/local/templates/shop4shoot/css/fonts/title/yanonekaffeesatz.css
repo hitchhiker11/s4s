@@ -1,0 +1,305 @@
+.main1, h1, h2, h3, h4, h5, h6{
+	font-family: 'Yanone Kaffeesatz', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 700;
+}
+.main2{
+    font-family: 'Yanone Kaffeesatz', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 400;
+}
+
+.text-content h2{
+    font-size: 60px;
+    line-height: 62px;
+    margin: 40px 0 25px;
+}
+.text-content h3{
+    font-size: 32px;
+    line-height: 32px;
+    margin: 35px 0 20px;
+}
+
+div.first-slider div.first-block div.first-block-container div.head div.title{
+    font-size: 75px;
+    line-height: 70px;
+}
+
+div.first-slider div.first-block div.first-block-container div.head.min div.title{
+    font-size: 65px;
+    line-height: 65px;
+}
+
+div.block div.head h2{
+    font-size: 65px;
+    line-height: 65px;
+}
+div.block div.head.min h2{
+    font-size: 55px;
+    line-height: 50px;
+}
+header div.scroll-wrap div.header-table div.header-cell div.number a{
+	font-size: 30px;
+    line-height: 30px;
+}
+
+div.advantages div.advantages-table div.advantages-cell.text-part div.part-wrap div.element div.text-wrap div.name{
+    font-size: 25px;
+    line-height: 22px;
+}
+
+
+div.opinion div.slider div.slider-for div.descrip-wrap div.name{
+    font-size: 30px;
+    line-height: 25px;
+}
+div.opinion div.opinion-table div.opinion-cell.image-part div.name-wrap div.name{
+    font-size: 35px;
+    line-height: 30px;
+}
+
+div.catalog div.tab-wrap-content div.tab-content div.element-parent div.element div.price-wrap div.price-parent div.old-price, 
+div.catalog div.tab-wrap-content div.tab-content div.element-parent div.element div.price-wrap div.price-parent div.price{
+    font-size: 25px;
+    line-height: 25px;
+}
+
+div.catalog-body div.content div.tabs-content div.price-wrap div.price{
+    font-size: 45px;
+    line-height: 46px;
+}
+div.catalog-body div.content div.tabs-content div.price-wrap div.old-price{
+    font-size: 40px;
+    line-height: 40px;
+}
+div.catalog-body div.title{
+    font-size: 43px;
+    line-height: 43px;
+}
+
+div.slider-services div.element-table div.element-cell.text-wrap div.title {
+    font-size: 45px;
+    line-height: 40px;
+}
+div.slider-services div.element-table div.element-cell.text-wrap div.price-wrap div.price{
+    font-size: 40px;
+    line-height: 40px;
+}
+div.slider-services div.element-table div.element-cell.text-wrap div.price-wrap div.old-price{
+    font-size: 35px;
+    line-height: 35px;
+}
+
+div.modal-body-content div.content div.info-table div.info-cell.text-wrap div.name{
+    font-size: 35px;
+    line-height: 35px;
+}
+
+div.modal-body-content div.content div.info-table div.info-cell.price-wrap{
+    font-size: 26px;
+    line-height: 26px;
+}
+div.modal-body-content div.content div.info-table div.info-cell span.old-price{
+    font-size: 24px;
+    line-height: 24px;
+}
+
+div.services div.service-item div.service-element div.name-wrap div.name{
+    font-size: 25px;
+    line-height: 25px;
+    height: 50px;
+}
+
+div.modal-body-content div.content div.gallery div.gallery-name{
+    font-size: 32px;
+    line-height: 32px;
+}
+
+
+div.form-block div.form-table div.form-cell form.form div.title{
+    font-size: 26px;
+    line-height: 26px;
+}
+
+div.news div.slider-news div.element div.name{
+    font-size: 28px;
+    line-height: 28px;
+}
+
+div.tarif div.tarif-item div.tarif-element div.name{
+    font-size: 30px;
+    line-height: 30px;
+}
+
+div.tarif-2 div.tarif-table div.tarif-cell.text-part div.title{
+    font-size: 45px;
+    line-height: 45px;
+}
+
+
+div.faq-block div.photo div.bot div.name{
+    font-size: 35px;
+    line-height: 35px;
+}
+
+footer div.footer-content-wrap div.contacts-table-wrap div.contacts-table div.contacts-cell.number a{
+    font-size: 30px;
+    line-height: 30px;
+}
+form.form div.title-form{
+    font-size: 25px;
+    line-height: 25px;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+
+	div.first-slider div.first-block div.first-block-container div.head div.title{
+	    font-size: 75px !important;
+	    line-height: 70px !important;
+	}
+
+	div.first-slider div.first-block div.first-block-container div.head.min div.title{
+	    font-size: 65px !important;
+	    line-height: 65px !important;
+	}
+
+	div.block div.head h2{
+	    font-size: 65px !important;
+	    line-height: 65px !important;
+	}
+	div.block div.head.min h2{
+	    font-size: 55px !important;
+	    line-height: 50px !important;
+	    text-align: left;
+	}
+
+
+}
+
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+	.text-content h2{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+
+	.text-content h3{
+	    font-size: 26px;
+	    line-height: 26px;
+	}
+
+	header div.scroll-wrap div.header-table div.header-cell div.number a{
+	    font-size: 23px;
+	    line-height: 23px;
+	}
+       
+   div.slider-services div.element-table div.element-cell.text-wrap div.title{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+
+	div.slider-services div.element-table div.element-cell.text-wrap div.price-wrap div.price{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+	div.slider-services div.element-table div.element-cell.text-wrap div.price-wrap div.old-price{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+
+	div.tarif div.tarif-item div.tarif-element div.name{
+	    font-size: 25px;
+	    line-height: 25px;
+	}
+
+	div.catalog-body div.title{
+	    font-size: 35px;
+	    line-height: 35px;
+	}
+
+	div.modal-body-content div.content div.info-table div.info-cell.text-wrap div.name{
+	    font-size: 29px;
+	    line-height: 30px;
+	}
+
+	div.form-block div.form-table div.form-cell form.form div.title{
+	    font-size: 23px;
+	    line-height: 23px;
+	}
+
+	footer div.footer-content-wrap div.contacts-table-wrap div.contacts-table div.contacts-cell.number a{
+	    font-size: 23px;
+	    line-height: 23px;
+	}
+
+
+    
+}
+
+
+@media (max-width: 767px){
+
+	.text-content h2{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+
+	.text-content h3{
+	    font-size: 26px;
+	    line-height: 26px;
+	}
+
+	header div.scroll-wrap div.header-table div.header-cell div.number a{
+	    font-size: 23px;
+	    line-height: 23px;
+	}
+       
+   div.slider-services div.element-table div.element-cell.text-wrap div.title{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+
+	div.slider-services div.element-table div.element-cell.text-wrap div.price-wrap div.price{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+	div.slider-services div.element-table div.element-cell.text-wrap div.price-wrap div.old-price{
+	    font-size: 30px;
+	    line-height: 30px;
+	}
+
+	div.tarif div.tarif-item div.tarif-element div.name{
+	    font-size: 25px;
+	    line-height: 25px;
+	}
+
+	div.catalog-body div.title{
+	    font-size: 26px;
+	    line-height: 29px;
+	}
+
+	div.modal-body-content div.content div.info-table div.info-cell.text-wrap div.name{
+	    font-size: 29px;
+	    line-height: 30px;
+	}
+
+	div.form-block div.form-table div.form-cell form.form div.title{
+	    font-size: 23px;
+	    line-height: 23px;
+	}
+
+	div.modal-body-content div.content div.gallery div.gallery-name{
+    	font-size: 28px;
+	    line-height: 28px;
+	}
+
+	div.catalog div.tab-wrap-content div.tab-content div.element-parent div.element div.price-wrap div.price-parent div.old-price,
+	div.catalog div.tab-wrap-content div.tab-content div.element-parent div.element div.price-wrap div.price-parent div.price {
+	    font-size: 18px;
+	    line-height: 20px;
+	}
+
+	footer div.footer-content-wrap div.contacts-table-wrap div.contacts-table div.contacts-cell.number a{
+	    font-size: 23px;
+	    line-height: 23px;
+	}
+}

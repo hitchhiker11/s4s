@@ -1,0 +1,88 @@
+body{
+    font-family: 'Open Sans', sans-serif, Arial, 'PT Sans Caption';
+}
+.bold{
+    font-family: 'Open Sans', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 700;
+}
+@media (min-width: 992px){
+    
+    header div.header-top div.main-phone div.ic-open-list-contact{
+        top: 3px;
+    }
+    div.switcher ul.switcher-tab.left li{
+        padding: 23px 30px 20px 15px;
+    }
+    header div.header-top div.wrap-main-menu nav.main-menu > li > a {
+        padding: 2px 20px 0;
+    }
+
+
+    div.open-menu div.footer-menu-wrap div.phone div.phone-value{
+    	background-position: left 1px;
+    }
+    div.open-menu div.footer-menu-wrap div.email a{
+    	background-position: left 3px;
+    }
+    footer div.footer-menu-wrap div.email a{
+    	background-position: left 3px;
+    }
+    footer div.footer-menu-wrap div.phone div.phone-value{
+    	background-position: left 1px;
+    }
+    div.descriptive div.descriptive-tabs-wrap ul.tabs li{
+        padding: 13px 20px 12px;
+    }
+    form.form ul.form-radio li{
+    	padding-bottom: 5px;
+    }
+    form.form ul.form-radio li label{
+        padding: 3px 0 3px 25px;
+    }
+    form.form ul.form-check li label{
+        padding: 1px 0 3px 25px;
+    }
+    div.tarif div.tarif-item div.tarif-element ul li.point-green,
+    div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap ul.adv-plus-minus li.point-green{
+    	background-position: left 7px;
+    }
+    div.tarif div.tarif-item div.tarif-element ul li,
+    div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap ul.adv-plus-minus li{
+    	background-position: left 7px;
+    }
+    div.faq-block div.faq div.faq-element{
+        padding: 7px 0 15px 50px;
+    }
+
+    div.empl div.element div.empl-phone span,
+    div.empl-full div.empl-phone span{
+    	background-position: left 1px;
+    }
+
+    div.news div.slider-news div.element div.name{
+        font-size: 16px;
+        line-height: 21px;
+    }
+
+    header div.header-top table.wrap td.right table.right-inner div.list-contacts table td div.desc{
+        font-size: 13px;
+    }
+    div.catalog-list-wrap div.section-list a.name{
+        font-size: 15px;
+    }
+    header div.header-top div.main-desciption{
+        font-size: 13px;
+    }
+    header div.header-top table.wrap td.right table.right-inner div.list-contacts table td div.phone span{
+        font-size: 22px;
+    }
+    header div.header-top div.main-phone div.visible-part.phone{
+        font-size: 22px;
+    }
+    div.news div.wrap-element div.element div.wrap-text div.new-name{
+        font-size: 16px;
+    }
+    .button-def.big{
+        font-size: 17px;
+    }
+}

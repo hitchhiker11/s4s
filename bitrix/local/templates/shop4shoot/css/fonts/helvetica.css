@@ -1,0 +1,21 @@
+@font-face{
+    font-display: swap; 
+    font-family: 'HelveticaRegular';
+    src: url(fonts/Helvetica/HelveticaRegular/HelveticaRegular.eot);
+    src: url(fonts/Helvetica/HelveticaRegular/HelveticaRegular.woff) format("woff"),url(fonts/Helvetica/HelveticaRegular/HelveticaRegular.ttf) format("truetype");
+    font-style: normal;
+}
+@font-face{
+    font-display: swap; 
+    font-family: 'HelveticaBold';
+    src: url(fonts/Helvetica/HelveticaBold/HelveticaBold.eot);
+    src: url(fonts/Helvetica/HelveticaBold/HelveticaBold.woff) format("woff"),url(fonts/Helvetica/HelveticaBold/HelveticaBold.ttf) format("truetype");
+    font-style: normal;
+}
+@font-face{
+    font-display: swap; 
+    font-family: 'HelveticaLight';
+    src: url(fonts/Helvetica/HelveticaLight/HelveticaLight.eot);
+    src: url(fonts/Helvetica/HelveticaLight/HelveticaLight.woff) format("woff"),url(fonts/Helvetica/HelveticaLight/HelveticaLight.ttf) format("truetype");
+    font-style: normal;
+}

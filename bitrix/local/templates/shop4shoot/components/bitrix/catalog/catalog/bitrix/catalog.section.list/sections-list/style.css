@@ -1,0 +1,187 @@
+.k1-section .frame-inner {
+  margin: 0 -10px 10px;
+  background-color: #f5f5f5;
+  display: block;
+}
+.k1-section .frame-outer {
+  position: relative;
+}
+.k1-section .frame {
+  overflow: hidden;
+  position: relative;
+  height: 262px;
+  z-index: 1;
+  display: block;
+}
+
+.k1-section .frame img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%,-50%) scale(1.05);
+  -ms-transform: translate(-50%,-50%) scale(1.05);
+  -o-transform: translate(-50%,-50%) scale(1.05);
+  transform: translate(-50%,-50%) scale(1.05);
+  transition: transform .3s;
+  -webkit-transition: transform 1s;
+  -moz-transition: transform 1s;
+  -o-transition: transform 1s;
+}
+
+.k1-section .small-shadow {
+
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+}
+
+.k1-section .frameshadow {
+  background: #000;
+  filter: alpha(opacity=0);
+  -webkit-transition: opacity .8s;
+  -o-transition: opacity .8s;
+  transition: opacity .8s;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.4;
+}
+@media (min-width: 1200px) {
+  .k1-section .frameshadow {
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -webkit-transition: opacity .8s;
+    -o-transition: opacity .8s;
+    transition: opacity .8s;
+  }
+}
+.k1-section .text {
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.k1-section .text .cont {
+  /*bottom: 0;*/
+  /*-webkit-transform: translate(0,0);*/
+  /*-ms-transform: translate(0,0);*/
+  /*-o-transform: translate(0,0);*/
+  /*transform: translate(0,0);*/
+  position: absolute;
+  -webkit-transform: translate(0,100%);
+  -ms-transform: translate(0,100%);
+  -o-transform: translate(0,100%);
+  transform: translate(0,100%);
+  bottom: 100%;
+  padding: 25px;
+  width: 100%;
+  transition: all .5s;
+  -webkit-transition: all .5s;
+  -moz-transition: all .5s;
+  -o-transition: all .5s;
+}
+@media (min-width: 1200px) {
+  .k1-section .text .cont {
+    bottom: 0;
+    -webkit-transform: translate(0,0);
+    -ms-transform: translate(0,0);
+    -o-transform: translate(0,0);
+    transform: translate(0,0);
+  }
+}
+.k1-section .text .name {
+  font-size: 22px;
+  line-height: 26px;
+  margin-top: 0 !important;
+}
+.k1-section .text .button {
+  /*bottom: -100px;*/
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 25px;
+  transition: all .5s;
+  -webkit-transition: all .5s;
+  -moz-transition: all .5s;
+  -o-transition: all .5s;
+}
+
+.k1-section .frame-desc-wrap {
+  border: 2px solid #e5e5e5;
+  border-top-width: 2px;
+  border-top-style: solid;
+  border-top-color: rgb(229, 229, 229);
+  border-top: 0;
+}
+
+.k1-section ul.catalog-link {
+  list-style: none;
+  padding: 15px 25px;
+  margin: 0;
+  background-color: #fff;
+}
+
+.k1-section ul.catalog-link li {
+  padding-right: 10px;
+  padding-left: 20px;
+  background: url('/bitrix/templates/concept_kraken_s1/images/tire.png') left 10px no-repeat;
+  margin: 5px 0;
+}
+.k1-section ul.catalog-link li a {
+  font-size: 15px;
+  line-height: 21px;
+  color: #2285c4;
+  text-decoration: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.k1-section ul.catalog-link li a span.bord-bot {
+  color: #1a8fe9;
+  border-bottom: 1px solid #dedede;
+  transition: border-bottom-color .7s;
+  -webkit-transition: border-bottom-color .7s;
+  -moz-transition: border-bottom-color .7s;
+  -o-transition: border-bottom-color .7s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

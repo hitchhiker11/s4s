@@ -1,0 +1,87 @@
+body{
+    font-family: 'Fira Sans Condensed', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 300;
+}
+.bold{
+    font-family: 'Fira Sans Condensed', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 700;
+}
+@media (min-width: 992px){
+
+    header div.header-top div.wrap-main-menu nav.main-menu > li > a{
+        padding: 4px 20px 0;
+        font-size: 14px;
+        line-height: 14px;
+    }
+    header div.header-top div.wrap-main-menu nav.main-menu > li > a > span.wrap-name div.bord{
+        bottom: -19px;
+    }
+    header div.header-top div.wrap-main-menu nav.main-menu > li.parent > a > span.wrap-name > span{
+        background-position: right 6px;
+    }
+    header div.header-top div.main-phone div.ic-open-list-contact{
+        top: 2px;
+    }
+    div.switcher ul.switcher-tab.left li{
+        padding: 22px 30px 15px 15px;
+    }
+    footer div.footer-menu-wrap div.email a{
+    	background-position: left 2px;
+    }
+
+    div.open-menu div.footer-menu-wrap div.phone div.phone-value{
+    	background-position: left 2px;
+    }
+    div.open-menu div.footer-menu-wrap div.email a{
+    	background-position: left 2px;
+    }
+    div.descriptive div.descriptive-tabs-wrap ul.tabs li{
+        padding: 13px 20px;
+    }
+    div.switcher ul.switcher-tab.left li{
+        padding: 20px 30px 17px 15px;
+    }
+    form.form ul.form-radio li{
+    	padding-bottom: 5px;
+    }
+    form.form ul.form-radio li label{
+        padding: 3px 0 3px 25px;
+    }
+    form.form ul.form-check li label{
+        padding: 1px 0 3px 25px;
+    }
+    div.tarif div.tarif-item div.tarif-element ul li.point-green,
+    div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap ul.adv-plus-minus li.point-green{
+    	background-position: left 7px;
+    }
+    div.tarif div.tarif-item div.tarif-element ul li,
+    div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap ul.adv-plus-minus li{
+    	background-position: left 7px;
+    }
+    div.empl div.element div.empl-email a,
+    div.empl-full div.empl-email a{
+    	background-position: left 5px;
+    }
+    div.empl div.element div.empl-phone span,
+    div.empl-full div.empl-phone span{
+    	background-position: left 2px;
+    }
+    div.catalog-main-menu ul.catalog-link li{
+    	background-position: left 9px;
+    }
+    div.cart-info-block div.desc-part a.style-scroll-ar-down{
+    	background-position: right 6px;
+    }
+    div.cart-char a.style-scroll-ar-down{
+    	background-position: right 5px;
+    }
+    div.catalog-list-wrap div.element-sort a.sort_btn.active.asc{
+        background-position: right 4px;
+    }
+    div.catalog-list-wrap div.element-sort a.sort_btn.active.desc{
+        background-position: right 4px;
+    }
+    div.catalog-list-wrap div.menu-navigation ul.nav > li.back a{
+    	background-position: left 17px;
+    }
+}

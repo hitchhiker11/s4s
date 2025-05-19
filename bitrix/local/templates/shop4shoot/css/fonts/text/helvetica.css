@@ -1,0 +1,95 @@
+body{
+    font-family: 'HelveticaRegular', Arial, 'PT Sans Caption';
+}
+.bold{
+	font-family: 'HelveticaBold', Arial, 'PT Sans Caption';
+}
+@media (min-width: 992px){
+
+    header div.header-top div.main-phone div.ic-open-list-contact{
+        top: 4px;
+    }
+    header div.header-top div.wrap-main-menu nav.main-menu > li.parent > a > span.wrap-name > span{
+	    background-position: right 5px;
+	}
+	header div.header-top div.wrap-main-menu nav.main-menu > li > a{
+	    padding: 4px 20px 0;
+	}
+
+	div.switcher ul.switcher-tab.left li{
+	    padding: 19px 30px 15px 15px;
+	}
+
+	footer div.footer-menu-wrap div.email a{
+		background-position: left 3px;
+	}
+	div.open-menu div.footer-menu-wrap div.email a{
+		background-position: left 3px;
+	}
+	div.open-menu div.footer-menu-wrap div.phone div.phone-value{
+		background-position: left 2px;
+	}
+	div.descriptive div.descriptive-tabs-wrap ul.tabs li{
+	    padding: 14px 20px 13px;
+	}
+	div.opinion.slider-small div.opinion-table div.opinion-cell.text-part div.more-info div.link-wrap a.link-video,
+	div.opinion.slider-big div.slider div.slider-for div.more-info-wrap div.more-info div.link-wrap a.link-video,
+	div.opinion.full-block div.opinion-table div.opinion-cell.text-part div.more-info div.link-wrap a.link-video{
+		background-position: left 5px;
+	}
+	div.opinion.slider-small div.opinion-table div.opinion-cell.text-part div.more-info div.link-wrap a.link-blank,
+	div.opinion.slider-big div.slider div.slider-for div.more-info-wrap div.more-info div.link-wrap a.link-blank,
+	div.opinion.full-block div.opinion-table div.opinion-cell.text-part div.more-info div.link-wrap a.link-blank{
+		background-position: left 2px;
+	}
+	div.empl div.element div.empl-email a,
+	div.empl-full div.empl-email a{
+		background-position: left 2px;
+	}
+	div.empl div.element div.empl-phone span,
+	div.empl-full div.empl-phone span{
+		background-position: left 1px;
+	}
+	form.form ul.form-radio li{
+		padding-bottom: 5px;
+	}
+	form.form ul.form-radio li label{
+	    padding: 3px 0 3px 25px;
+	}
+	form.form ul.form-check li label{
+	    padding: 1px 0 3px 25px;
+	}
+	div.tarif div.tarif-item div.tarif-element ul li.point-green,
+	div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap ul.adv-plus-minus li.point-green{
+		background-position: left 7px;
+	}
+	div.tarif div.tarif-item div.tarif-element ul li,
+	div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap ul.adv-plus-minus li{
+		background-position: left 7px;
+	}
+	div.faq-block div.faq div.faq-element{
+	    padding: 7px 0 15px 50px;
+	}
+	ol.inner-breadcrumb li a,
+	ol.inner-breadcrumb li.active{
+	    padding: 8px 10px 7px;
+	}
+	div.catalog-main-menu ul.catalog-link li{
+		background-position: left 9px;
+	}
+	div.catalog-list-wrap div.element-sort a.sort_btn.active.asc{
+	    background-position: right 4px;
+	}
+	div.catalog-list-wrap div.element-sort a.sort_btn.active.desc{
+	    background-position: right 4px;
+	}
+	div.catalog-list-wrap div.menu-navigation ul.nav > li.back a{
+		background-position: left 17px;
+	}
+	div.menu-navigation ul.new-detail > li.back a{
+		background-position: left 1px;
+	}
+	div.switcher ul.switcher-tab li{
+	    padding: 12px 20px 5px;
+	}
+}

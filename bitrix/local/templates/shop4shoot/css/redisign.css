@@ -1,0 +1,6 @@
+.redisign {
+  --pink: #ff0070;
+  --container-padding: 15px;
+  --header-container: calc(1800px + var(--container-padding) * 2);
+}
+

@@ -1,0 +1,30 @@
+.main-color{
+	color: #000;
+}
+
+@media (min-width: 1200px){
+	a.main-color:hover,
+	button.main-color:hover,
+	input.main-color:hover{
+		color: #000;
+	}
+	
+}
+a.main-color:focus,
+button.main-color:focus,
+input.main-color:focus,
+a.main-color:visited,
+button.main-color:visited,
+input.main-color:visited,
+a.main-color:hover,
+button.main-color:hover,
+input.main-color:hover,
+header div.header-top div.wrap-main-menu nav.main-menu > li:hover > a,
+header div.header-top div.wrap-main-menu nav.main-menu > li > a.selected,
+header div.header-top div.wrap-main-menu a.ic-main-menu-burger:hover,
+header div.header-top div.wrap-main-menu nav.main-menu > li.parent > ul > li:hover > a,
+header div.header-top div.wrap-main-menu nav.main-menu > li.parent > ul > li > a.selected,
+header div.header-top div.wrap-main-menu nav.main-menu > li.parent > ul > li.parent2 ul > li:hover > a,
+header div.header-top div.wrap-main-menu nav.main-menu > li.parent > ul > li.parent2 ul > li > a.selected{
+	color: #000;
+}

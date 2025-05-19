@@ -1,0 +1,8 @@
+.main1, h1, h2, h3, h4, h5, h6{
+	font-family: 'Roboto', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 700;
+}
+.main2{
+    font-family: 'Roboto', sans-serif, Arial, 'PT Sans Caption';
+    font-weight: 400;
+}

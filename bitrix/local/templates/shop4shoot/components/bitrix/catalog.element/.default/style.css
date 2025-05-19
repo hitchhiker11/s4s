@@ -1,0 +1,3 @@
+ol.inner-breadcrumb li.active{
+    display: none !important;
+}

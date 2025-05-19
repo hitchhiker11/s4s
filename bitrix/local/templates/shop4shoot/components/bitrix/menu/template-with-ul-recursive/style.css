@@ -1,0 +1,290 @@
+
+
+
+.r-parent {
+  display: flex;
+  gap: 10px;
+  padding: 0;
+  align-items: center;
+}
+
+.r-parent,
+.r-parent ul,
+.r-parent li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.r-parent {
+  position: relative;
+  z-index: 1000;
+}
+.r-child {
+  position: absolute;
+  top: 100%;
+  display: none;
+  background-color: var(--white);
+}
+.r-parent > li.separator {
+  width: 4px;
+  height: 4px;
+  background-color: var(--pink);
+  border-radius: 50%;
+}
+.r-parent > li.separator-last {
+  display: none;
+}
+.r-parent > li:hover {
+
+}
+
+.r-parent > li > span,
+.r-parent > li > a  {
+  display: inline-block;
+  font-size: 29px;
+  padding: 20px 0;
+  color: #ffffff;
+  font-weight: 500;
+  font-family: var(--font-ttс);
+  text-transform: uppercase;
+
+}
+@media (min-width: 1000px) {
+  .r-parent > li > span,
+  .r-parent > li > a {
+    position: relative;
+  }.r-parent > li > span:before,
+  .r-parent > li > a:before {
+    content: "";
+    display: block;
+    width: calc(100% + 8px);
+    height: 2px;
+    position: absolute;
+    left: -4px;
+    bottom: 16px;
+    background-color: transparent;
+    transition: background-color .2s linear;
+
+  }
+  .r-parent > li:hover > span:before,
+  .r-parent > li:hover > a:before {
+    background-color: var(--pink);
+  }
+  .r-parent > li:hover .r-child {
+    display: flex;
+    box-shadow: 2px 11px 8px 2px grey;
+    padding: var(--child-list-top-padding) 20px;
+    background-color: var(--white);
+    z-index: 1;
+  }
+}
+
+.r-child span,
+.r-child a {
+  font-weight: 700;
+  font-size: 16px;
+  color: Var(--dark);
+  font-family: 'SegoeUIRegular',Arial,'PT Sans Caption';
+}
+
+.r-child {
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  flex-direction: row;
+  flex-wrap: wrap;
+  writing-mode: vertical-lr;
+  text-orientation: upright;
+}
+
+.r-child * {
+  writing-mode: horizontal-tb;
+}
+
+.r-items span,
+.r-items a {
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.r-items li {
+  padding-left: 20px;
+  position: relative;
+}
+.r-items li:before {
+  content: "-";
+  position: absolute;
+  display: block;
+  left: 4px;
+  top: 1px;
+}
+
+
+
+
+@media (min-width: 768px) {
+
+  .r-child a:hover {
+    text-decoration: underline;
+  }
+}
+.filter-namespace {
+  display: flex;
+}
+.filter-namespace ul {
+  transition: scale .1s linear;
+  display: none;
+  gap: 8px;
+  scale: 0;
+}
+.filter-namespace [data-namespace] {
+  transition: scale .1s linear;
+  display: block;
+  scale: 1;
+}
+
+
+.current-filter-namespace ul {
+  display: flex;
+  scale: 1;
+}
+.current-filter-namespace [data-namespace] {
+  display: none;
+  scale: 0;
+}
+
+.r-header-mobile {
+  display: none;
+}
+
+@media (max-width: 1410px) {
+  .r-parent > li > span,
+  .r-parent > li > a {
+    font-size: 20px;
+  }
+}
+@media (max-width: 1000px) {
+  .r-header__footer {
+    position: relative;
+  }
+  .r-parent {
+    position: absolute;
+    padding: 20px 24px;
+    top: 100%;
+    background-color: var(--white);
+    display: block;
+    width: 100dvw;
+    height: calc(100dvh - (var(--slider-max-height-fix) + var(--header-top-height-fix)));
+    overflow-y: auto;
+    left: -100dvw;
+    transition: opacity .2s linear, left .3s linear;
+    z-index: 100;
+    opacity: 0;
+  }
+  .r-show-mobile-menu .r-parent {
+    left: 0;
+    box-shadow: 0 10px 5px 10px grey;
+    opacity: 1;
+  }
+  .r-parent li span,
+  .r-parent li a {
+    color: var(--dark);
+    font-family: var(--font-ttс);
+    font-size: 20px;
+  }
+  .r-parent .separator {
+    display: none;
+  }
+  .r-parent > li {
+    position: relative;
+  }
+  .r-parent > li > span,
+  .r-parent > li > a {
+    padding: 4px 0 4px 16px;
+    font-size: 29px;
+  }
+  .r-parent > li + li {
+    margin-top: 6px;
+  }
+  .r-parent > li > span:before,
+  .r-parent > li > a:before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 16px;
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--pink);
+  }
+
+  .r-parent .r-child {
+    display: block;
+    position: static;
+    writing-mode: initial;
+    text-orientation: initial;
+  }
+  .r-child li {
+    display: block;
+  }
+  .r-items {
+    display: none;
+  }
+  .r-header-mobile {
+    display: block;
+  }
+
+  .r-parent .r-header-mobile-first {
+    margin-top: 44px;
+    position: relative;
+  }
+
+  .r-parent .r-header-mobile-first:before {
+    content: "";
+    width: 200px;
+    height: 2px;
+    background-color: var(--pink);
+    position: absolute;
+    display: block;
+    top: -21px;
+    left: 16px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

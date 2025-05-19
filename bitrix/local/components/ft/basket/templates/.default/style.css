@@ -1,0 +1,470 @@
+.parent_link_style {
+  position: relative;
+}
+
+.parent_link_style a.link_style {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+[data-k-entity=k-basket-empty]  {
+  display: none;
+}
+.k-basket-wrapper td.td-lvl-1 {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  vertical-align: top;
+}
+
+.k-basket-wrapper .img {
+  width: 70px;
+  padding-right: 15px;
+}
+
+
+.k-basket-wrapper .img img {
+  max-height: 70px;
+}
+
+.k-basket-wrapper .main {
+  color: #000;
+}
+
+.k-basket-wrapper .bold {
+  /*font-weight: 700;*/
+}
+
+.k-basket-wrapper .name .main {
+  font-size: 15px;
+  line-height: 20px;
+  margin-bottom: 2px;
+}
+
+.k-basket-wrapper .name .main:hover {
+  color: #656565;
+  -webkit-transition: color .3s;
+  -o-transition: color .3s;
+  transition: color .3s;
+}
+
+.k-basket-wrapper .other {
+  font-size: 14px;
+  line-height: 20px;
+  color: #b1a9a9;
+  font-style: italic;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.k-basket-wrapper .name_offers {
+  font-size: 13px;
+  line-height: 22px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.k-basket-wrapper .counter {
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.k-basket-wrapper .count-cart {
+  height: 24px;
+  margin: auto;
+  /*margin-bottom: auto;*/
+  margin-bottom: 10px;
+}
+
+.k-basket-wrapper .count-cart > div {
+  font-size: 10px;
+  text-align: center;
+}
+
+.k-basket-wrapper .has-max-count {
+  height: 42px;
+}
+
+.k-basket-wrapper .has-max-count table {
+  height: 24px;
+}
+
+.k-basket-wrapper .minus,
+.k-basket-wrapper .plus {
+  cursor: pointer;
+}
+
+.k-basket-wrapper td.left,
+.k-basket-wrapper td.right {
+  width: 28px;
+  height: 100%;
+}
+
+.k-basket-wrapper .minus div {
+  border: 1px solid #cccccc;
+  -webkit-border-radius: 3px 0 0 3px;
+  -moz-border-radius: 3px 0 0 3px;
+  border-radius: 3px 0 0 3px;
+  height: 100%;
+  background: url(/bitrix/templates/concept_kraken_s1/images/cart/min.jpg) center no-repeat;
+}
+
+.k-basket-wrapper .plus div {
+  border: 1px solid #cccccc;
+  -webkit-border-radius: 0 3px 3px 0;
+  -moz-border-radius: 0 3px 3px 0;
+  border-radius: 0 3px 3px 0;
+  height: 100%;
+  background: url(/bitrix/templates/concept_kraken_s1/images/cart/plus.png) center no-repeat;
+}
+
+.k-basket-wrapper .k-count-val {
+  width: 100%;
+  border: 0;
+  border-top-width: 0px;
+  border-top-style: none;
+  border-top-color: currentcolor;
+  border-bottom-width: 0px;
+  border-bottom-style: none;
+  border-bottom-color: currentcolor;
+  border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+  height: 100%;
+  text-align: center;
+  padding: 0 2px;
+  font-size: 15px;
+  line-height: 15px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.k-basket-wrapper td.price {
+  vertical-align: top;
+  text-align: center;
+}
+.k-basket-wrapper .price-one {
+  font-size: 15px;
+  line-height: 20px;
+  color: #000;
+  margin-bottom: 3px;
+}
+
+.k-basket-wrapper td.remove-wrap {
+  position: relative;
+  padding-right: 0;
+}
+
+.k-basket-wrapper .remove-wrap div {
+  position: relative;
+  width: 14px;
+  height: 19px;
+  margin-left: auto;
+}
+
+.k-basket-wrapper .remove-wrap a.remove {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("/bitrix/templates/concept_kraken_s1/images/cart/remove.png") left top no-repeat;
+  top: 3px;
+  left: 50%;
+  -webkit-transform: translate(-50%,0);
+  -ms-transform: translate(-50%,0);
+  -o-transform: translate(-50%,0);
+  transform: translate(-50%,0);
+}
+
+.k-basket-wrapper .remove-wrap a.remove:hover {
+  background: url("/bitrix/templates/concept_kraken_s1/images/cart/remove.png") right top no-repeat;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*.title-form.main1 {*/
+/*  font-size: 21px;*/
+/*  line-height: 25px;*/
+/*  text-transform: uppercase;*/
+/*  text-align: center;*/
+/*  margin-bottom: 20px;*/
+/*}*/
+
+/*.form-order .input {*/
+/*  margin: 0 0 15px;*/
+/*  position: relative;*/
+/*}*/
+/*.form-order .input .bg {*/
+/*  position: absolute;*/
+/*  top: 0;*/
+/*  bottom: 0;*/
+/*  left: 0;*/
+/*  right: 0;*/
+/*  background-color: #fff;*/
+/*  -webkit-border-radius: 5px;*/
+/*  -moz-border-radius: 5px;*/
+/*  border-radius: 4px;*/
+/*}*/
+
+/*.form-order .input .desc {*/
+/*  font-size: 16px;*/
+/*  line-height: 17px;*/
+/*  position: absolute;*/
+/*  top: 18px;*/
+/*  left: 16px;*/
+/*  color: #767676;*/
+/*  transition: .3s;*/
+/*  -webkit-transition: .3s;*/
+/*  -moz-transition: .3s;*/
+/*  -o-transition: .3s;*/
+/*}*/
+
+/*.form-order .input.in-focus .desc {*/
+/*  font-size: 12px;*/
+/*  line-height: 13px;*/
+/*  padding: 7px 11px 0;*/
+/*  top: 2px;*/
+/*  left: 2px;*/
+/*  right: 2px;*/
+/*  background: #fff;*/
+/*  z-index: 10;*/
+/*}*/
+
+/*.form-order input[type="text"], form.form input[type="email"], form.form input[type="password"] {*/
+/*  width: 100%;*/
+/*  -webkit-border-radius: 5px;*/
+/*  -moz-border-radius: 5px;*/
+/*  border-radius: 4px;*/
+/*  box-shadow: none !important;*/
+/*  border: 2px solid #d5d5d5;*/
+/*  padding: 0 12px;*/
+/*  padding-top: 0px;*/
+/*  padding-right: 12px;*/
+/*  height: 54px;*/
+/*  position: relative;*/
+/*  font-size: 16px;*/
+/*  line-height: 17px;*/
+/*}*/
+/*.form-order textarea.focus-anim,*/
+/*.form-order input.focus-anim {*/
+/*  padding-top: 11px;*/
+/*  background: transparent;*/
+/*}*/
+
+/*.form-order textarea.focus-anim {*/
+/*  padding-top: 20px;*/
+/*}*/
+/*.form-order input.require {*/
+/*  background: url('/bitrix/templates/concept_kraken_s1/images/star-req.png') calc(100% - 12px) 50% no-repeat;*/
+/*  background-size: auto;*/
+/*  background-size: 7px;*/
+/*  padding-right: 35px;*/
+/*}*/
+
+/*.form-order textarea {*/
+/*  outline: none;*/
+/*  resize: none;*/
+/*  overflow: auto;*/
+/*  text-align: left;*/
+/*  -webkit-border-radius: 5px;*/
+/*  -moz-border-radius: 5px;*/
+/*  border-radius: 5px;*/
+/*  border: 2px solid #d5d5d5;*/
+/*  box-shadow: none;*/
+/*  width: 100%;*/
+/*  padding: 12px;*/
+/*  padding-top: 12px;*/
+/*  height: 110px;*/
+/*  font-size: 16px;*/
+/*  line-height: 17px;*/
+/*  position: relative;*/
+/*  background-color: transparent;*/
+/*}*/
+
+/*.form-order .input-textarea textarea {*/
+/*  height: 110px;*/
+/*}*/
+
+/*.form-order .name-tit-choose {*/
+/*  font-size: 18px;*/
+/*  line-height: 22px;*/
+/*  margin: 10px 0 20px;*/
+/*}*/
+
+/*.form-order .form-select {*/
+/*  position: relative;*/
+/*}*/
+
+/*.form-order .ar-down {*/
+/*  position: absolute;*/
+/*  width: 44px;*/
+/*  height: 44px;*/
+/*  right: 2px;*/
+/*  top: 2px;*/
+/*  bottom: 0;*/
+/*  background: #fff url('/bitrix/templates/concept_kraken_s1/images/select_ar.png') center no-repeat;*/
+/*  z-index: 10;*/
+/*  border-left: 2px solid #d5d5d5;*/
+/*  cursor: pointer;*/
+/*  -webkit-border-radius: 2px;*/
+/*  -moz-border-radius: 2px;*/
+/*  border-radius: 2px;*/
+/*}*/
+
+/*.form-order .select-list-choose {*/
+/*  font-size: 15px;*/
+/*  line-height: 15px;*/
+/*  width: 100%;*/
+/*  display: block;*/
+/*  background: #fff;*/
+/*  padding: 14px 55px 15px 12px;*/
+/*  position: relative;*/
+/*  -webkit-border-radius: 5px;*/
+/*  -moz-border-radius: 5px;*/
+/*  border-radius: 5px;*/
+/*  min-height: 43px;*/
+/*  border: 0;*/
+/*  cursor: pointer;*/
+/*  border: 2px solid #d5d5d5;*/
+/*  color: #767676;*/
+/*}*/
+
+/*.form-order .select-list {*/
+/*  display: none;*/
+/*  position: absolute;*/
+/*  top: 100%;*/
+/*  left: 0;*/
+/*  width: calc(100% - 58px);*/
+/*  background: #fff;*/
+/*  z-index: 11;*/
+/*  border: 2px solid #d5d5d5;*/
+/*  border-top-width: 2px;*/
+/*  border-top-style: solid;*/
+/*  border-top-color: rgb(213, 213, 213);*/
+/*  border-top: 0;*/
+/*}*/
+
+/*.form-order .select-list label {*/
+/*  display: block;*/
+/*  font-weight: normal;*/
+/*  max-width: 100%;*/
+/*  margin-bottom: 5px;*/
+/*}*/
+
+/*.form-order .select-list .name {*/
+/*  display: block;*/
+/*  padding: 12px;*/
+/*  cursor: pointer;*/
+/*  overflow: hidden;*/
+/*}*/
+
+/*.form-order .select-list input[type="radio"] {*/
+/*  position: absolute;*/
+/*  left: -9999999999px;*/
+/*  margin: 4px 0 0;*/
+/*  margin-top: 1px\9;*/
+/*  line-height: normal;*/
+/*  -webkit-box-sizing: border-box;*/
+/*  -moz-box-sizing: border-box;*/
+/*  box-sizing: border-box;*/
+/*  padding: 0;*/
+/*}*/
+/*.form-order .form-select.open .select-list {*/
+/*  display: block;*/
+/*  max-height: 194px;*/
+/*  overflow: auto;*/
+/*}*/
+
+/*.form-order .form-select.open .select-list label:last-child {*/
+/*  margin-bottom: 0;*/
+/*}*/
+
+/*.form-order .inp-desc-style.active {*/
+/*  padding: 0 0 5px 30px;*/
+/*  font-size: 14px;*/
+/*  line-height: 19px;*/
+/*  color: #5d5d5d;*/
+/*  background: url("/bitrix/templates/concept_kraken_s1/images/cart/info.png") left top no-repeat;*/
+/*  margin: 16px 0 0;*/
+/*  position: static;*/
+/*}*/
+
+/*.form-order .button-def {*/
+/*  width: 100%;*/
+/*}*/
+
+
+/*.form-order .has-error input[type="text"],*/
+/*.form-order .has-error input[type="email"],*/
+/*.form-order .has-error input[type="password"] {*/
+/*  border-color: #a94242 !important;*/
+/*  transition: .7s;*/
+/*  -webkit-transition: .7s;*/
+/*  -moz-transition: .7s;*/
+/*  -o-transition: .7s;*/
+/*}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

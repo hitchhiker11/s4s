@@ -1,0 +1,53 @@
+.main1, h1, h2, h3, h4, h5, h6{
+	font-family: 'PT Serif', serif, Arial, 'PT Sans Caption';
+    font-weight: 700;
+}
+.main2{
+    font-family: 'PT Serif', serif, Arial, 'PT Sans Caption';
+    font-weight: 400;
+}
+div.first-slider div.first-block div.first-block-container div.head div.title{
+    font-size: 50px;
+    line-height: 55px;
+}
+div.first-slider div.first-block div.first-block-container div.head.min div.title{
+    font-size: 45px;
+    line-height: 50px;
+}
+
+div.block div.head.min h2{
+    font-size: 45px;
+    line-height: 52px;
+}
+div.block div.head h2{
+    font-size: 47px;
+    line-height: 54px;
+}
+
+
+
+div.news div.slider-news div.element div.name{
+    font-size: 19px;
+    line-height: 25px;
+}
+
+div.tarif div.tarif-item div.tarif-element div.name{
+    font-size: 23px;
+    line-height: 28px;
+}
+
+div.tarif-2 div.tarif-table div.tarif-cell.text-part div.tarif-body div.list-wrap div.name{
+    font-size: 23px;
+    line-height: 28px;
+}
+
+div.faq-block div.photo div.bot div.name{
+    font-size: 23px;
+    line-height: 23px;
+}
+
+div.form-block div.form-table div.form-cell form.form div.title{
+    font-size: 19px;
+    line-height: 23px;
+    margin-bottom: 12px;
+}
