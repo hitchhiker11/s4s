@@ -1,4 +1,0 @@
-<?php
-  $sSectionName = "Бренды";
-  $arDirProperties = [];
-?>
