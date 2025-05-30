@@ -51,7 +51,7 @@ npm install
 3. Создать файл `.env.local` и настроить переменные окружения:
 
 ```
-NEXT_PUBLIC_BITRIX_URL=http://your-bitrix-site.com
+NEXT_PUBLIC_BITRIX_URL=http://api-route.com
 ```
 
 ## Разработка

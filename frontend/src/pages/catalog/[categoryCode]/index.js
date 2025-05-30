@@ -2,18 +2,23 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
 
-import { getCategoryDetails, getSubcategoriesForCategory } from '../../../lib/mockData'; // Using mock data for now
+// Импортируем методы API вместо моков
+import { getCategoryByCode, getSubcategories, getCatalogItemsByCategory } from '../../../lib/api/bitrix';
+import { transformCatalogItems } from '../../../lib/api/transformers';
+// Закомментируем моки, но оставим импорт для fallback
+// import { getCategoryDetails, getSubcategoriesForCategory } from '../../../lib/mockData';
 import { loadBitrixCore } from '../../../lib/auth';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import Breadcrumbs from '../../../components/Breadcrumbs';
-import CategoryCard from '../../../components/CategoryCard'; // Use CategoryCard
-import ResponsiveProductSection from '../../../components/ResponsiveProductSection'; // For recently viewed
+import CategoryCard from '../../../components/CategoryCard';
+import ResponsiveProductSection from '../../../components/ResponsiveProductSection';
 import SubscriptionForm from '../../../components/SubscriptionForm'; 
-import ProductCard from '../../../components/ProductCard'; // Needed for Recently Viewed inside ResponsiveProductSection
+import ProductCard from '../../../components/ProductCard';
 
-import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens'; // Added SPACING
+import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens';
 
 // Styled components (can be reused or adapted from other catalog pages)
 const Container = styled.div`
@@ -121,6 +126,12 @@ const EmptyState = styled.div`
   font-size: 18px;
 `;
 
+const LoadingState = styled.div`
+  text-align: center;
+  padding: 50px;
+  color: #666;
+`;
+
 // Dummy recently viewed data for now - this should come from an API or context in a real app
 // Fetch this via API in getServerSideProps or useQuery
 const DUMMY_RECENTLY_VIEWED = [
@@ -207,27 +218,74 @@ const DoubleCardWrapperSecond = styled.div`
   }
 `;
 
-// Replace the CategoryCardWrapper with a version that handles both mobile and desktop
-const CategoryCardWrapper = ({ categories }) => {
+// Специальная карточка "Все товары"
+const AllProductsCard = styled(CategoryCard)`
+  background-color: ${COLORS.primary};
+  
+  h3 {
+    color: ${COLORS.white};
+    font-weight: 700;
+  }
+`;
+
+// Преобразуем данные из API в формат для наших компонентов
+const transformCategory = (apiCategory) => {
+  if (!apiCategory) return null;
+  
+  return {
+    id: apiCategory.id,
+    name: apiCategory.name,
+    code: apiCategory.fields?.CODE || '',
+    image: apiCategory.fields?.PICTURE ? `/upload/${apiCategory.fields.PICTURE}` : null,
+  };
+};
+
+const transformSubcategories = (apiSubcategories, parentCategoryCode) => {
+  if (!apiSubcategories || !Array.isArray(apiSubcategories)) return [];
+  
+  return apiSubcategories.map(subcat => ({
+    id: subcat.id,
+    name: subcat.name,
+    code: subcat.fields?.CODE || '',
+    // Формируем ссылку в формате /catalog/[categoryCode]/[subCategoryCode]
+    link: `/catalog/${parentCategoryCode}/${subcat.fields?.CODE || subcat.id}`,
+    imageUrl: subcat.fields?.PICTURE ? `/upload/${subcat.fields.PICTURE}` : null,
+  }));
+};
+
+// Update the CategoryCardWrapper with a version that handles both mobile and desktop
+const CategoryCardWrapper = ({ categories, allProductsCard }) => {
+  // Add "All Products" card at the beginning if provided
+  const allCategories = allProductsCard 
+    ? [allProductsCard, ...categories]
+    : categories;
+    
   // For mobile layout, we need special handling for the last row
-  const totalCards = categories.length;
+  const totalCards = allCategories.length;
   const remainder = totalCards % 3;
   
   // If remainder is 1 or 2, we need special handling for the last 1 or 2 cards in mobile view
   const standardCardsCount = remainder === 0 ? totalCards : totalCards - remainder;
-  const standardCategories = categories.slice(0, standardCardsCount);
-  const lastRowCategories = categories.slice(standardCardsCount);
+  const standardCategories = allCategories.slice(0, standardCardsCount);
+  const lastRowCategories = allCategories.slice(standardCardsCount);
 
   return (
     <CategoriesGrid>
       {/* Standard cards render normally in both mobile and desktop */}
-      {standardCategories.map(category => (
+      {standardCategories.map((category, index) => (
         <CategoryCard 
           key={category.id}
-          title={category.title} 
-          imageUrl={category.imageUrl}
+          title={category.title || category.name} 
+          imageUrl={category.imageUrl || category.image}
           link={category.link}
-          additionalStyles={{ maxWidth: '260px' }} 
+          additionalStyles={{ 
+            maxWidth: '260px',
+            ...(index === 0 && allProductsCard ? { 
+              backgroundColor: COLORS.primary,
+              color: COLORS.white,
+              fontWeight: 700
+            } : {})
+          }} 
         />
       ))}
 
@@ -236,8 +294,8 @@ const CategoryCardWrapper = ({ categories }) => {
         <SingleCardWrapper>
           <CategoryCard 
             key={lastRowCategories[0].id}
-            title={lastRowCategories[0].title} 
-            imageUrl={lastRowCategories[0].imageUrl}
+            title={lastRowCategories[0].title || lastRowCategories[0].name} 
+            imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
             link={lastRowCategories[0].link}
             additionalStyles={{ maxWidth: '260px' }} 
           />
@@ -249,18 +307,17 @@ const CategoryCardWrapper = ({ categories }) => {
           <DoubleCardWrapperFirst>
             <CategoryCard 
               key={lastRowCategories[0].id}
-              title={lastRowCategories[0].title} 
-              imageUrl={lastRowCategories[0].imageUrl}
+              title={lastRowCategories[0].title || lastRowCategories[0].name}
+              imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
               link={lastRowCategories[0].link}
             />
           </DoubleCardWrapperFirst>
           <DoubleCardWrapperSecond>
             <CategoryCard 
               key={lastRowCategories[1].id}
-              title={lastRowCategories[1].title} 
-              imageUrl={lastRowCategories[1].imageUrl}
+              title={lastRowCategories[1].title || lastRowCategories[1].name}
+              imageUrl={lastRowCategories[1].imageUrl || lastRowCategories[1].image}
               link={lastRowCategories[1].link}
-
             />
           </DoubleCardWrapperSecond>
         </>
@@ -269,9 +326,98 @@ const CategoryCardWrapper = ({ categories }) => {
   );
 };
 
-const CategoryDetailPage = ({ category, subCategories, seo }) => {
+const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewProducts, seo }) => {
   const router = useRouter();
   const { categoryCode } = router.query;
+
+  // Запрос категории по символьному коду
+  const { data: categoryData, isError: categoryIsError } = useQuery(
+    ['category', categoryCode],
+    () => getCategoryByCode(categoryCode, { limit: 1 }),
+    {
+      enabled: !!categoryCode,
+      staleTime: 1000 * 60 * 5, // 5 минут
+    }
+  );
+
+  // Извлекаем информацию о категории из полученных данных
+  const category = React.useMemo(() => {
+    if (categoryData?.data && categoryData.data.length > 0) {
+      return transformCategory(categoryData.data[0]);
+    }
+    
+    // Fallback к initialCategory если есть
+    if (initialCategory) {
+      return initialCategory;
+    }
+    
+    return null;
+  }, [categoryData, initialCategory]);
+
+  // Запрос подкатегорий по ID категории
+  const { data: subCategoriesData, isError: subCategoriesIsError, isLoading: subCategoriesIsLoading } = useQuery(
+    ['subcategories', category?.id],
+    () => getSubcategories(category.id, { tree_mode: 'flat' }),
+    {
+      enabled: !!category?.id,
+      staleTime: 1000 * 60 * 5, // 5 минут
+    }
+  );
+
+  // Преобразуем подкатегории в формат для отображения
+  const subCategories = React.useMemo(() => {
+    if (subCategoriesData?.data) {
+      return transformSubcategories(subCategoriesData.data, categoryCode);
+    }
+    
+    // Fallback к initialSubCategories если есть
+    if (initialSubCategories) {
+      return initialSubCategories;
+    }
+    
+    return [];
+  }, [subCategoriesData, initialSubCategories, categoryCode]);
+
+  // Запрос новых товаров категории
+  const { data: newProductsData, isError: newProductsIsError, isLoading: newProductsIsLoading } = useQuery(
+    ['newCategoryProducts', category?.id],
+    () => getCatalogItemsByCategory(category.id, { 
+      include_subsections: 'Y',
+      limit: 12,
+      sort: 'date_create:asc'
+    }),
+    {
+      enabled: !!category?.id,
+      staleTime: 1000 * 60 * 5, // 5 минут
+    }
+  );
+
+  // Преобразуем новые товары в формат для отображения
+  const newProducts = React.useMemo(() => {
+    if (newProductsData?.data) {
+      return transformCatalogItems(newProductsData.data);
+    }
+    
+    // Fallback к initialNewProducts если есть
+    if (initialNewProducts) {
+      return initialNewProducts;
+    }
+    
+    return [];
+  }, [newProductsData, initialNewProducts]);
+
+  // Преобразуем товары для компонента ResponsiveProductSection
+  const formattedNewProducts = React.useMemo(() => {
+    return newProducts.map(product => ({
+      id: product.id,
+      imageUrl: product.image,
+      brand: product.brand,
+      name: product.name,
+      price: product.price,
+      productLink: product.detailUrl,
+      CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N'
+    }));
+  }, [newProducts]);
 
   // AddToCart handler for recently viewed items
   const handleAddToCart = (product) => {
@@ -301,13 +447,15 @@ const CategoryDetailPage = ({ category, subCategories, seo }) => {
     { href: `/catalog/${categoryCode}`, label: category.name } // Current page
   ];
 
-  // Format subCategories for CategoryCardWrapper
-  const formattedSubCategories = subCategories.map(subCat => ({
-    id: subCat.code, // Use code as unique id
-    title: subCat.name,
-    link: `/catalog/${categoryCode}/${subCat.code}`,
-    imageUrl: null // Explicitly set imageUrl to null for blank space
-  }));
+  // Создаем карточку "Все товары"
+  const allProductsCard = {
+    id: 'all-products',
+    name: 'Все товары',
+    title: 'Все',
+    link: `/catalog/${categoryCode}/all`,
+    imageUrl: null,
+    isAllProducts: true
+  };
 
   return (
     <>
@@ -322,38 +470,36 @@ const CategoryDetailPage = ({ category, subCategories, seo }) => {
       <Container>
         <PageTitle>{category.name}</PageTitle>
 
-        {formattedSubCategories && formattedSubCategories.length > 0 ? (
-          // Use CategoryCardWrapper with formatted subcategories
-          <CategoryCardWrapper categories={formattedSubCategories} />
+        {subCategoriesIsLoading ? (
+          <LoadingState>Загрузка подкатегорий...</LoadingState>
+        ) : subCategories && subCategories.length > 0 ? (
+          // Используем CategoryCardWrapper с форматированными подкатегориями и картой "Все товары"
+          <CategoryCardWrapper 
+            categories={subCategories} 
+            allProductsCard={allProductsCard}
+          />
         ) : (
           <EmptyState>В этой категории пока нет подкатегорий.</EmptyState>
         )}
 
         {/* Recently Viewed Section - API data needed */} 
-        {DUMMY_RECENTLY_VIEWED.length > 0 && (
-            <RecentlyViewedSection>
-              <SectionHeader>
-                  <SectionTitle>Недавно просмотренные</SectionTitle>
-              </SectionHeader>
-              {/* Using ProductsGrid directly until ResponsiveProductSection is confirmed needed/working */}
-              <ProductsGrid>
-                  {DUMMY_RECENTLY_VIEWED.map(product => (
-                      <ProductCard key={product.ID} product={product} onAddToCart={handleAddToCart}/>
-                  ))}
-              </ProductsGrid>
-            </RecentlyViewedSection>
+        {newProductsIsLoading ? (
+          <LoadingState>Загрузка товаров...</LoadingState>
+        ) : formattedNewProducts && formattedNewProducts.length > 0 ? (
+          <ResponsiveProductSection 
+            title="Новые поступления"
+            subtitle=""
+            viewAllLink={`/catalog/${categoryCode}/all`}
+            showViewAllLink={true}
+            items={formattedNewProducts}
+            renderItem={renderRecentlyViewedProductCard}
+            onAddToCart={handleAddToCartRecentlyViewed}
+            gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
+          />
+        ) : (
+          <EmptyState>В этой категории пока нет товаров.</EmptyState>
         )}
 
-        <ResponsiveProductSection 
-          title="Новые поступления"
-          subtitle=""
-          viewAllLink="/catalog?filter=new"
-          showViewAllLink={false}
-          items={mockRecentlyViewedProducts} // Use 'items' prop name
-          renderItem={renderRecentlyViewedProductCard} // Pass the render function
-          onAddToCart={handleAddToCartRecentlyViewed} // Still needed for ProductCard via renderItem
-          gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
-        />
         <SubscriptionForm />
 
       </Container>
@@ -364,30 +510,78 @@ const CategoryDetailPage = ({ category, subCategories, seo }) => {
 
 export async function getServerSideProps(context) {
   const { categoryCode } = context.query;
+  const queryClient = new QueryClient();
   
-  // Fetch category details and subcategories from API or use mock
-  const category = getCategoryDetails(categoryCode);
-  const subCategories = getSubcategoriesForCategory(categoryCode);
-  // TODO: Fetch Recently Viewed from API here
-
-  if (!category) {
-    return { notFound: true }; 
+  try {
+    // Предварительно запрашиваем категорию по коду
+    await queryClient.prefetchQuery(['category', categoryCode], () => 
+      getCategoryByCode(categoryCode, { limit: 1 })
+    );
+    
+    // Получаем данные категории из кэша
+    const categoryData = queryClient.getQueryData(['category', categoryCode]);
+    
+    // Если категория не найдена, возвращаем 404
+    if (!categoryData?.data || categoryData.data.length === 0) {
+      return { notFound: true };
+    }
+    
+    const category = transformCategory(categoryData.data[0]);
+    
+    // Предварительно запрашиваем подкатегории
+    await queryClient.prefetchQuery(['subcategories', category.id], () => 
+      getSubcategories(category.id, { tree_mode: 'flat' })
+    );
+    
+    // Получаем данные подкатегорий из кэша
+    const subCategoriesData = queryClient.getQueryData(['subcategories', category.id]);
+    const subCategories = subCategoriesData?.data 
+      ? transformSubcategories(subCategoriesData.data, categoryCode)
+      : [];
+    
+    // Предварительно запрашиваем новые товары категории
+    await queryClient.prefetchQuery(['newCategoryProducts', category.id], () => 
+      getCatalogItemsByCategory(category.id, { 
+        include_subsections: 'Y',
+        limit: 12,
+        sort: 'date_create:asc'
+      })
+    );
+    
+    // Получаем данные новых товаров из кэша
+    const newProductsData = queryClient.getQueryData(['newCategoryProducts', category.id]);
+    const newProducts = newProductsData?.data
+      ? transformCatalogItems(newProductsData.data)
+      : [];
+    
+    // SEO данные
+    const seo = {
+      title: `${category.name} - подкатегории | Shop4Shoot`,
+      description: `Ознакомьтесь с подкатегориями товаров в разделе ${category.name} нашего интернет-магазина.`,
+    };
+    
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+        initialCategory: category,
+        initialSubCategories: subCategories,
+        initialNewProducts: newProducts,
+        seo,
+      },
+    };
+  } catch (error) {
+    console.error('Error in getServerSideProps:', error);
+    
+    // Используем мок-данные как fallback
+    // const category = getCategoryDetails(categoryCode);
+    // const subCategories = getSubcategoriesForCategory(categoryCode);
+    
+    // if (!category) {
+    //  return { notFound: true }; 
+    // }
+    
+    return { notFound: true };
   }
-
-  // Dummy SEO data
-  const seo = {
-    title: `${category.name} - подкатегории | Shop4Shoot`,
-    description: `Ознакомьтесь с подкатегориями товаров в разделе ${category.name} нашего интернет-магазина.`,
-  };
-
-  return {
-    props: {
-      category,
-      subCategories,
-      seo,
-      // Pass recently viewed items data if fetched
-    },
-  };
 }
 
 export default CategoryDetailPage; 

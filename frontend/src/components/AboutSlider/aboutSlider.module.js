@@ -5,7 +5,7 @@ import SwiperCore, { Autoplay, Pagination, Navigation } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { useAboutSliderData } from '../../lib/hooks/useAboutSliderData';
+import { useAboutSliderData } from '../../lib/hooks/useAbboutSliderData';
 import styles from './slider.module.css'; // Импортируем стили как CSS Modules
 
 // Инициализируем Swiper-модули

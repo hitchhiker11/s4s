@@ -3,6 +3,7 @@ import Link from 'next/link';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
+import { useBasket } from '../../hooks/useBasket';
 
 // Completely restructured CardWrapper to fix height calculation issues
 const CardWrapper = styled.div`
@@ -188,6 +189,9 @@ const AddToCartButton = styled.button`
 `;
 
 const ProductCard = ({ product, onAddToCart }) => {
+  // Use the basket hook to get the addToBasket function
+  const { addToBasket, isLoading } = useBasket({ initialFetch: false });
+  
   const {
     id,
     imageUrl,
@@ -208,10 +212,23 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-    if (onAddToCart && isAvailable) {
-      onAddToCart(id);
+    
+    if (isAvailable) {
+      // Use the new API method to add to basket
+      addToBasket({
+        product_id: id,
+        quantity: 1
+      });
+      
+      // Also call the parent component's onAddToCart if provided (for backwards compatibility)
+      if (onAddToCart) {
+        onAddToCart(id);
+      }
+      
+      console.log(`Adding product ${id} to basket`);
+    } else {
+      console.log(`Product ${id} is not available for purchase`);
     }
-    console.log(`Add to cart clicked: ${id}, Available: ${isAvailable}`);
   };
 
   const validProductLink = productLink && typeof productLink === 'string' && productLink.startsWith('/') 
@@ -247,8 +264,8 @@ const ProductCard = ({ product, onAddToCart }) => {
       <SeparatorLine />
 
       <AddToCartContainer>
-        <AddToCartButton onClick={handleAddToCart} disabled={!isAvailable}>
-          {isAvailable ? 'В корзину' : 'Нет в наличии'}
+        <AddToCartButton onClick={handleAddToCart} disabled={!isAvailable || isLoading}>
+          {isLoading ? 'Добавление...' : (isAvailable ? 'В корзину' : 'Нет в наличии')}
         </AddToCartButton>
       </AddToCartContainer>
     </CardWrapper>
@@ -261,9 +278,9 @@ ProductCard.propTypes = {
     imageUrl: PropTypes.string,
     brand: PropTypes.string,
     name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
+    price: PropTypes.number,
     productLink: PropTypes.string,
-    CATALOG_AVAILABLE: PropTypes.oneOf(['Y', 'N']),
+    CATALOG_AVAILABLE: PropTypes.string,
     badge: PropTypes.string
   }).isRequired,
   onAddToCart: PropTypes.func

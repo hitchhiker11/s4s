@@ -32,12 +32,13 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Получаем количество товаров в корзине через кастомный хук
-  const { data: basketCount = 0, isLoading: isBasketLoading, error: basketError } = useBasketCount({
+  const { count: basketCount = 0, isLoading: isBasketLoading, error: basketError } = useBasketCount({
     refetchOnWindowFocus: true,
     staleTime: 1000 * 60 * 2, // 2 minutes
-    useMock: useMocks, // Используем параметр для переключения режимов
-    mockData: mockBasketCount // Передаем количество товаров для мока
   });
+
+  // Use mockBasketCount if we're in mock mode
+  const displayBasketCount = useMocks ? mockBasketCount : basketCount;
 
   // Обработчик скролла для изменения внешнего вида хедера
   useEffect(() => {
@@ -102,7 +103,7 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
   return (
     <HeaderContainer role="navigation" aria-label="Основной заголовок сайта">
       <MainHeader 
-        basketCount={basketCount} 
+        basketCount={displayBasketCount} 
         isBasketLoading={isBasketLoading}
         toggleMobileMenu={toggleMobileMenu}
         isScrolled={isScrolled}
@@ -111,7 +112,7 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
         isOpen={isMobileMenuOpen} 
         onClose={closeMobileMenu}
         isAuthenticated={isAuthenticated}
-        basketCount={basketCount}
+        basketCount={displayBasketCount}
       />
     </HeaderContainer>
   );

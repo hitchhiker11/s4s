@@ -1,105 +1,168 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { 
-  getBasketCountResponse, 
-  addToBasketItem as apiAddToBasket, 
-  updateBasketItem as apiUpdateBasketItem, 
-  removeFromBasket as apiRemoveFromBasket, 
-  clearBasket as apiClearBasket 
+  getBasket,
+  addToBasket,
+  updateBasketItemQuantity,
+  removeFromBasket,
+  clearBasket
 } from '../lib/api/bitrix';
 
-// Хук для получения количества товаров в корзине
-export const useBasketCount = (options = {}) => {
+/**
+ * Hook to fetch and manage basket data
+ * @param {Object} options - Configuration options
+ * @param {boolean} options.initialFetch - Whether to fetch basket data on mount
+ * @param {boolean} options.refetchOnWindowFocus - Whether to refetch when window gains focus
+ * @param {number} options.staleTime - Time in ms before data is considered stale
+ * @returns {Object} Basket data and operations
+ */
+export const useBasket = (options = {}) => {
   const {
-    useMock = true, // В режиме разработки используем моки по умолчанию
-    mockData = 5,
+    initialFetch = true,
     refetchOnWindowFocus = false,
-    staleTime = 60000 // 1 минута
+    staleTime = 60000, // 1 minute
+    format = 'full' // 'full' or 'compact'
   } = options;
 
-  // Функция для имитации запроса к бэкенду
-  const fetchBasketCount = async () => {
-    if (useMock) {
-      console.log('Using mock basket count:', mockData);
-      return mockData;
-    }
+  const queryClient = useQueryClient();
 
-    // В реальном приложении здесь был бы запрос к API
+  // Function to fetch basket data
+  const fetchBasket = async () => {
     try {
-      // Для тестирования вернем фиксированное значение
-      return mockData;
+      const response = await getBasket({ format });
+      console.log('Fetched basket data:', response);
+      return response.basket || { items: [], summary: { count: 0, quantity: 0 } };
     } catch (error) {
-      console.error('Error fetching basket count:', error);
-      return 0;
+      console.error('Error fetching basket data:', error);
+      return { items: [], summary: { count: 0, quantity: 0 } };
     }
   };
 
-  const { data, isLoading, error } = useQuery(
-    ['basketCount', useMock ? 'mock' : 'real'],
-    fetchBasketCount,
+  // Query for basket data
+  const { 
+    data: basketData, 
+    isLoading: isLoadingBasket, 
+    error: basketError,
+    refetch: refetchBasket
+  } = useQuery(
+    ['basket', format],
+    fetchBasket,
     {
+      enabled: initialFetch,
       refetchOnWindowFocus,
-      staleTime
+      staleTime,
+      onError: (error) => {
+        console.error('Basket query error:', error);
+      }
     }
   );
 
+  // Invalidate basket queries to refresh data
+  const invalidateBasketQueries = () => {
+    queryClient.invalidateQueries(['basket']);
+  };
+
+  // Add item to basket mutation
+  const addToBasketMutation = useMutation(
+    (productData) => addToBasket(productData),
+    {
+      onSuccess: (data) => {
+        console.log('Item added to basket:', data);
+        invalidateBasketQueries();
+      },
+      onError: (error) => {
+        console.error('Error adding item to basket:', error);
+      }
+    }
+  );
+
+  // Update basket item quantity mutation
+  const updateBasketItemMutation = useMutation(
+    (updateData) => updateBasketItemQuantity(updateData),
+    {
+      onSuccess: (data) => {
+        console.log('Basket item updated:', data);
+        invalidateBasketQueries();
+      },
+      onError: (error) => {
+        console.error('Error updating basket item:', error);
+      }
+    }
+  );
+
+  // Remove item from basket mutation
+  const removeFromBasketMutation = useMutation(
+    (removeData) => removeFromBasket(removeData),
+    {
+      onSuccess: (data) => {
+        console.log('Item removed from basket:', data);
+        invalidateBasketQueries();
+      },
+      onError: (error) => {
+        console.error('Error removing item from basket:', error);
+      }
+    }
+  );
+
+  // Clear basket mutation
+  const clearBasketMutation = useMutation(
+    () => clearBasket(),
+    {
+      onSuccess: (data) => {
+        console.log('Basket cleared:', data);
+        invalidateBasketQueries();
+      },
+      onError: (error) => {
+        console.error('Error clearing basket:', error);
+      }
+    }
+  );
+
+  // Get basket count (items count, not quantity)
+  const basketCount = basketData?.summary?.count || 0;
+  const basketQuantity = basketData?.summary?.quantity || 0;
+  const basketItems = basketData?.items || [];
+  const basketTotalPrice = basketData?.summary?.total_price || 0;
+
   return {
-    data, // Количество товаров
-    isLoading,
-    error
+    // Basket data
+    basketData,
+    basketItems,
+    basketCount,
+    basketQuantity,
+    basketTotalPrice,
+    
+    // Loading and error states
+    isLoading: isLoadingBasket || 
+               addToBasketMutation.isLoading || 
+               updateBasketItemMutation.isLoading || 
+               removeFromBasketMutation.isLoading || 
+               clearBasketMutation.isLoading,
+    error: basketError, 
+    
+    // Operations
+    refetchBasket,
+    addToBasket: (productData) => addToBasketMutation.mutate(productData),
+    updateBasketItem: (basketItemId, quantity) => 
+      updateBasketItemMutation.mutate({ basket_item_id: basketItemId, quantity }),
+    removeFromBasket: (basketItemId) => 
+      removeFromBasketMutation.mutate({ basket_item_id: basketItemId }),
+    clearBasket: () => clearBasketMutation.mutate()
   };
 };
 
-// Хук для операций с корзиной
-export const useBasketOperations = () => {
-  const queryClient = useQueryClient();
-
-  // Обновление кэша количества товаров после операций
-  const invalidateBasketQueries = () => {
-    queryClient.invalidateQueries('basketCount');
-    queryClient.invalidateQueries('basketItems');
-  };
-
-  // Добавление товара в корзину
-  const addToBasketMutation = useMutation(
-    ({ productId, quantity }) => apiAddToBasket(productId, quantity),
-    {
-      onSuccess: () => invalidateBasketQueries(),
-    }
-  );
-
-  // Обновление количества товара в корзине
-  const updateBasketItemMutation = useMutation(
-    ({ productId, quantity }) => apiUpdateBasketItem(productId, quantity),
-    {
-      onSuccess: () => invalidateBasketQueries(),
-    }
-  );
-
-  // Удаление товара из корзины
-  const removeFromBasketMutation = useMutation(
-    (productId) => apiRemoveFromBasket(productId),
-    {
-      onSuccess: () => invalidateBasketQueries(),
-    }
-  );
-
-  // Очистка корзины
-  const clearBasketMutation = useMutation(
-    apiClearBasket,
-    {
-      onSuccess: () => invalidateBasketQueries(),
-    }
-  );
+/**
+ * Simple hook to get just the basket count
+ * Useful for components that only need to display the count (e.g. header)
+ */
+export const useBasketCount = (options = {}) => {
+  const { basketCount, isLoading, error } = useBasket({
+    ...options,
+    format: 'compact' // Use compact format for efficiency
+  });
 
   return {
-    addItemToBasket: addToBasketMutation.mutate,
-    updateBasketItem: updateBasketItemMutation.mutate,
-    removeFromBasket: removeFromBasketMutation.mutate,
-    clearBasket: clearBasketMutation.mutate,
-    isLoading: 
-      addToBasketMutation.isLoading || 
-      updateBasketItemMutation.isLoading || 
-      removeFromBasketMutation.isLoading || 
-      clearBasketMutation.isLoading
+    count: basketCount,
+    isLoading,
+    error
   };
 }; 

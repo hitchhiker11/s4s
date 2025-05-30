@@ -2,46 +2,38 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useQuery, dehydrate, QueryClient } from 'react-query';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
 
 // API методы
-import { getCategoryByCode, getSubcategories, getCatalogItemsBySubCategoryCode } from '../../../../lib/api/bitrix';
-import { transformCatalogItems } from '../../../../lib/api/transformers';
-import { loadBitrixCore } from '../../../../lib/auth';
+import { getCategoryByCode, getCatalogItemsByCategory } from '../../../lib/api/bitrix';
+import { transformCatalogItems } from '../../../lib/api/transformers';
+import { loadBitrixCore } from '../../../lib/auth';
 
 // Компоненты
-import Header from '../../../../components/Header';
-import Footer from '../../../../components/Footer';
-import Breadcrumbs from '../../../../components/Breadcrumbs';
-import ProductGrid from '../../../../components/ProductGrid';
-import Pagination from '../../../../components/Pagination';
-import SubscriptionForm from '../../../../components/SubscriptionForm';
+import Layout from '../../../components/Layout';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
+import Breadcrumbs from '../../../components/Breadcrumbs';
+import ProductGrid from '../../../components/ProductGrid';
+import Pagination from '../../../components/Pagination';
+import SubscriptionForm from '../../../components/SubscriptionForm';
 
 // Стили
-import { SIZES, COLORS, mediaQueries } from '../../../../styles/tokens';
+import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens';
 
-// Styled components for this page (can be adjusted or extended)
+// Styled Components
 const Container = styled.div`
   max-width: 1920px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   padding: 0 12px;
-  
-  ${mediaQueries.sm} {
-    padding: 0 16px;
-  }
-  
-  ${mediaQueries.md} {
-    padding: 0 20px;
-  }
-  
-  ${mediaQueries.lg} {
-    padding: 0 40px;
-  }
+  ${mediaQueries.sm} { padding: 0 16px; }
+  ${mediaQueries.md} { padding: 0 20px; }
+  ${mediaQueries.lg} { padding: 0 40px; }
 `;
 
-const Title = styled.h1`
+const PageTitle = styled.h1`
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
   font-size: 24px;
@@ -49,7 +41,6 @@ const Title = styled.h1`
   color: #1C1C1C;
   margin-top: 24px;
   margin-bottom: 24px;
-  
   ${mediaQueries.md} {
     font-size: 36px;
     margin-top: 40px;
@@ -57,17 +48,17 @@ const Title = styled.h1`
   }
 `;
 
-const LoadingState = styled.div`
-  text-align: center;
-  padding: 50px;
-  color: #666;
-`;
-
 const EmptyState = styled.div`
   text-align: center;
   padding: 50px;
   color: #666;
   font-size: 18px;
+`;
+
+const LoadingState = styled.div`
+  text-align: center;
+  padding: 50px;
+  color: #666;
 `;
 
 // Трансформация данных из API
@@ -82,13 +73,13 @@ const transformCategory = (apiCategory) => {
   };
 };
 
-const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialProducts, seo }) => {
+const CategoryAllProductsPage = ({ initialCategory, initialProducts, seo }) => {
   const router = useRouter();
-  const { categoryCode, subCategoryCode, page = '1' } = router.query;
+  const { categoryCode, page = '1' } = router.query;
   const currentPage = parseInt(page, 10) || 1;
-  const ITEMS_PER_PAGE = 12; // Количество товаров на странице
+  const ITEMS_PER_PAGE = 24; // Увеличенный лимит элементов на странице
 
-  // Запрос категории по коду
+  // Запрос категории по символьному коду
   const { data: categoryData, isError: categoryIsError } = useQuery(
     ['category', categoryCode],
     () => getCategoryByCode(categoryCode, { limit: 1 }),
@@ -98,17 +89,7 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     }
   );
 
-  // Запрос подкатегории по коду
-  const { data: subCategoryData, isError: subCategoryIsError } = useQuery(
-    ['subcategory', subCategoryCode],
-    () => getCategoryByCode(subCategoryCode, { limit: 1 }),
-    {
-      enabled: !!subCategoryCode,
-      staleTime: 1000 * 60 * 5, // 5 минут
-    }
-  );
-
-  // Получаем данные категории
+  // Извлекаем информацию о категории из полученных данных
   const category = React.useMemo(() => {
     if (categoryData?.data && categoryData.data.length > 0) {
       return transformCategory(categoryData.data[0]);
@@ -122,35 +103,19 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     return null;
   }, [categoryData, initialCategory]);
 
-  // Получаем данные подкатегории
-  const subCategory = React.useMemo(() => {
-    if (subCategoryData?.data && subCategoryData.data.length > 0) {
-      return transformCategory(subCategoryData.data[0]);
-    }
-    
-    // Fallback к initialSubCategory если есть
-    if (initialSubCategory) {
-      return initialSubCategory;
-    }
-    
-    return null;
-  }, [subCategoryData, initialSubCategory]);
-
-  // Запрос товаров подкатегории с пагинацией
+  // Запрос товаров категории со всеми подкатегориями с пагинацией
   const { data: productsData, isError: productsIsError, isLoading: productsIsLoading } = useQuery(
-    ['subcategoryProducts', categoryCode, subCategoryCode, currentPage, ITEMS_PER_PAGE],
-    () => getCatalogItemsBySubCategoryCode(categoryCode, subCategoryCode, { 
+    ['categoryProducts', category?.id, currentPage, ITEMS_PER_PAGE],
+    () => getCatalogItemsByCategory(category.id, { 
+      include_subsections: 'Y',
       limit: ITEMS_PER_PAGE,
       page: currentPage,
-      sort: 'date_create:asc',
-      include_subsections: 'Y'
+      sort: 'date_create:asc' // Изменена сортировка с desc на asc
     }),
     {
-      enabled: !!categoryCode && !!subCategoryCode,
+      enabled: !!category?.id,
       staleTime: 1000 * 60 * 5, // 5 минут
       keepPreviousData: true, // Важно для пагинации
-      refetchOnWindowFocus: false, // Отключаем рефетч при фокусе окна
-      refetchOnMount: false, // Отключаем рефетч при монтировании
     }
   );
 
@@ -185,26 +150,25 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     };
   }, [productsData, products, currentPage, ITEMS_PER_PAGE]);
 
-  // Обработчик смены страницы
-  const handlePageChange = (newPage) => {
-    router.replace({
-      pathname: `/catalog/${categoryCode}/${subCategoryCode}`,
-      query: { page: newPage }
-    }, undefined, { shallow: true });
-  };
-
   // Обработчик добавления в корзину
   const handleAddToCart = (product) => {
-    console.log('AddToCart from SubCategoryProductsPage', product);
+    console.log('AddToCart from CategoryAllProductsPage', product);
     // Добавить логику корзины здесь
+  };
+
+  // Обработчик смены страницы
+  const handlePageChange = (newPage) => {
+    router.push({
+      pathname: `/catalog/${categoryCode}/all`,
+      query: { page: newPage }
+    }, undefined, { shallow: true });
   };
 
   useEffect(() => {
     loadBitrixCore();
   }, []);
 
-  // Если категория или подкатегория не найдена
-  if (!category || !subCategory) {
+  if (!category) {
     return (
       <>
         <Header />
@@ -216,26 +180,25 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     );
   }
 
-  // Строим хлебные крошки
   const breadcrumbItems = [
     { href: '/', label: 'Главная' },
     { href: '/catalog', label: 'Каталог' },
     { href: `/catalog/${categoryCode}`, label: category.name },
-    { href: `/catalog/${categoryCode}/${subCategoryCode}`, label: subCategory.name }, // Текущая страница
+    { href: `/catalog/${categoryCode}/all`, label: 'Все товары' }, // Текущая страница
   ];
 
   return (
     <>
       <Head>
-        <title>{seo?.title || `${subCategory.name} - ${category.name} | Shop4Shoot`}</title>
-        <meta name="description" content={seo?.description || `Товары в категории ${subCategory.name}`} />
+        <title>{seo?.title || `${category.name} - Все товары`}</title>
+        <meta name="description" content={seo?.description || `Все товары в категории ${category.name}`} />
       </Head>
 
       <Header />
       <Breadcrumbs items={breadcrumbItems} />
 
       <Container>
-        <Title>{subCategory.name}</Title>
+        <PageTitle>{category.name} - Все товары</PageTitle>
 
         {productsIsLoading ? (
           <LoadingState>Загрузка товаров...</LoadingState>
@@ -272,9 +235,9 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
 };
 
 export async function getServerSideProps(context) {
-  const { categoryCode, subCategoryCode, page = '1' } = context.query;
+  const { categoryCode, page = '1' } = context.query;
   const currentPage = parseInt(page, 10) || 1;
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 24;
   const queryClient = new QueryClient();
   
   try {
@@ -293,49 +256,32 @@ export async function getServerSideProps(context) {
     
     const category = transformCategory(categoryData.data[0]);
     
-    // Предварительно запрашиваем подкатегорию по коду
-    await queryClient.prefetchQuery(['subcategory', subCategoryCode], () => 
-      getCategoryByCode(subCategoryCode, { limit: 1 })
-    );
-    
-    // Получаем данные подкатегории из кэша
-    const subCategoryData = queryClient.getQueryData(['subcategory', subCategoryCode]);
-    
-    // Если подкатегория не найдена, возвращаем 404
-    if (!subCategoryData?.data || subCategoryData.data.length === 0) {
-      return { notFound: true };
-    }
-    
-    const subCategory = transformCategory(subCategoryData.data[0]);
-    
-    // Предварительно запрашиваем товары подкатегории с новым методом API
-    await queryClient.prefetchQuery(
-      ['subcategoryProducts', categoryCode, subCategoryCode, currentPage, ITEMS_PER_PAGE], 
-      () => getCatalogItemsBySubCategoryCode(categoryCode, subCategoryCode, { 
+    // Предварительно запрашиваем товары категории
+    await queryClient.prefetchQuery(['categoryProducts', category.id, currentPage, ITEMS_PER_PAGE], () => 
+      getCatalogItemsByCategory(category.id, { 
+        include_subsections: 'Y',
         limit: ITEMS_PER_PAGE,
         page: currentPage,
-        sort: 'date_create:asc',
-        include_subsections: 'Y'
+        sort: 'date_create:asc' // Изменена сортировка с desc на asc
       })
     );
     
     // Получаем данные товаров из кэша
-    const productsData = queryClient.getQueryData(['subcategoryProducts', categoryCode, subCategoryCode, currentPage, ITEMS_PER_PAGE]);
+    const productsData = queryClient.getQueryData(['categoryProducts', category.id, currentPage, ITEMS_PER_PAGE]);
     const products = productsData?.data
       ? transformCatalogItems(productsData.data)
       : [];
     
     // SEO данные
     const seo = {
-      title: `${subCategory.name} - ${category.name} | Shop4Shoot`,
-      description: `Товары в категории ${subCategory.name} в нашем интернет-магазине Shop4Shoot.`,
+      title: `${category.name} - Все товары | Shop4Shoot`,
+      description: `Все товары в категории ${category.name} в нашем интернет-магазине Shop4Shoot.`,
     };
     
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
         initialCategory: category,
-        initialSubCategory: subCategory,
         initialProducts: products,
         seo,
       },
@@ -346,4 +292,4 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default SubCategoryProductsPage; 
+export default CategoryAllProductsPage; 

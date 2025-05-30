@@ -1,54 +1,74 @@
 import React from 'react';
 import styled from 'styled-components';
-import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
+import { COLORS, mediaQueries } from '../../styles/tokens';
 
-const PaginationContainer = styled.nav`
+const PaginationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+  width: 100%;
+`;
+
+const ButtonsContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: ${SPACING.lg} 0;
-  margin-top: ${SPACING.xl};
-  margin-bottom: ${SPACING.xl};
+  width: 100%;
+  margin-bottom: 15px;
 `;
 
 const PageButton = styled.button`
-  font-family: ${TYPOGRAPHY.fontFamily};
-  font-weight: ${TYPOGRAPHY.weight.regular};
-  font-size: ${TYPOGRAPHY.size.md};
-  color: ${props => props.isActive ? COLORS.white : COLORS.black};
-  background-color: ${props => props.isActive ? COLORS.primary : COLORS.white};
-  border: 1px solid ${props => props.isActive ? COLORS.primary : COLORS.gray300};
-  padding: ${SPACING.sm} ${SPACING.md};
-  margin: 0 ${SPACING.xs};
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 5px;
+  background-color: ${props => props.active ? COLORS.primary : 'white'};
+  color: ${props => props.active ? 'white' : COLORS.black};
+  border: 1px solid ${props => props.active ? COLORS.primary : '#E5E5E5'};
+  border-radius: 8px;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${props => props.disabled ? 0.5 : 1};
+  font-size: 14px;
+  transition: all 0.2s;
 
   &:hover {
-    background-color: ${props => !props.isActive && COLORS.gray100};
-    border-color: ${props => !props.isActive && COLORS.gray400};
+    background-color: ${props => props.active || props.disabled ? '' : '#F5F5F5'};
   }
 
-  &:disabled {
-    color: ${COLORS.gray400};
-    background-color: ${COLORS.gray100};
-    border-color: ${COLORS.gray200};
-    cursor: not-allowed;
-  }
-  
-  ${mediaQueries.sm} {
-    font-size: ${TYPOGRAPHY.size.sm};
-    padding: ${SPACING.xs} ${SPACING.sm};
+  ${mediaQueries.md} {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
   }
 `;
 
-const Ellipsis = styled.span`
-  padding: ${SPACING.sm} ${SPACING.xs};
-  color: ${COLORS.gray500};
-  font-family: ${TYPOGRAPHY.fontFamily};
-  font-size: ${TYPOGRAPHY.size.md};
-  align-self: flex-end; /* Align with bottom of buttons */
-  line-height: 1.5; /* Adjust to match button height better */
+const NavigationButton = styled(PageButton)`
+  width: auto;
+  padding: 0 15px;
+  ${mediaQueries.md} {
+    padding: 0 20px;
+  }
+`;
+
+const PageButtonsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PaginationInfo = styled.div`
+  font-size: 14px;
+  color: ${COLORS.gray700};
+  margin-top: 10px;
+  text-align: center;
+
+  ${mediaQueries.md} {
+    font-size: 16px;
+  }
 `;
 
 /**
@@ -56,89 +76,116 @@ const Ellipsis = styled.span`
  * @param {object} props
  * @param {number} props.currentPage - The current active page
  * @param {number} props.totalPages - The total number of pages
+ * @param {number} props.totalItems - Total number of items
  * @param {function} props.onPageChange - Function to call when page changes, receives new page number
  */
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  if (totalPages <= 1) {
-    return null; // Don't render pagination if there's only one page or less
+const Pagination = ({ currentPage, totalPages, totalItems, onPageChange }) => {
+  // Если страниц меньше 2, не показываем пагинацию
+  if (totalPages <= 1) return null;
+
+  // Определяем, какие кнопки страниц показывать
+  // Всегда показываем 5 страниц, если доступно
+  let pageButtons = [];
+  let startPage, endPage;
+
+  if (totalPages <= 5) {
+    // Если страниц 5 или меньше, показываем все
+    startPage = 1;
+    endPage = totalPages;
+  } else {
+    // Если страниц больше 5, показываем группу страниц вокруг текущей
+    if (currentPage <= 3) {
+      startPage = 1;
+      endPage = 5;
+    } else if (currentPage + 2 >= totalPages) {
+      startPage = totalPages - 4;
+      endPage = totalPages;
+    } else {
+      startPage = currentPage - 2;
+      endPage = currentPage + 2;
+    }
   }
 
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const maxPagesToShow = 5; // Max direct page numbers to show (e.g., 1 ... 3 4 5 ... 10)
-    const halfMaxPages = Math.floor(maxPagesToShow / 2);
-
-    if (totalPages <= maxPagesToShow + 2) { // Show all pages if not too many
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      // Always show first page
-      pageNumbers.push(1);
-
-      // Ellipsis after first page if needed
-      if (currentPage > halfMaxPages + 2) {
-        pageNumbers.push('...');
-      }
-
-      // Determine middle range
-      let startPage = Math.max(2, currentPage - halfMaxPages);
-      let endPage = Math.min(totalPages - 1, currentPage + halfMaxPages);
-
-      if (currentPage <= halfMaxPages + 1) {
-        endPage = Math.min(totalPages -1, maxPagesToShow);
-      } else if (currentPage >= totalPages - halfMaxPages) {
-        startPage = Math.max(2, totalPages - maxPagesToShow + 1);
-      }
-      
-      for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-      }
-
-      // Ellipsis before last page if needed
-      if (currentPage < totalPages - halfMaxPages -1) {
-        pageNumbers.push('...');
-      }
-      
-      // Always show last page
-      pageNumbers.push(totalPages);
+  // Добавляем кнопку для первой страницы, если она не включена
+  if (startPage > 1) {
+    pageButtons.push(
+      <PageButton
+        key={1}
+        active={1 === currentPage}
+        onClick={() => onPageChange(1)}
+      >
+        1
+      </PageButton>
+    );
+    
+    // Добавляем многоточие, если первая страница не следует сразу за выбранным диапазоном
+    if (startPage > 2) {
+      pageButtons.push(
+        <PageButton key="ellipsis-start" disabled={true}>...</PageButton>
+      );
     }
-    return pageNumbers;
-  };
+  }
 
-  const pageNumbers = getPageNumbers();
+  // Создаем массив кнопок страниц для выбранного диапазона
+  for (let i = startPage; i <= endPage; i++) {
+    pageButtons.push(
+      <PageButton
+        key={i}
+        active={i === currentPage}
+        onClick={() => onPageChange(i)}
+      >
+        {i}
+      </PageButton>
+    );
+  }
+
+  // Добавляем кнопку для последней страницы, если она не включена
+  if (endPage < totalPages) {
+    // Добавляем многоточие, если последняя страница не следует сразу за выбранным диапазоном
+    if (endPage < totalPages - 1) {
+      pageButtons.push(
+        <PageButton key="ellipsis-end" disabled={true}>...</PageButton>
+      );
+    }
+    
+    pageButtons.push(
+      <PageButton
+        key={totalPages}
+        active={totalPages === currentPage}
+        onClick={() => onPageChange(totalPages)}
+      >
+        {totalPages}
+      </PageButton>
+    );
+  }
 
   return (
-    <PaginationContainer aria-label="Pagination">
-      <PageButton
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
-        Предыдущая
-      </PageButton>
+    <PaginationContainer>
+      <ButtonsContainer>
+        <NavigationButton
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          Назад
+        </NavigationButton>
 
-      {pageNumbers.map((number, index) => {
-        if (number === '...') {
-          return <Ellipsis key={`ellipsis-${index}`}>...</Ellipsis>;
-        }
-        return (
-          <PageButton
-            key={number}
-            onClick={() => onPageChange(number)}
-            isActive={currentPage === number}
-            aria-current={currentPage === number ? 'page' : undefined}
-          >
-            {number}
-          </PageButton>
-        );
-      })}
+        <PageButtonsContainer>
+          {pageButtons}
+        </PageButtonsContainer>
 
-      <PageButton
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        Следующая
-      </PageButton>
+        <NavigationButton
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Вперед
+        </NavigationButton>
+      </ButtonsContainer>
+      
+      {totalItems && (
+        <PaginationInfo>
+          Страница {currentPage} из {totalPages} (всего {totalItems} товаров)
+        </PaginationInfo>
+      )}
     </PaginationContainer>
   );
 };

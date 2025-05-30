@@ -26,7 +26,7 @@ export const SOCIAL_MEDIA = {
 
 // Настройки API
 export const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_BITRIX_URL || 'https://s4s.local/bitrix/',
+  baseUrl: process.env.NEXT_PUBLIC_BITRIX_URL || 'https://shop4shoot.com/api',
   timeout: parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '30000', 10),
   useMocks: process.env.NEXT_PUBLIC_USE_MOCKS === 'true'
 };

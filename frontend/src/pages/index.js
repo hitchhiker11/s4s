@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo, useEffect } from 'react';
 import styled from 'styled-components';
-import { dehydrate, QueryClient } from 'react-query';
-import { getAboutSliderData } from '../lib/api/bitrix';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
+import { getCatalogSections, getBrands, getCatalogItems, getAboutSliderData, getBasket } from '../lib/api/bitrix';
+import { transformSections, transformBrands, transformCatalogItems } from '../lib/api/transformers';
+// Import mock data for fallback
 import { mockCategories, mockNewArrivals, mockBrands, mockBestsellers } from '../lib/mockData';
 
 // Components
@@ -14,6 +16,7 @@ import ProductCard from '../components/ProductCard'; // Import card for renderin
 import BrandFeature from '../components/BrandFeature'; // Import brand feature component
 import ClubSubscription from '../components/ClubSubscription'; // Import club subscription component
 import Layout from '../components/Layout'; // Import Layout component
+import { useBasket } from '../hooks/useBasket'; // Import useBasket hook
 
 // Styles
 import { COLORS, SPACING, TYPOGRAPHY, mediaQueries, SIZES, BREAKPOINTS } from '../styles/tokens';
@@ -58,24 +61,7 @@ const HeroSection = styled.section`
     padding: 0px;
   }
 
-  // ${mediaQueries.sm} {
-  //   padding: 0 24px;
-  // }
-
-  // ${mediaQueries.md} {
-  //   padding: 0 48px;
-  // }
-
-  // ${mediaQueries.lg} {
-  //   padding: 0 40px;
-  // }
-
-  // ${mediaQueries.xl} {
-  //   padding: 0 40px;
-  // }
-
   ${mediaQueries.xxl} {
-    // padding: 0 40px;
     max-width: 1920px;
     margin-left: auto;
     margin-right: auto;
@@ -162,7 +148,6 @@ const AboutSection = styled.section`
   max-height: 434px;
     
   ${mediaQueries.md} {
-
     max-height: 850px;
   }
 `;
@@ -176,7 +161,152 @@ const SectionTitle = styled.h2`
 `;
 
 // Компонент главной страницы
-const HomePage = () => {
+const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initialBestsellers }) => {
+  // Initialize basket data when the page loads
+  const { refetchBasket, basketCount } = useBasket();
+  
+  // Fetch basket data on component mount
+  useEffect(() => {
+    console.log('Fetching basket data on homepage load');
+    refetchBasket();
+  }, [refetchBasket]);
+
+  // Use data from SSR via hydration, fallback to mock data if needed
+  const { data: categoriesData, isError: categoriesIsError } = useQuery('homeCategories', 
+    () => getCatalogSections({ tree_mode: 'flat', depth: 3  })
+    // Removed initialData, rely on hydration
+  ); 
+  const { data: newArrivalsData, isError: newArrivalsIsError } = useQuery('homeNewArrivals', 
+    () => getCatalogItems({ 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:desc' })
+    // Removed initialData
+  );
+  const { data: brandsData, isError: brandsIsError } = useQuery('homeBrands', 
+    () => getBrands({ with_product_count: 'Y', limit: 8 })
+    // Removed initialData
+  );
+  const { data: bestsellersData, isError: bestsellersIsError } = useQuery('homeBestsellers', 
+    () => getCatalogItems({ 'property[BESTSELLER]': 'Y', limit: 5, sort: 'sort:asc' })
+    // Removed initialData
+  );
+
+  const displayCategories = useMemo(() => {
+    let dataToUse = [];
+    if (!categoriesIsError && categoriesData?.data) {
+      dataToUse = categoriesData.data;
+    } else if (Array.isArray(initialCategories) && initialCategories.length > 0) {
+      dataToUse = initialCategories;
+    }
+    
+    // Transform sections from API format
+    const allSections = transformSections(Array.isArray(dataToUse) ? dataToUse : []);
+    
+    // Find the ID of "Каталог сайта" section
+    const catalogSectionId = allSections.find(section => 
+      section.raw?.fields?.CODE === "katalog_sayta" || section.raw?.fields?.NAME === "Каталог сайта"
+    )?.id || "572"; // Default to "572" if not found
+    
+    console.log('Found "Каталог сайта" with ID:', catalogSectionId);
+    
+    // Filter sections that are direct children of "Каталог сайта" (level 2 categories)
+    const mainCategories = allSections.filter(section => {
+      if (section.raw && section.raw.fields) {
+        // Include only sections with IBLOCK_SECTION_ID equal to catalogSectionId (direct children)
+        return section.raw.fields.IBLOCK_SECTION_ID === catalogSectionId;
+      }
+      return false;
+    });
+    
+    console.log('Found main categories count:', mainCategories.length);
+    
+    // Map to match expected props for ResponsiveCategorySection
+    const mappedCategories = mainCategories.map(section => {
+      // Используем CODE для URL вместо ID, если доступен
+      const categoryCode = section.raw?.fields?.CODE || section.id;
+      
+      return {
+        ...section,
+        title: section.name, // Add 'title' field from 'name'
+        imageUrl: section.image, // Ensure imageUrl is set from image
+        link: `/catalog/${categoryCode}`, // Use code instead of ID for better SEO
+      };
+    });
+    
+    console.log('Main categories for display:', mappedCategories);
+    
+    return mappedCategories.length > 0 ? mappedCategories : mockCategories;
+  }, [categoriesData, categoriesIsError, initialCategories]);
+
+  const displayNewArrivals = useMemo(() => {
+    let dataToUse = [];
+    if (!newArrivalsIsError && newArrivalsData?.data) {
+      dataToUse = newArrivalsData.data;
+    } else if (Array.isArray(initialNewArrivals) && initialNewArrivals.length > 0) {
+      dataToUse = initialNewArrivals;
+    }
+    
+    // Transform products from API format
+    const transformedProducts = transformCatalogItems(Array.isArray(dataToUse) ? dataToUse : []);
+    
+    // Map to match expected props for ProductGrid
+    const mappedProducts = transformedProducts.map(product => ({
+      ...product,
+      imageUrl: product.image, // Ensure imageUrl is set from image
+      productLink: product.detailUrl, // Ensure productLink is set from detailUrl
+      CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N', // Add required CATALOG_AVAILABLE field
+    }));
+    
+    console.log('New arrivals for display:', mappedProducts);
+    
+    return mappedProducts.length > 0 ? mappedProducts : mockNewArrivals;
+  }, [newArrivalsData, newArrivalsIsError, initialNewArrivals]);
+
+  const displayBrands = useMemo(() => {
+    let dataToUse = [];
+    if (!brandsIsError && brandsData?.data) {
+      dataToUse = brandsData.data;
+    } else if (Array.isArray(initialBrands) && initialBrands.length > 0) {
+      dataToUse = initialBrands;
+    }
+    
+    // Transform brands and add required fields for ResponsiveCategorySection
+    const transformedBrands = transformBrands(Array.isArray(dataToUse) ? dataToUse : []);
+    
+    // Map to match expected props for ResponsiveCategorySection
+    const mappedBrands = transformedBrands.map(brand => ({
+      ...brand,
+      title: brand.name, // Add 'title' field from 'name'
+      imageUrl: brand.image, // Ensure imageUrl is set from image
+      link: brand.url, // Ensure link is set from url
+    }));
+    
+    console.log('Brands for display:', mappedBrands);
+    
+    return mappedBrands.length > 0 ? mappedBrands : mockBrands;
+  }, [brandsData, brandsIsError, initialBrands]);
+
+  const displayBestsellers = useMemo(() => {
+    let dataToUse = [];
+    if (!bestsellersIsError && bestsellersData?.data) {
+      dataToUse = bestsellersData.data;
+    } else if (Array.isArray(initialBestsellers) && initialBestsellers.length > 0) {
+      dataToUse = initialBestsellers;
+    }
+    
+    // Transform products from API format
+    const transformedProducts = transformCatalogItems(Array.isArray(dataToUse) ? dataToUse : []);
+    
+    // Map to match expected props for ProductGrid
+    const mappedProducts = transformedProducts.map(product => ({
+      ...product,
+      imageUrl: product.image, // Ensure imageUrl is set from image
+      productLink: product.detailUrl, // Ensure productLink is set from detailUrl
+      CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N', // Add required CATALOG_AVAILABLE field
+    }));
+    
+    console.log('Bestsellers for display:', mappedProducts);
+    
+    return mappedProducts.length > 0 ? mappedProducts : mockBestsellers;
+  }, [bestsellersData, bestsellersIsError, initialBestsellers]);
 
   // Placeholder add to cart handler
   const handleAddToCart = (productId) => {
@@ -188,7 +318,12 @@ const HomePage = () => {
   const renderCategoryCard = (category, cardStyle) => (
     <CategoryCard 
       key={category.id} 
-      {...category} // Spread category props
+      title={category.title || category.name} // Use title or fallback to name
+      imageUrl={category.imageUrl || category.image} // Use imageUrl or fallback to image
+      link={category.link || category.url} // Use link or fallback to url
+      showTitle={category.showTitle !== undefined ? category.showTitle : true}
+      rotation={category.rotation || 0}
+      disableRotation={category.disableRotation || false}
       additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
     />
   );
@@ -196,14 +331,19 @@ const HomePage = () => {
   const renderProductCard = (product, cardStyle) => (
     <ProductCard 
       key={product.id} 
-      product={product} // Pass the whole product object
+      product={{
+        ...product,
+        imageUrl: product.imageUrl || product.image, // Ensure imageUrl exists
+        productLink: product.productLink || product.detailUrl, // Ensure productLink exists
+        CATALOG_AVAILABLE: product.CATALOG_AVAILABLE || (product.inStock ? 'Y' : 'N'), // Ensure CATALOG_AVAILABLE exists
+      }}
       onAddToCart={handleAddToCart}
       additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
     />
   );
 
   return (
-    <Layout mockBasketCount={5}>
+    <Layout mockBasketCount={basketCount || 0}>
       <HomePageContainer>
         <AboutSection>
           {/* <SectionTitle>О нас</SectionTitle> */}
@@ -221,13 +361,12 @@ const HomePage = () => {
         
         <SearchBar />
         
-
         {/* Categories Section using Responsive Wrapper */}
         <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
           <ResponsiveCategorySection 
             title="Каталог товаров" 
             viewAllLink="/catalog"
-            items={mockCategories.map(category => ({...category, disableRotation: true}))} // Disable rotation
+            items={displayCategories.map(category => ({...category, disableRotation: true}))} // Disable rotation
             renderItem={renderCategoryCard} // Pass the render function
             containerStyle={`
               /* Styling for image positioning */
@@ -279,7 +418,7 @@ const HomePage = () => {
             title="Новые поступления"
             subtitle="посмотрите наши новинки"
             viewAllLink="/catalog?filter=new"
-            items={mockNewArrivals} // Use 'items' prop name
+            items={displayNewArrivals} // Use 'items' prop name
             renderItem={renderProductCard} // Pass the render function
             onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
           />
@@ -290,7 +429,7 @@ const HomePage = () => {
             title="Наши бренды"
             subtitle="если хотите пополнить коллекцию"
             viewAllLink="/brands"
-            items={mockBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
+            items={displayBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
             renderItem={renderCategoryCard} // Pass the render function
             // cardStyle={{ maxWidth: '280px' }}
           />
@@ -302,7 +441,7 @@ const HomePage = () => {
               title="Хиты продаж 🔥"
               subtitle="посмотрите самые популярные продукты"
             viewAllLink="/catalog?filter=bestsellers"
-            items={mockBestsellers} // Use 'items' prop name
+            items={displayBestsellers} // Use 'items' prop name
             renderItem={renderProductCard} // Pass the render function
             useGradientTitle={true}
             onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
@@ -322,20 +461,93 @@ const HomePage = () => {
 export async function getServerSideProps() {
   const queryClient = new QueryClient();
   
+  const catalogIblockId = process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21';
+  const brandsIblockId = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '21';
+  const sliderIblockId = process.env.NEXT_PUBLIC_SLIDER_IBLOCK_ID || '21';
+
+  console.log('[SSR] Initializing getServerSideProps...');
+  console.log(`[SSR] Using catalogIblockId: ${catalogIblockId}, brandsIblockId: ${brandsIblockId}, sliderIblockId: ${sliderIblockId}`);
+
   try {
-    // Предварительная загрузка данных для слайдера
-    // В продакшене раскомментировать, в режиме разработки исключить
-    // await queryClient.prefetchQuery(['aboutSliderData'], getAboutSliderData);
+    console.log('[SSR] Prefetching homeCategories...');
+    await queryClient.prefetchQuery('homeCategories', () => {
+      console.log('[SSR] Executing getCatalogSections query function with simplified params');
+      return getCatalogSections({ iblock_id: catalogIblockId, tree_mode: 'flat', depth: 3 });
+    });
+    const categoriesResult = queryClient.getQueryData('homeCategories');
+    console.log('[SSR] homeCategories prefetched. Result:', JSON.stringify(categoriesResult, null, 2));
+
+    console.log('[SSR] Prefetching homeNewArrivals...');
+    await queryClient.prefetchQuery('homeNewArrivals', () => {
+      console.log('[SSR] Executing getCatalogItems (New Arrivals) query function');
+      return getCatalogItems({ iblock_id: catalogIblockId, 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:desc' });
+    });
+    const newArrivalsResult = queryClient.getQueryData('homeNewArrivals');
+    console.log('[SSR] homeNewArrivals prefetched. Result:', JSON.stringify(newArrivalsResult, null, 2));
+
+    console.log('[SSR] Prefetching homeBrands...');
+    await queryClient.prefetchQuery('homeBrands', () => {
+      console.log('[SSR] Executing getBrands query function');
+      return getBrands({ iblock_id: brandsIblockId, with_product_count: 'Y', limit: 8 });
+    });
+    const brandsResult = queryClient.getQueryData('homeBrands');
+    console.log('[SSR] homeBrands prefetched. Result:', JSON.stringify(brandsResult, null, 2));
+    
+    console.log('[SSR] Prefetching homeBestsellers...');
+    await queryClient.prefetchQuery('homeBestsellers', () => {
+      console.log('[SSR] Executing getCatalogItems (Bestsellers) query function');
+      return getCatalogItems({ iblock_id: catalogIblockId, 'property[BESTSELLER]': 'Y', limit: 10, sort: 'sort:asc' });
+    });
+    const bestsellersResult = queryClient.getQueryData('homeBestsellers');
+    console.log('[SSR] homeBestsellers prefetched. Result:', JSON.stringify(bestsellersResult, null, 2));
+
+    console.log('[SSR] Prefetching aboutSliderData...');
+    await queryClient.prefetchQuery(['aboutSliderData'], () => {
+      console.log('[SSR] Executing getAboutSliderData query function');
+      return getAboutSliderData({ iblock_id: sliderIblockId });
+    });
+    const sliderDataResult = queryClient.getQueryData(['aboutSliderData']);
+    console.log('[SSR] aboutSliderData prefetched. Result:', JSON.stringify(sliderDataResult, null, 2));
+    
+    // Prefetch basket data on server side
+    console.log('[SSR] Prefetching basket data...');
+    await queryClient.prefetchQuery(['basket', 'full'], () => {
+      console.log('[SSR] Executing getBasket query function');
+      return getBasket();
+    });
+    const basketResult = queryClient.getQueryData(['basket', 'full']);
+    console.log('[SSR] basket data prefetched. Result:', JSON.stringify(basketResult, null, 2));
+    
+    const initialCategoriesVal = (categoriesResult && !categoriesResult.error && categoriesResult.data) ? categoriesResult.data : [];
+    const initialNewArrivalsVal = (newArrivalsResult && !newArrivalsResult.error && newArrivalsResult.data) ? newArrivalsResult.data : [];
+    const initialBrandsVal = (brandsResult && !brandsResult.error && brandsResult.data) ? brandsResult.data : [];
+    const initialBestsellersVal = (bestsellersResult && !bestsellersResult.error && bestsellersResult.data) ? bestsellersResult.data : [];
+
+    console.log('[SSR] initialCategories to be passed as props:', JSON.stringify(initialCategoriesVal, null, 2));
+    console.log('[SSR] initialBrands to be passed as props:', JSON.stringify(initialBrandsVal, null, 2));
+
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+        initialCategories: initialCategoriesVal,
+        initialNewArrivals: initialNewArrivalsVal,
+        initialBrands: initialBrandsVal,
+        initialBestsellers: initialBestsellersVal,
+      },
+    };
   } catch (error) {
-    console.error('Ошибка предзагрузки данных:', error);
-    // В случае ошибки делаем fallback с пустыми данными
+    console.error('[SSR] Error prefetching homepage data:', error);
+    // Fallback to empty arrays for initial props in case of a major error during prefetch setup
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient), // Still pass dehydrated state, may contain partial/error states
+        initialCategories: [],
+        initialNewArrivals: [],
+        initialBrands: [],
+        initialBestsellers: []
+      },
+    };
   }
-  
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
 }
 
 export default HomePage; 

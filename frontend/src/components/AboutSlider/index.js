@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Pagination, Navigation } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { useAboutSliderData } from '../../lib/hooks/useAboutSliderData';
+import { aboutSliderMockData } from '../../lib/mocks/mockData';
 import { COLORS, TYPOGRAPHY, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
 // Инициализируем Swiper-модули
@@ -137,44 +137,13 @@ const PaginationDot = styled.div`
   class-name: pagination-dot ${props => props.$active ? 'active' : ''};
 `;
 
-// Анимация вращения для лоадера
-const spin = keyframes`
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
-`;
-
-// Визуальный спиннер
-const Spinner = styled.div`
-  width: 48px;
-  height: 48px;
-  border: 5px solid ${COLORS.gray300};
-  border-top: 5px solid ${COLORS.primary};
-  border-radius: 50%;
-  animation: ${spin} 1s linear infinite;
-`;
-
-// Компонент Loader для отображения в процессе загрузки данных
-const Loader = styled.div`
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${COLORS.black};
-  font-size: 18px;
-  background-color: ${COLORS.gray100};
-  
-  ${mediaQueries.lg} {
-    aspect-ratio: 21 / 9;
-    max-height: 856px;
-  }
-`;
-
 // Основной компонент слайдера
 const AboutSlider = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data, isLoading, error } = useAboutSliderData();
   const [swiperInstance, setSwiperInstance] = useState(null);
+  
+  // Используем статические данные из mockData
+  const sliderData = aboutSliderMockData.data;
   
   const handlePaginationClick = (index) => {
     if (swiperInstance) {
@@ -195,23 +164,6 @@ const AboutSlider = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [swiperInstance]);
-
-  // Если данные загружаются, показываем вращающийся лоадер
-  if (isLoading) {
-    return (
-      <Loader>
-        <Spinner />
-      </Loader>
-    );
-  }
-
-  // Если произошла ошибка, показываем сообщение
-  if (error) {
-    return <Loader>Ошибка при загрузке слайдера</Loader>;
-  }
-
-  // Если данные получены успешно
-  const sliderData = data?.success ? data.data : [];
 
   // Если данных нет, не показываем компонент
   if (!sliderData || sliderData.length === 0) {
