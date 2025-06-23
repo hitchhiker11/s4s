@@ -13,6 +13,7 @@ import ProductCard from '../../../../components/ProductCard'; // Adjusted path
 // import DeliveryInfoForm from '../../../../components/DeliveryInfoForm/DeliveryInfoForm'; // Not needed
 import ProductDetailCard from '../../../../components/ProductDetailCard'; // New component
 import styles from '../../../../styles/pages/ProductPage.module.css'; // New CSS module
+import { useBasket } from '../../../../hooks/useBasket'; // Import useBasket hook
 
 // Mock data for demonstration - will be replaced by dynamic data
 const mockProductData = {
@@ -83,11 +84,19 @@ const ProductPage = ({ productData = mockProductData }) => { // Receive productD
   console.log('productData', productData);
   const router = useRouter();
   const { productID, categoryCode, subCategoryCode } = router.query;
+  
+  // Use the basket hook for cart operations
+  const { addToBasket } = useBasket();
 
   // Placeholder add to cart handler for recently viewed, adapt for main product later
-  const handleAddToCartRecentlyViewed = (productId) => {
-    console.log(`Adding product ${productId} to cart (from ProductPage)`);
-    // Add actual cart logic here later
+  const handleAddToCartRecentlyViewed = async (product) => {
+    const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
+    try {
+      await addToBasket({ product_id: productId, quantity: 1 });
+      console.log('Recently viewed product added to cart:', productId);
+    } catch (error) {
+      console.error('Error adding recently viewed product to cart:', error);
+    }
   };
 
   const renderRecentlyViewedProductCard = (product) => (
@@ -99,9 +108,14 @@ const ProductPage = ({ productData = mockProductData }) => { // Receive productD
   );
 
   // This will be the actual "Add to cart" for the main product on the page
-  const handleAddToCart = (productDetails) => {
-    console.log('Adding to cart:', productDetails);
-    // Implement actual add to cart logic, potentially using Bitrix AJAX
+  const handleAddToCart = async (productDetails) => {
+    const productId = parseInt(productDetails.id || productDetails.ID, 10); // Convert ID to number
+    try {
+      await addToBasket({ product_id: productId, quantity: 1 });
+      console.log('Product added to cart:', productId);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }
   };
 
   // Mock category and subcategory names - in production these would come from API

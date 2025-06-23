@@ -1,44 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import Header from '../components/Header'; // Assuming Header component exists
-import Footer from '../components/Footer'; // Assuming Footer component exists
+import { useRouter } from 'next/router';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import Breadcrumbs from '../components/Breadcrumbs';
 import CartItem from '../components/CartItem';
 import OrderSummary from '../components/OrderSummary';
-import ResponsiveProductSection from '../components/ResponsiveProductSection'; // Use responsive wrapper
-import ProductCard from '../components/ProductCard'; // Import card for rendering
-import ProductGrid from '../components/ProductGrid'; // For "Recently Viewed"
-import CartTabs from '../components/CartTabs/CartTabs'; // Added import
-import DeliveryInfoForm from '../components/DeliveryInfoForm/DeliveryInfoForm'; // Added import
+import ResponsiveProductSection from '../components/ResponsiveProductSection';
+import ProductCard from '../components/ProductCard';
+import CartTabs from '../components/CartTabs/CartTabs';
+import DeliveryInfoForm from '../components/DeliveryInfoForm/DeliveryInfoForm';
+import { useBasket } from '../hooks/useBasket';
 import styles from '../styles/pages/CartPage.module.css';
-// Mock data for demonstration
-const initialMockCartItems = [
-  {
-    id: '1',
-    imageUrl: '/images/new-products/aim.png', // Replace with actual image path or use a placeholder service
-    name: 'Полное название продукта, даже если оно очень длинное',
-    brand: 'Бренд',
-    price: 2100,
-    description: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.',
-    quantity: 1,
-    stock: 8,
-    productLink: '/product/1'
-  },
-  {
-    id: '2',
-    imageUrl: '/images/new-products/aim.png', // Replace with actual image path
-    name: 'Еще один товар, тоже с длинным названием для проверки верстки',
-    brand: 'Другой Бренд',
-    price: 1500,
-    description: 'Consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.',
-    quantity: 2,
-    stock: 5,
-    productLink: '/product/2'
-  }
-];
 
+// Mock data only for recently viewed products
 const mockRecentlyViewedProducts = [
-  // Populate with product data similar to ProductGrid's expected format
   {
     id: 'rv1',
     imageUrl: '/images/new-products/aim.png',
@@ -80,103 +56,147 @@ const mockRecentlyViewedProducts = [
 const breadcrumbItems = [
   { href: '/', label: 'Главная' },
   { href: '/cart', label: 'Корзина' },
-  // { href: `/cart/`, label: 'Моя корзина' } 
 ];
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState(initialMockCartItems); // Use state for cart items
-  const [activeTab, setActiveTab] = useState('cart'); // 'cart', 'delivery', 'payment'
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('cart');
+  
+  // Use the basket hook to get real basket data
+  const {
+    basketItems,
+    basketData,
+    basketCount,
+    basketTotalPrice,
+    isLoading,
+    error,
+    updateBasketItem,
+    removeFromBasket,
+    addToBasket,
+    refetchBasket
+  } = useBasket({
+    initialFetch: true,
+    refetchOnWindowFocus: true,
+    staleTime: 30000 // 30 seconds
+  });
+
+  // Fetch basket data on component mount
+  useEffect(() => {
+    refetchBasket();
+  }, [refetchBasket]);
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
   };
 
-  // Placeholder add to cart handler
-  const handleAddToCartRecentlyViewed = (productId) => {
-    console.log(`Adding product ${productId} to cart (from HomePage)`);
-    // Add actual cart logic here later
+  // Handle adding products from "Recently Viewed" section
+  const handleAddToCartRecentlyViewed = (product) => {
+    const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
+    addToBasket({ product_id: productId, quantity: 1 });
   };
 
   const renderRecentlyViewedProductCard = (product) => (
     <ProductCard 
       key={product.id} 
-      product={product} // Pass the whole product object
-      onAddToCart={handleAddToCartRecentlyViewed} 
+      product={product}
+      onAddToCart={handleAddToCartRecentlyViewed}
     />
   );
 
-  // Placeholder functions for quantity changes and item removal
+  // Handle quantity changes for cart items
   const handleQuantityChange = (itemId, newQuantity) => {
-    console.log(`Attempting to change item ${itemId} quantity to ${newQuantity}`);
-    setCartItems(currentItems =>
-      currentItems.map(item =>
-        item.id === itemId 
-          ? { ...item, quantity: newQuantity === '' ? '' : Math.max(0, parseInt(newQuantity,10) || 0) } // Allow temp empty, ensure number
-          : item
-      )
-    );
+    // Ensure numeric value for API call
+    const quantity = newQuantity === '' ? 1 : Math.max(1, parseInt(newQuantity, 10) || 1);
+    updateBasketItem(itemId, quantity);
   };
 
+  // Handle removing items from cart
   const handleRemoveItem = (itemId) => {
-    console.log(`Attempting to remove item ${itemId}`);
-    setCartItems(currentItems => currentItems.filter(item => item.id !== itemId));
+    removeFromBasket(itemId);
   };
 
   const handleProceedToCheckout = () => {
     if (activeTab === 'cart') {
-      setActiveTab('delivery'); // Move to delivery tab
+      setActiveTab('delivery');
     } else if (activeTab === 'delivery') {
-      // Here you would typically validate delivery form data
-      console.log('Proceeding to payment with items:', cartItems);
-      setActiveTab('payment'); // Move to payment (placeholder)
+      // Would validate delivery form data here
+      setActiveTab('payment');
     } else if (activeTab === 'payment') {
-      // Here you would handle final payment processing
+      // Would handle final payment processing here
       console.log('Finalizing order...');
-      // Navigate to checkout page or trigger checkout process
     }
   };
 
   const getButtonText = () => {
     if (activeTab === 'cart') return 'Перейти к оформлению';
     if (activeTab === 'delivery') return 'Продолжить';
-    if (activeTab === 'payment') return 'Оплатить заказ'; // Example
+    if (activeTab === 'payment') return 'Оплатить заказ';
     return 'Продолжить';
   };
 
-  const breadcrumbs = [
+  // Dynamic breadcrumb based on active tab
+  const dynamicBreadcrumbs = [
     { name: 'Главная', link: '/' },
     { name: 'Корзина', link: '/cart' },
-    { name: activeTab === 'cart' ? 'Моя корзина' : activeTab === 'delivery' ? 'Информация о доставке' : 'Оплата', link: '/cart' }, // Dynamic breadcrumb
+    { 
+      name: activeTab === 'cart' 
+        ? 'Моя корзина' 
+        : activeTab === 'delivery' 
+          ? 'Информация о доставке' 
+          : 'Оплата', 
+      link: '/cart' 
+    },
   ];
 
-  // Calculate totals based on the current cartItems state
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity === '' ? 0 : item.quantity), 0);
-  const shippingCost = cartItems.length > 0 ? 650 : 0; // Example: shipping only if items exist
-  const packagingCost = 0; // Example
+  // Calculate order summary values
+  const subtotal = basketTotalPrice || 0;
+  const shippingCost = basketItems && basketItems.length > 0 ? 650 : 0; // Example shipping cost
+  const packagingCost = 0; // Free packaging
   const total = subtotal + shippingCost + packagingCost;
+
+  // Format cart items for the CartItem component
+  const formattedCartItems = basketItems?.map(item => ({
+    id: item.id,
+    imageUrl: item.product_image || '/images/product-placeholder.png',
+    name: item.name,
+    brand: item.brand_name || 'Бренд',
+    price: item.price,
+    description: item.description || '',
+    quantity: item.quantity,
+    stock: item.available_quantity || 10, // Default to 10 if not provided
+    productLink: item.detail_page_url || `/product/${item.id}`
+  })) || [];
 
   return (
     <>
       <Head>
         <title>
-          {activeTab === 'cart' && 'Моя корзина - ShopShoot'}
-          {activeTab === 'delivery' && 'Информация о доставке - ShopShoot'}
-          {activeTab === 'payment' && 'Оплата - ShopShoot'}
+          {activeTab === 'cart' && 'Моя корзина - Shop4Shoot'}
+          {activeTab === 'delivery' && 'Информация о доставке - Shop4Shoot'}
+          {activeTab === 'payment' && 'Оплата - Shop4Shoot'}
         </title>
-        <meta name="description" content="Проверьте и оформите ваш заказ в интернет-магазине ShopShoot" />
+        <meta name="description" content="Проверьте и оформите ваш заказ в интернет-магазине Shop4Shoot" />
       </Head>
-      <Header breadcrumbs={breadcrumbs} />
+      <Header />
       <Breadcrumbs items={breadcrumbItems} />
 
       <main className={styles.cartPageContainer}>
-        <CartTabs activeTab={activeTab} onTabClick={handleTabClick} /> {/* Added CartTabs */}
+        <CartTabs activeTab={activeTab} onTabClick={handleTabClick} />
         
         <div className={styles.cartLayout}>
           {activeTab === 'cart' && (
             <section className={styles.cartItemsSection}>
               <h1 className={styles.mainTitle}>Моя корзина</h1>
-              {cartItems.length > 0 ? (
-                cartItems.map(item => (
+              {isLoading ? (
+                <div className={styles.loaderContainer}>
+                  <p>Загрузка корзины...</p>
+                </div>
+              ) : error ? (
+                <div className={styles.errorContainer}>
+                  <p>Ошибка при загрузке корзины. Пожалуйста, попробуйте позже.</p>
+                </div>
+              ) : formattedCartItems.length > 0 ? (
+                formattedCartItems.map(item => (
                   <CartItem
                     key={item.id}
                     item={item}
@@ -185,23 +205,29 @@ const CartPage = () => {
                   />
                 ))
               ) : (
-                <p className={styles.emptyCartMessage}>Ваша корзина пуста.</p>
+                <div className={styles.emptyCartContainer}>
+                  <p className={styles.emptyCartMessage}>Ваша корзина пуста.</p>
+                  <button 
+                    className={styles.continueShoppingButton}
+                    onClick={() => router.push('/catalog')}
+                  >
+                    Перейти в каталог
+                  </button>
+                </div>
               )}
             </section>
           )}
 
           {(activeTab === 'delivery' || activeTab === 'payment') && (
-            <section className={styles.contentSection}> {/* New section for delivery/payment */}
+            <section className={styles.contentSection}>
               {activeTab === 'delivery' && (
                 <>
-                  {/* <div className={styles.infoText}>Lorem ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.ipsum odor amet, consectetuer adipiscing elit. Nisi montes netus habitant; molestie ultricies vel.</div> */}
                   <DeliveryInfoForm />
                 </>
               )}
               {activeTab === 'payment' && (
                 <>
                   <h1 className={styles.mainTitle}>Оплата</h1>
-                  {/* Placeholder for Payment Form/Info */}
                   <div className={styles.placeholderContent}>
                     <p>Здесь будет форма для выбора способа оплаты и ввода платежных данных.</p>
                   </div>
@@ -217,30 +243,23 @@ const CartPage = () => {
                 shippingCost={shippingCost}
                 total={total}
                 onCheckout={handleProceedToCheckout}
-                buttonText={getButtonText()} // Pass dynamic button text
-                isCheckoutDisabled={activeTab === 'cart' && cartItems.length === 0}
+                buttonText={getButtonText()}
+                isCheckoutDisabled={activeTab === 'cart' && (!formattedCartItems || formattedCartItems.length === 0)}
               />
           </aside>
         </div>
       </main>
 
-        {/* New Arrivals Section using Responsive Wrapper */}
-        <ResponsiveProductSection 
-          title="Новые поступления"
-          subtitle=""
-          viewAllLink="/catalog?filter=new"
-          items={mockRecentlyViewedProducts} // Use 'items' prop name
-          renderItem={renderRecentlyViewedProductCard} // Pass the render function
-          onAddToCart={handleAddToCartRecentlyViewed} // Still needed for ProductCard via renderItem
-        />
+      {/* Recently Viewed Products Section */}
+      <ResponsiveProductSection 
+        title="Новые поступления"
+        subtitle=""
+        viewAllLink="/catalog?filter=new"
+        items={mockRecentlyViewedProducts}
+        renderItem={renderRecentlyViewedProductCard}
+        onAddToCart={handleAddToCartRecentlyViewed}
+      />
 
-      {/* <ProductGrid
-        title="Недавно просмотренные"
-        products={mockRecentlyViewedProducts}
-        viewAllLink="#" // Optional: link to a page with all recently viewed items
-        viewAllText="Смотреть все" // Optional
-        // onAddToCart prop can be omitted if not applicable here or handled differently
-      /> */}
       <Footer />
     </>
   );

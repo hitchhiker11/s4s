@@ -16,6 +16,7 @@ import Breadcrumbs from '../../../../components/Breadcrumbs';
 import ProductGrid from '../../../../components/ProductGrid';
 import Pagination from '../../../../components/Pagination';
 import SubscriptionForm from '../../../../components/SubscriptionForm';
+import { useBasket } from '../../../../hooks/useBasket';
 
 // Стили
 import { SIZES, COLORS, mediaQueries } from '../../../../styles/tokens';
@@ -87,6 +88,11 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
   const { categoryCode, subCategoryCode, page = '1' } = router.query;
   const currentPage = parseInt(page, 10) || 1;
   const ITEMS_PER_PAGE = 12; // Количество товаров на странице
+
+  const { addToBasket, refetchBasket } = useBasket({
+    initialFetch: false,
+    staleTime: 60000 // 1 minute
+  });
 
   // Запрос категории по коду
   const { data: categoryData, isError: categoryIsError } = useQuery(
@@ -184,19 +190,24 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
       totalItems: products.length
     };
   }, [productsData, products, currentPage, ITEMS_PER_PAGE]);
-
+ 
   // Обработчик смены страницы
   const handlePageChange = (newPage) => {
-    router.replace({
+    router.push({
       pathname: `/catalog/${categoryCode}/${subCategoryCode}`,
       query: { page: newPage }
-    }, undefined, { shallow: true });
+    });
   };
 
   // Обработчик добавления в корзину
-  const handleAddToCart = (product) => {
-    console.log('AddToCart from SubCategoryProductsPage', product);
-    // Добавить логику корзины здесь
+  const handleAddToCart = async (product) => {
+    const productId = parseInt(product.ID || product.id, 10);
+    try {
+      await addToBasket({ product_id: productId, quantity: 1 });
+      console.log('Product added to cart:', productId);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }
   };
 
   useEffect(() => {
@@ -242,11 +253,14 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
         ) : products && products.length > 0 ? (
           <>
             <ProductGrid 
+              showTitleRow={false}
               products={products.map(product => ({
                 ...product,
                 imageUrl: product.image,
                 productLink: product.detailUrl,
                 CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N',
+                CATALOG_QUANTITY: product.quantity ? String(product.quantity) : "0",
+                CODE: product.code
               }))} 
               onAddToCart={handleAddToCart}
             />

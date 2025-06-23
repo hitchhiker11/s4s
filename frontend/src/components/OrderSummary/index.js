@@ -2,7 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './OrderSummary.module.css';
 
-const OrderSummary = ({ subtotal, packagingCost, shippingCost, total, onCheckout }) => {
+const OrderSummary = ({ 
+  subtotal, 
+  packagingCost, 
+  shippingCost, 
+  total, 
+  onCheckout, 
+  buttonText = 'Продолжить',
+  isCheckoutDisabled = false
+}) => {
   const formatCurrency = (amount) => {
     return `₽${amount.toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
@@ -39,9 +47,13 @@ const OrderSummary = ({ subtotal, packagingCost, shippingCost, total, onCheckout
       </div>
     </div>
     
-    <button onClick={onCheckout} className={styles.checkoutButton}>
-        Продолжить
-      </button>
+    <button 
+      onClick={onCheckout} 
+      className={styles.checkoutButton}
+      disabled={isCheckoutDisabled}
+    >
+      {buttonText}
+    </button>
     </div>
   );
 };
@@ -52,6 +64,8 @@ OrderSummary.propTypes = {
   shippingCost: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
   onCheckout: PropTypes.func.isRequired,
+  buttonText: PropTypes.string,
+  isCheckoutDisabled: PropTypes.bool
 };
 
 export default OrderSummary; 

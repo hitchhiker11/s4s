@@ -141,11 +141,17 @@ export const useBasket = (options = {}) => {
     
     // Operations
     refetchBasket,
-    addToBasket: (productData) => addToBasketMutation.mutate(productData),
+    addToBasket: (productData) => {
+      // Ensure product_id is a number
+      if (productData.product_id) {
+        productData.product_id = parseInt(productData.product_id, 10);
+      }
+      addToBasketMutation.mutate(productData);
+    },
     updateBasketItem: (basketItemId, quantity) => 
-      updateBasketItemMutation.mutate({ basket_item_id: basketItemId, quantity }),
+      updateBasketItemMutation.mutate({ basket_item_id: parseInt(basketItemId, 10), quantity }),
     removeFromBasket: (basketItemId) => 
-      removeFromBasketMutation.mutate({ basket_item_id: basketItemId }),
+      removeFromBasketMutation.mutate({ basket_item_id: parseInt(basketItemId, 10) }),
     clearBasket: () => clearBasketMutation.mutate()
   };
 };

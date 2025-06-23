@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useQueryClient } from 'react-query';
-import { basketApi } from '../lib/api';
+import { useBasket } from '../hooks/useBasket';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, ANIMATION, mediaQueries } from '../styles/tokens';
 
 const Card = styled.div`
@@ -151,12 +151,13 @@ const CartActionArea = styled.div`
   background-color: #FEFEFE;
   padding: 8px 38px;
   width: 100%;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: background-color 0.2s ease;
   flex-shrink: 0; /* Prevent from shrinking */
+  opacity: ${props => props.disabled ? 0.7 : 1};
 
   &:hover {
-    background-color: ${COLORS.gray100};
+    background-color: ${props => props.disabled ? '#FEFEFE' : COLORS.gray100};
   }
 
   @media (min-width: 600px) {
@@ -169,7 +170,7 @@ const AddToCartText = styled.span`
   font-weight: ${TYPOGRAPHY.weight.bold};
   font-size: clamp(10px, 3vw, 18px);
   line-height: 1;
-  color: ${COLORS.primary};
+  color: ${props => props.isPreOrder ? COLORS.black : COLORS.primary};
   text-transform: uppercase;
 
   @media (min-width: 1024px) {
@@ -180,21 +181,39 @@ const AddToCartText = styled.span`
 const ProductCard = ({ product, onAddToCart }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const queryClient = useQueryClient();
+  
+  // Use the basket hook if external handler is not provided
+  const { addToBasket } = useBasket({
+    initialFetch: false, // Don't fetch basket data on mount
+    staleTime: 60000 // 1 minute cache
+  });
 
-  const handleAddToCart = async () => {
-    const productId = product.ID || product.id;
-    const isAvailable = product.CATALOG_AVAILABLE === 'Y' || product.available;
+  const handleAddToCart = async (e) => {
+    // Prevent navigation to product detail page when clicking add to cart
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
+    const hasZeroQuantity = product.CATALOG_QUANTITY === "0" || product.quantity === 0;
+    // Check if product can be added to cart (either available or zero quantity for pre-order)
+    const canAddToCart = (product.CATALOG_AVAILABLE === 'Y' || product.available) || hasZeroQuantity;
 
-    if (!productId || isLoading || !isAvailable) return;
+    if (!productId || isLoading || !canAddToCart) return;
 
     setIsLoading(true);
 
     try {
-      await basketApi.addToBasket(productId, 1);
-      queryClient.invalidateQueries('basketCount');
       if (onAddToCart) {
-        onAddToCart(product);
+        // Use provided handler if available
+        await onAddToCart(product);
+      } else {
+        // Otherwise use the basket hook
+        await addToBasket({ product_id: productId, quantity: 1 });
       }
+      
+      // Invalidate queries to refresh basket count
+      queryClient.invalidateQueries(['basket']);
+      queryClient.invalidateQueries(['basketCount']);
     } catch (error) {
       console.error('Error adding product to cart:', error);
     } finally {
@@ -205,8 +224,18 @@ const ProductCard = ({ product, onAddToCart }) => {
   const brandName = product.BRAND_NAME || product.brand || "Brand";
   const productName = product.NAME || product.name || "Product Name";
   const priceValue = product.PRICE || product.price || 0;
-  const imageUrl = product.PREVIEW_PICTURE_SRC || product.imageUrl || '/images/no-image.png';
+  
+  // Use the correct image path (assuming it's already processed by transformers.js)
+  const imageUrl = product.imageUrl || product.image || '/images/no-image.png';
+  
+  // Check availability and quantity - UPDATED LOGIC
   const isAvailable = product.CATALOG_AVAILABLE === 'Y' || product.available === true;
+  // Just check quantity for pre-order status, regardless of availability
+  const isPreOrder = product.CATALOG_QUANTITY === "0" || product.quantity === 0;
+  
+  // Get the correct product detail URL from CODE field
+  const productCode = product.CODE || product.code || '';
+  const detailUrl = product.productLink || product.detailUrl || `/detail/${productCode}`;
 
   const formattedPrice = new Intl.NumberFormat('ru-RU', {
     style: 'currency',
@@ -216,22 +245,27 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <Card>
-      <ImageContainer>
-        <Image 
-          src={imageUrl} 
-          alt={productName} 
-          loading="lazy"
-        />
-      </ImageContainer>
-      <Content>
-        <BrandTitle>{brandName}</BrandTitle> 
-        <ProductTitle>{productName}</ProductTitle>
-        <Price>{formattedPrice}</Price>
-      </Content>
+      <a href={detailUrl} style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+        <ImageContainer>
+          <Image 
+            src={imageUrl} 
+            alt={productName} 
+            loading="lazy"
+          />
+        </ImageContainer>
+        <Content>
+          <BrandTitle>{brandName}</BrandTitle> 
+          <ProductTitle>{productName}</ProductTitle>
+          <Price>{formattedPrice}</Price>
+        </Content>
+      </a>
       <DividerLine />
-      <CartActionArea onClick={handleAddToCart} disabled={!isAvailable || isLoading}>
-        <AddToCartText>
-          {isLoading ? 'Добавление...' : 'В корзину'}
+      <CartActionArea 
+        onClick={handleAddToCart}
+        disabled={(!isAvailable && !isPreOrder) || isLoading}
+      >
+        <AddToCartText isPreOrder={isPreOrder}>
+          {isLoading ? 'Добавление...' : isPreOrder ? 'Предзаказ' : 'В корзину'}
         </AddToCartText>
       </CartActionArea>
     </Card>

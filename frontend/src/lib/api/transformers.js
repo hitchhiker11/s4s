@@ -49,34 +49,95 @@ export const transformCatalogItem = (apiItem) => {
     fields = {},
     properties = {},
     prices = [],
+    images = {},
     // Assuming API might provide `in_stock` directly at the top level or within fields/props
     in_stock: topLevelInStock,
   } = apiItem;
   
-  const articleProp = properties.ARTICLE || {};
+  const articleProp = properties.ARTICLE || properties.CML2_ARTICLE || {};
   const brandProp = properties.BRAND || {};
   
-  // Image handling: Prioritize MORE_PHOTO, then DETAIL_PICTURE, then PREVIEW_PICTURE
-  let itemImages = [];
-  if (properties.MORE_PHOTO?.VALUE && Array.isArray(properties.MORE_PHOTO.VALUE) && properties.MORE_PHOTO.VALUE.length > 0) {
-    itemImages = properties.MORE_PHOTO.VALUE;
-  } else if (properties.MORE_PHOTO?.VALUE && typeof properties.MORE_PHOTO.VALUE === 'string') {
-    itemImages = [properties.MORE_PHOTO.VALUE];
-  } else if (fields.DETAIL_PICTURE) {
-    itemImages = [fields.DETAIL_PICTURE];
-  } else if (fields.PREVIEW_PICTURE) {
-    itemImages = [fields.PREVIEW_PICTURE];
+  // Process images from the new API structure
+  let mainImage = '/images/placeholder.png';
+  let imagesList = [];
+  
+  // Get the OLD_BASE_URL from environment variables
+  const OLD_BASE_URL = process.env.OLD_BASE_URL || 'https://shop4shoot.com';
+  
+  // Helper function to prepend the base URL if needed
+  const getFullImageUrl = (path) => {
+    if (!path) return '/images/placeholder.png';
+    
+    // If already a full URL, return as is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
+    // If starts with /upload, prepend the OLD_BASE_URL
+    if (path.startsWith('/upload')) {
+      return `${OLD_BASE_URL}${path}`;
+    }
+    
+    // For local images that start with /images, return as is
+    return path;
+  };
+  
+  // Handle the new images structure first if available
+  if (images && typeof images === 'object') {
+    if (images.preview && images.preview.src) {
+      // Use medium size for product cards if available
+      mainImage = images.preview.standard_sizes?.medium?.src || images.preview.src;
+      mainImage = getFullImageUrl(mainImage);
+      imagesList.push(mainImage);
+    }
+    
+    if (images.detail && images.detail.src && images.detail.src !== mainImage) {
+      const detailImage = getFullImageUrl(images.detail.src);
+      imagesList.push(detailImage);
+    }
+    
+    // Add gallery images if available
+    if (images.gallery && Array.isArray(images.gallery)) {
+      imagesList = [...imagesList, ...images.gallery.map(img => getFullImageUrl(img.src))];
+    }
+    
+    // If all images are available in the 'all' array, use that
+    if (images.all && Array.isArray(images.all) && images.all.length > 0) {
+      // Add any additional images not already included
+      images.all.forEach(img => {
+        if (img.src) {
+          const fullUrl = getFullImageUrl(img.src);
+          if (!imagesList.includes(fullUrl)) {
+            imagesList.push(fullUrl);
+          }
+        }
+      });
+    }
   }
-
-  const mainImage = itemImages[0] || '/images/placeholder.png';
+  
+  // Fallback to legacy image fields if new structure isn't available
+  if (imagesList.length === 0) {
+    // Image handling: Prioritize MORE_PHOTO, then DETAIL_PICTURE, then PREVIEW_PICTURE
+    if (properties.MORE_PHOTO?.VALUE && Array.isArray(properties.MORE_PHOTO.VALUE) && properties.MORE_PHOTO.VALUE.length > 0) {
+      imagesList = properties.MORE_PHOTO.VALUE.map(img => getFullImageUrl(img));
+      mainImage = imagesList[0];
+    } else if (properties.MORE_PHOTO?.VALUE && typeof properties.MORE_PHOTO.VALUE === 'string') {
+      mainImage = getFullImageUrl(properties.MORE_PHOTO.VALUE);
+      imagesList = [mainImage];
+    } else if (fields.DETAIL_PICTURE) {
+      mainImage = getFullImageUrl(`/upload/${fields.DETAIL_PICTURE}`);
+      imagesList = [mainImage];
+    } else if (fields.PREVIEW_PICTURE) {
+      mainImage = getFullImageUrl(`/upload/${fields.PREVIEW_PICTURE}`);
+      imagesList = [mainImage];
+    }
+  }
   
   const basePrice = prices.find(price => price.base) || prices[0] || {};
   
   // Determine stock status
-  let stockStatus = topLevelInStock === 'Y' || fields.QUANTITY > 0 || properties.AVAILABLE?.VALUE === 'Y';
-  if (apiItem.available !== undefined) { // Prefer direct `available` from API if present
-      stockStatus = apiItem.available === 'Y';
-  }
+  const stockStatus = fields.CATALOG_AVAILABLE === 'Y';
+  const quantityAvailable = parseInt(fields.CATALOG_QUANTITY || 0, 10) > 0;
 
   return {
     id: String(id), // Ensure ID is a string
@@ -86,10 +147,12 @@ export const transformCatalogItem = (apiItem) => {
     price: parseFloat(basePrice.price) || 0,
     currency: basePrice.currency || 'RUB',
     image: mainImage,
-    images: itemImages.length > 0 ? itemImages : ['/images/placeholder.png'],
+    images: imagesList.length > 0 ? imagesList : ['/images/placeholder.png'],
     description: fields.PREVIEW_TEXT || fields.DETAIL_TEXT || '',
     detailUrl: fields.DETAIL_PAGE_URL || `/catalog/${fields.CODE || id}`,
     inStock: stockStatus,
+    quantityAvailable: quantityAvailable,
+    quantity: parseInt(fields.CATALOG_QUANTITY || 0, 10),
     isNew: properties.ISNEW?.VALUE === 'Y' || properties.NEWPRODUCT?.VALUE === 'Y', // common variations for new flag
     isBestseller: properties.BESTSELLER?.VALUE === 'Y' || properties.SALELEADER?.VALUE === 'Y', // common variations
     code: fields.CODE || '',

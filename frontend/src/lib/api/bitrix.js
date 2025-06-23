@@ -79,7 +79,7 @@ export const getCatalogItemById = async (itemId, params = {}) => {
  */
 
 /**
- * Get all catalog sections/categories
+ * Get all catalog section/categories
  * @param {Object} params - Query parameters for sections API (iblock_id will be overridden if not for sections)
  * @returns {Promise<Object>} Sections data or error object
  */

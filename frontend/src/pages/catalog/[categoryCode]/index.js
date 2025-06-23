@@ -20,6 +20,9 @@ import ProductCard from '../../../components/ProductCard';
 
 import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens';
 
+// Add import for useBasket hook
+import { useBasket } from '../../../hooks/useBasket';
+
 // Styled components (can be reused or adapted from other catalog pages)
 const Container = styled.div`
   max-width: 1920px;
@@ -185,11 +188,11 @@ const mockRecentlyViewedProducts = [
     // Add actual cart logic here later
   };
 
+  // In the renderRecentlyViewedProductCard function, remove the onAddToCart prop since ProductCard will handle it internally
   const renderRecentlyViewedProductCard = (product) => (
     <ProductCard 
       key={product.id} 
-      product={product} // Pass the whole product object
-      onAddToCart={handleAddToCartRecentlyViewed} 
+      product={product}
     />
   );
 
@@ -329,6 +332,12 @@ const CategoryCardWrapper = ({ categories, allProductsCard }) => {
 const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewProducts, seo }) => {
   const router = useRouter();
   const { categoryCode } = router.query;
+  
+  // Add the useBasket hook
+  const { addToBasket, refetchBasket } = useBasket({
+    initialFetch: false,
+    staleTime: 60000 // 1 minute
+  });
 
   // Запрос категории по символьному коду
   const { data: categoryData, isError: categoryIsError } = useQuery(
@@ -419,10 +428,15 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
     }));
   }, [newProducts]);
 
-  // AddToCart handler for recently viewed items
-  const handleAddToCart = (product) => {
-    console.log('Dummy AddToCart from CategoryDetailPage', product);
-    // Add actual basket logic here
+  // Update the handleAddToCart function to use the useBasket hook
+  const handleAddToCart = async (product) => {
+    const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
+    try {
+      await addToBasket({ product_id: productId, quantity: 1 });
+      console.log('Product added to cart:', productId);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }
   }
 
   useEffect(() => {
@@ -493,7 +507,7 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
             showViewAllLink={true}
             items={formattedNewProducts}
             renderItem={renderRecentlyViewedProductCard}
-            onAddToCart={handleAddToCartRecentlyViewed}
+            onAddToCart={handleAddToCart}
             gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
           />
         ) : (
