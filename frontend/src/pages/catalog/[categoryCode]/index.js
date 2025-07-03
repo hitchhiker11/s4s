@@ -507,7 +507,6 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
             showViewAllLink={true}
             items={formattedNewProducts}
             renderItem={renderRecentlyViewedProductCard}
-            onAddToCart={handleAddToCart}
             gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
           />
         ) : (

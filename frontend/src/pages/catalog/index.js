@@ -281,7 +281,8 @@ const mockRecentlyViewedProducts = [
     <ProductCard 
       key={product.id} 
       product={product} // Pass the whole product object
-      onAddToCart={handleAddToCartRecentlyViewed} 
+      // Remove onAddToCart to let ProductCard handle it with toasts
+      // onAddToCart={handleAddToCartRecentlyViewed} 
     />
   );
 

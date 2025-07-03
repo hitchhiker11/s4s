@@ -1,0 +1,284 @@
+/* Base QuantityControl styles */
+.quantityControl {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+/* Size variants */
+.quantityControl.default {
+  /* Default desktop size */
+}
+
+.quantityControl.compact {
+  padding: 1px;
+}
+
+.quantityControl.small {
+  padding: 0;
+}
+
+/* Orientation variants */
+.quantityControl.horizontal {
+  flex-direction: row;
+}
+
+@media (max-width: 768px) {
+  .quantityControl.horizontal {
+    max-height: 25px;
+  }
+}
+
+.quantityControl.vertical {
+  flex-direction: column;
+}
+
+/* Button styles */
+.quantityButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #E7194A;
+  transition: background-color 0.2s ease;
+}
+
+.quantityControl.default .quantityButton {
+  padding: 10px 14px;
+}
+
+.quantityControl.compact .quantityButton {
+  padding: 8px 12px;
+}
+
+.quantityControl.small .quantityButton {
+  padding: 4px 8px;
+}
+
+.quantityButton:hover:not(:disabled) {
+  background-color: #E0E0E0;
+}
+
+.quantityButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantityButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.quantityControl.compact .quantityButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.quantityControl.small .quantityButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Increase button specific styles */
+.increaseButton {
+  background-color: #E7194A !important;
+  color: #FCFCFC !important;
+}
+
+.increaseButton:hover:not(:disabled) {
+  background-color: #c4143f !important;
+}
+
+/* Remove icon button specific styles */
+.removeIconButton {
+  color: #E7194A;
+}
+
+.removeIconButton:hover:not(:disabled) {
+  background-color: #FCE8EC;
+}
+
+/* Input styles */
+.quantityInput {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  color: #1C1C1C;
+  text-align: center;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.quantityControl.default .quantityInput {
+  padding: 10px 18px 10px 3px;
+  font-size: 18px;
+  min-width: 35px;
+  width: 60px;
+}
+
+.quantityControl.compact .quantityInput {
+  padding: 8px 15px 8px 3px;
+  font-size: 16px;
+  min-width: 30px;
+  width: 50px;
+}
+
+.quantityControl.small .quantityInput {
+  padding: 4px 8px;
+  font-size: 14px;
+  min-width: 25px;
+  width: 40px;
+}
+
+.quantityInput::-webkit-outer-spin-button,
+.quantityInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantityInput:focus {
+  outline: none;
+}
+
+/* Loading states */
+.quantityControl.loading .quantityButton {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quantityControl.loading .quantityInput {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quantityControl.disabled {
+  opacity: 0.5;
+}
+
+.quantityControl.disabled .quantityButton,
+.quantityControl.disabled .quantityInput {
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+/* Spinner styles */
+.spinner {
+  display: inline-block;
+  border: 2px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 2px solid #E7194A;
+  animation: spin 1s linear infinite;
+}
+
+.quantityControl.default .spinner {
+  width: 14px;
+  height: 14px;
+}
+
+.quantityControl.compact .spinner {
+  width: 12px;
+  height: 12px;
+}
+
+.quantityControl.small .spinner {
+  width: 10px;
+  height: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ProductCard specific styles for integration */
+.quantityControl.productCardStyle {
+  background-color: #FEFEFE;
+  border-radius: 0;
+  width: 100%;
+  justify-content: center;
+  padding: 4px 8px;
+}
+
+.quantityControl.productCardStyle .quantityButton {
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.quantityControl.productCardStyle .quantityInput {
+  padding: 6px 8px;
+  font-size: 14px;
+  min-width: 25px;
+  width: 35px;
+  font-weight: 700;
+}
+
+.quantityControl.productCardStyle .quantityButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+.quantityControl.productCardStyle .spinner {
+  width: 12px;
+  height: 12px;
+}
+
+/* Override hover for ProductCard context */
+.quantityControl.productCardStyle .quantityButton:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.quantityControl.productCardStyle .increaseButton:hover:not(:disabled) {
+  background-color: #c4143f !important;
+}
+
+.quantityControl.productCardStyle .removeIconButton:hover:not(:disabled) {
+  background-color: rgba(231, 25, 74, 0.1);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .quantityControl.default .quantityButton {
+    padding: 6px 10px;
+  }
+  
+  .quantityControl.default .quantityInput {
+    padding: 6px 10px;
+    font-size: 14px;
+    min-width: 25px;
+    width: 35px;
+  }
+  
+  .quantityControl.default .quantityButton svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ProductCard mobile adjustments */
+  .quantityControl.productCardStyle {
+    padding: 2px 4px;
+  }
+
+  .quantityControl.productCardStyle .quantityButton {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .quantityControl.productCardStyle .quantityInput {
+    padding: 4px 6px;
+    font-size: 12px;
+    min-width: 20px;
+    width: 30px;
+  }
+
+  .quantityControl.productCardStyle .quantityButton svg {
+    width: 12px;
+    height: 12px;
+  }
+} 

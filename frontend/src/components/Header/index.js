@@ -32,13 +32,22 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Получаем количество товаров в корзине через кастомный хук
-  const { count: basketCount = 0, isLoading: isBasketLoading, error: basketError } = useBasketCount({
+  const { 
+    count: basketCount = 0, 
+    isLoading: isBasketLoading, 
+    error: basketError,
+    isInitialized: isFuserIdInitialized
+  } = useBasketCount({
     refetchOnWindowFocus: true,
     staleTime: 1000 * 60 * 2, // 2 minutes
+    autoInitialize: true
   });
 
-  // Use mockBasketCount if we're in mock mode
-  const displayBasketCount = useMocks ? mockBasketCount : basketCount;
+  // Use mockBasketCount if we're in mock mode, otherwise use real basket count
+  // Show 0 if fuser_id is not yet initialized to avoid flickering
+  const displayBasketCount = useMocks 
+    ? mockBasketCount 
+    : (isFuserIdInitialized ? basketCount : 0);
 
   // Обработчик скролла для изменения внешнего вида хедера
   useEffect(() => {

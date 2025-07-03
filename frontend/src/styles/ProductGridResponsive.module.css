@@ -7,6 +7,9 @@
   row-gap: 20px;
   align-items: start;
   width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking below content size */
+  overflow: hidden; /* Prevent grid overflow */
 }
 
 /* Tablet and above */
@@ -32,4 +35,8 @@
   height: auto;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking below content size */
+  overflow: hidden; /* Prevent content overflow */
 } 

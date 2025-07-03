@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS, SIZES, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens'; // Adjusted path for styles
+import RequestModal from '../modals/RequestModal';
 
 // Main wrapper for the subscription section, can be exported if pages need to use it directly
 export const SubscriptionSectionWrapper = styled.div`
@@ -184,6 +185,8 @@ const SubscriptionForm = () => {
     email: ''
   });
 
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormInputs(prev => ({ ...prev, [name]: value }));
@@ -191,14 +194,28 @@ const SubscriptionForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Actual form submission logic would go here
-    console.log('Subscription Form submitted:', formInputs);
-    // Example: alert('Спасибо за подписку!');
-    setFormInputs({ phone: '', name: '', email: '' }); // Reset form
+    
+    // Open RequestModal with current form data
+    setIsRequestModalOpen(true);
+  };
+
+  const handleCloseRequestModal = () => {
+    setIsRequestModalOpen(false);
   };
 
   return (
     <SubscriptionSectionWrapper>
+      {/* RequestModal */}
+      <RequestModal
+        isOpen={isRequestModalOpen}
+        onClose={handleCloseRequestModal}
+        initialValues={{
+          name: formInputs.name,
+          phone: formInputs.phone,
+          email: formInputs.email
+        }}
+      />
+      
       <SubscriptionContainer>
         <ContentWrapper>
           <SubscriptionImageContainer>

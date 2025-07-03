@@ -4,22 +4,27 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .modal {
   background-color: #FCFCFC; /* Figma: fill_KGRBW9 */
   padding: 50px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 4px 0px rgba(129, 129, 129, 0.25); /* Figma: effect_AKWE6P */
+  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Updated to match other modals */
   position: relative;
-  width: auto;
+  width: 100%;
   max-width: 928px; /* Figma: Frame 1321315851 width */
+  max-height: 90vh;
   display: flex;
+  margin: auto;
+  overflow-y: auto;
 }
 
 .closeButton {
@@ -31,6 +36,7 @@
   font-size: 24px;
   cursor: pointer;
   color: #1C1C1C;
+  z-index: 2;
 }
 
 .content {
@@ -81,75 +87,123 @@
 }
 
 .input {
-  background-color: rgba(255, 255, 255, 0.35); /* Figma: fill_O214YB */
+  background: transparent;
   border: none;
-  border-bottom: 2px solid #B6B6B6; /* Figma: stroke_CKD663 (default bottom) */
-  padding: 10px 8px 10px 0px; /* Figma: layout_YAQRHB padding */
+  border-bottom: 2px solid #B6B6B6;
+  padding: 8px 0 8px 0;
   font-family: 'Rubik', sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 24px;
+  color: #1C1C1C;
   width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: left;
+}
+
+.input:focus {
+  border-bottom: 2px solid #E7194A;
 }
 
 .input::placeholder {
-  color: #B6B6B6; /* Figma: fill_BZFVW5 for first two, but PHJ1P9 for others. Using B6B6B6 for consistency */
-  text-align: right;
+  color: #B6B6B6;
+  text-align: left;
+  font-weight: 400;
 }
 
-/* Specific border for the first input as per Figma */
-.formSection form input:nth-child(1) {
-  border-top: 2px solid #B6B6B6; /* Figma: stroke_I49PPA */
-  border-bottom: none;
-}
-
-/* Specific border for the second input as per Figma */
+/* Remove specific borders from Figma as they conflict with the unified approach */
+.formSection form input:nth-child(1),
 .formSection form input:nth-child(2) {
-  border-top: 2px solid #B6B6B6; /* Figma: stroke_TKSYHF */
-  border-bottom: none;
+  border-top: none;
 }
-
-
-.input[placeholder="Номер телефона"], .input[placeholder="Почта"], .textarea {
-  color: #1C1C1C; /* Default text color */
-}
-
-.input[placeholder="Номер телефона"]::placeholder, 
-.input[placeholder="Почта"]::placeholder, 
-.textarea::placeholder {
-  color: rgba(0, 0, 0, 0.35); /* Figma: fill_PHJ1P9 */
-}
-
 
 .textarea {
-  min-height: 100px; /* Adjust as needed, Figma shows more lines */
+  min-height: 100px;
   resize: vertical;
-  padding-top: 10px; /* Align text better with other inputs */
-  border-bottom: 2px solid #B6B6B6; /* Figma: stroke_CKD663 */
+  border-bottom: 2px solid #B6B6B6;
+  transition: border-color 0.2s;
+  text-align: left;
+}
+
+.textarea:focus {
+  border-bottom: 2px solid #E7194A;
 }
 
 .submitButton {
-  background-color: #E7194A; /* Figma: fill_U5YW8Q */
-  color: #FCFCFC; /* Figma: fill_KGRBW9 */
+  background-color: #E7194A;
+  color: #FCFCFC;
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
   font-size: 24px;
   line-height: 1.4;
   text-transform: uppercase;
-  padding: 10px 24px; /* Figma: layout_6LWP93 padding */
+  padding: 10px 24px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   align-self: stretch;
-  margin-top: 31px; /* Figma: layout_P4HRIX gap */
-  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_ZR0EVZ */
+  margin-top: 31px;
+  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1);
+  letter-spacing: 0.02em;
+  transition: background 0.2s;
+}
+
+.submitButton:hover,
+.submitButton:focus {
+  background: #c9153e;
+}
+
+.inputError {
+  border-bottom: 2px solid #E7194A !important;
+}
+
+.errorText {
+  color: #E7194A;
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.input:disabled,
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton:disabled {
+  background-color: #B6B6B6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submitButton:disabled:hover,
+.submitButton:disabled:focus {
+  background-color: #B6B6B6;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .modal, .content {
+@media (max-width: 900px) {
+  .overlay {
+    padding: 10px;
+    align-items: flex-center;
+    padding-top: 20px;
+  }
+
+  .modal {
     flex-direction: column;
     padding: 20px;
-    gap: 30px;
+    max-width: 100%;
+    width: 100%;
+    gap: 20px;
+    max-height: 95vh;
+    margin: 0;
+  }
+  
+  .content {
+    flex-direction: column;
+    gap: 20px;
   }
 
   .infoSection, .formSection {
@@ -157,10 +211,57 @@
   }
 
   .title {
-    font-size: 32px;
+    font-size: 24px;
   }
 
-  .input, .description, .submitButton, .textarea {
-    font-size: 18px;
+  .description {
+    font-size: 16px;
+  }
+
+  .input {
+    font-size: 16px;
+    padding: 12px 0 8px 0;
+  }
+  
+  .textarea {
+    font-size: 16px;
+  }
+  
+  .submitButton {
+    font-size: 16px;
+    padding: 12px 0;
+    margin-top: 18px;
+  }
+
+  .errorText {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 20px;
+    padding-top: 10px;
+  }
+
+  .modal {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .input, .description, .textarea {
+    font-size: 14px;
+  }
+  
+  .submitButton {
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  .errorText {
+    font-size: 11px;
   }
 } 

@@ -103,7 +103,8 @@ const ProductPage = ({ productData = mockProductData }) => { // Receive productD
     <ProductCard
       key={product.id}
       product={product}
-      onAddToCart={handleAddToCartRecentlyViewed}
+      // Remove onAddToCart to let ProductCard handle it with toasts
+      // onAddToCart={handleAddToCartRecentlyViewed}
     />
   );
 
@@ -202,7 +203,8 @@ const ProductPage = ({ productData = mockProductData }) => { // Receive productD
         items={mockRecentlyViewedProducts}
         showViewAllLink={false}
         renderItem={renderRecentlyViewedProductCard}
-        onAddToCart={handleAddToCartRecentlyViewed}
+        // Remove onAddToCart to let ProductCard handle it with toasts
+        // onAddToCart={handleAddToCartRecentlyViewed}
         
       />
       <Footer />

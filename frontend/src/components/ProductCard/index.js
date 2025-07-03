@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -12,6 +12,10 @@ const CardWrapper = styled.div`
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
   transition: ${ANIMATION.transitionBase};
+  width: 100%; /* Take full width of grid cell */
+  max-width: 100%; /* Prevent overflow from parent grid */
+  min-width: 0; /* Allow shrinking below content size */
+  /* overflow: hidden; */ /* Remove this to allow toasts to be visible */
   
   &:hover {
     border-right-color: ${COLORS.gray500};
@@ -73,6 +77,9 @@ const TextContent = styled.div`
   text-align: center;
   padding: ${SPACING.md} ${SPACING.sm};
   background-color: ${COLORS.white};
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Prevent text overflow */
   
   ${mediaQueries.md} {
     padding: ${SPACING.xl} ${SPACING.lg};
@@ -83,6 +90,8 @@ const BrandLinkWrapper = styled.a`
   text-decoration: none;
   color: inherit;
   display: block;
+  width: 100%;
+  max-width: 100%;
 `;
 
 const Brand = styled.span`
@@ -94,6 +103,10 @@ const Brand = styled.span`
   text-transform: uppercase;
   line-height: 1;
   margin-bottom: ${SPACING.xs};
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   
   ${mediaQueries.md} {
     font-size: 23.27px;
@@ -109,9 +122,17 @@ const Name = styled.h3`
   margin: 0;
   color: ${COLORS.black};
   text-transform: uppercase;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  hyphens: auto;
   
   ${mediaQueries.md} {
     font-size: 18px;
+    -webkit-line-clamp: 3; /* Allow 3 lines on larger screens */
   }
 `;
 
@@ -122,6 +143,10 @@ const Price = styled.div`
   color: ${COLORS.primary};
   margin-top: ${SPACING.sm};
   line-height: 0.67;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   
   ${mediaQueries.md} {
     font-size: 35px;
@@ -158,12 +183,80 @@ const AddToCartContainer = styled.div`
   padding: ${SPACING.xs} ${SPACING.sm} ${SPACING.xs};
   text-align: center;
   background-color: ${COLORS.white};
+  width: 100%;
+  max-width: 100%;
   
   ${mediaQueries.md} {
     padding: ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   }
 `;
 
+// Add toast notification styles
+const ToastContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: ${COLORS.white};
+  border: 2px solid ${COLORS.primary};
+  padding: ${SPACING.sm} 35px ${SPACING.sm} ${SPACING.md}; /* Right padding increased for close button */
+  z-index: 9999; /* Increase z-index to ensure toasts appear above all elements */
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.bold};
+  font-size: 12px;
+  color: ${COLORS.black};
+  text-transform: uppercase;
+  opacity: ${props => props.visible ? 1 : 0};
+  pointer-events: ${props => props.visible ? 'auto' : 'none'};
+  transition: opacity 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 280px;
+  min-width: 200px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  
+  ${mediaQueries.md} {
+    font-size: 14px;
+    padding: ${SPACING.md} 40px ${SPACING.md} ${SPACING.lg};
+    max-width: 320px;
+  }
+`;
+
+const ToastCloseButton = styled.button`
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: ${COLORS.primary};
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: rgba(231, 25, 74, 0.1);
+    border-radius: 2px;
+  }
+  
+  ${mediaQueries.md} {
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+  }
+`;
+
+// Update button styles for loading state
 const AddToCartButton = styled.button`
   background-color: transparent;
   color: ${COLORS.black};
@@ -174,8 +267,13 @@ const AddToCartButton = styled.button`
   padding: ${SPACING.xs} 0;
   cursor: pointer;
   width: 100%;
+  max-width: 100%;
   text-align: center;
   text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   
   &:disabled {
     color: ${COLORS.gray400};
@@ -188,9 +286,37 @@ const AddToCartButton = styled.button`
   }
 `;
 
+const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid ${COLORS.gray300};
+  border-radius: 50%;
+  border-top-color: ${COLORS.primary};
+  animation: spin 1s ease-in-out infinite;
+  margin-right: ${SPACING.xs};
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  ${mediaQueries.md} {
+    width: 14px;
+    height: 14px;
+  }
+`;
+
 const ProductCard = ({ product, onAddToCart }) => {
   // Use the basket hook to get the addToBasket function
-  const { addToBasket, isLoading } = useBasket({ initialFetch: false });
+  const { addToBasketWithStockCheck, isLoading: isBasketLoading } = useBasket({ 
+    initialFetch: false,
+    autoInitialize: true
+  });
+  
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [buttonState, setButtonState] = useState('default'); // 'default', 'loading', 'success', 'error'
   
   const {
     id,
@@ -200,6 +326,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     price,
     productLink = '#',
     CATALOG_AVAILABLE,
+    CATALOG_QUANTITY,
     badge
   } = product;
 
@@ -209,25 +336,88 @@ const ProductCard = ({ product, onAddToCart }) => {
   };
 
   const isAvailable = CATALOG_AVAILABLE === 'Y';
+  const isPreOrder = CATALOG_QUANTITY === "0" || CATALOG_QUANTITY === 0;
+  const isLoading = isBasketLoading || isLocalLoading || buttonState === 'loading';
+  
+  // Disable button for pre-order items or if loading
+  const isButtonDisabled = isPreOrder || isLoading || !isAvailable;
 
-  const handleAddToCart = (e) => {
+  const showToastMessage = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+      setToastMessage('');
+    }, 3000);
+  };
+
+  // Function to close toast manually
+  const closeToast = () => {
+    setShowToast(false);
+    setToastMessage('');
+  };
+
+  // Reset button state after showing success/error
+  const resetButtonState = () => {
+    setTimeout(() => {
+      setButtonState('default');
+    }, 2000);
+  };
+
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     
-    if (isAvailable) {
-      // Use the new API method to add to basket
-      addToBasket({
+    if (isButtonDisabled) {
+      console.log(`Product ${id} - button disabled. PreOrder: ${isPreOrder}, Available: ${isAvailable}, Loading: ${isLoading}`);
+      return;
+    }
+    
+    setIsLocalLoading(true);
+    setButtonState('loading');
+    
+    try {
+      console.log('🛒 [ProductCard] Adding product to basket with stock check:', { id, name, isAvailable, isPreOrder });
+      
+      // Use the new async API method with stock check to add to basket
+      await addToBasketWithStockCheck({
         product_id: id,
         quantity: 1
       });
       
-      // Also call the parent component's onAddToCart if provided (for backwards compatibility)
+      console.log(`✅ [ProductCard] Successfully added product ${id} to basket`);
+      setButtonState('success');
+      showToastMessage('Товар успешно добавлен в корзину');
+      resetButtonState();
+      
+      // Call the parent component's onAddToCart if provided (for backwards compatibility)
+      // but don't await it as it's just a callback
       if (onAddToCart) {
-        onAddToCart(id);
+        try {
+          onAddToCart(id);
+        } catch (callbackError) {
+          console.warn('Error in onAddToCart callback:', callbackError);
+        }
+      }
+    } catch (error) {
+      console.error(`❌ [ProductCard] Failed to add product ${id} to basket:`, error);
+      
+      // Check if it's a stock-related error
+      if (error.stockResponse) {
+        console.log('📊 [ProductCard] Stock error details:', error.stockResponse);
+        const availableQuantity = error.stockResponse.available_quantity || 0;
+        const errorMessage = availableQuantity > 0 
+          ? `Доступно только ${availableQuantity} шт.`
+          : 'Товар закончился на складе';
+        showToastMessage(errorMessage);
+        setButtonState('error');
+      } else {
+        showToastMessage('Ошибка при добавлении товара');
+        setButtonState('error');
       }
       
-      console.log(`Adding product ${id} to basket`);
-    } else {
-      console.log(`Product ${id} is not available for purchase`);
+      resetButtonState();
+    } finally {
+      setIsLocalLoading(false);
     }
   };
 
@@ -235,9 +425,46 @@ const ProductCard = ({ product, onAddToCart }) => {
                            ? productLink 
                            : `/catalog/unknown/unknown/${id}`;
 
+  const getButtonText = () => {
+    switch (buttonState) {
+      case 'loading':
+        return '';
+      case 'success':
+        return 'Добавлено!';
+      case 'error':
+        return 'Недостаточно товара';
+      default:
+        if (isPreOrder) return 'Предзаказ';
+        if (!isAvailable) return 'Нет в наличии';
+        return 'В корзину';
+    }
+  };
+
+  const getButtonStyles = () => {
+    switch (buttonState) {
+      case 'success':
+        return {
+          color: COLORS.success || '#28a745',
+          fontWeight: 'bold'
+        };
+      case 'error':
+        return {
+          color: COLORS.error || '#dc3545',
+          fontWeight: 'bold'
+        };
+      default:
+        return {};
+    }
+  };
+
   return (
     <CardWrapper>
       {badge && <Badge>{badge}</Badge>}
+      
+      <ToastContainer visible={showToast}>
+        {toastMessage}
+        <ToastCloseButton onClick={closeToast}>✗</ToastCloseButton>
+      </ToastContainer>
 
       <Link href={validProductLink} passHref legacyBehavior>
         <ImageLinkWrapper>
@@ -264,8 +491,13 @@ const ProductCard = ({ product, onAddToCart }) => {
       <SeparatorLine />
 
       <AddToCartContainer>
-        <AddToCartButton onClick={handleAddToCart} disabled={!isAvailable || isLoading}>
-          {isLoading ? 'Добавление...' : (isAvailable ? 'В корзину' : 'Нет в наличии')}
+        <AddToCartButton 
+          onClick={handleAddToCart} 
+          disabled={isButtonDisabled}
+          style={getButtonStyles()}
+        >
+          {buttonState === 'loading' && <LoadingSpinner />}
+          {getButtonText()}
         </AddToCartButton>
       </AddToCartContainer>
     </CardWrapper>
@@ -281,6 +513,7 @@ ProductCard.propTypes = {
     price: PropTypes.number,
     productLink: PropTypes.string,
     CATALOG_AVAILABLE: PropTypes.string,
+    CATALOG_QUANTITY: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     badge: PropTypes.string
   }).isRequired,
   onAddToCart: PropTypes.func

@@ -36,6 +36,41 @@ const brandImageMap = {
 };
 
 /**
+ * Get full URL for an image
+ * @param {string} imagePath - Relative or absolute image path
+ * @returns {string} Full image URL
+ */
+export const getFullImageUrl = (imagePath) => {
+  // Check if imagePath is null, undefined, or not a string
+  if (!imagePath || typeof imagePath !== 'string') {
+    console.warn('🖼️ [Transformer] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
+    return '/images/placeholder.png';
+  }
+  
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // Get base URL from environment
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com/';
+  
+  // If path starts with /, add base URL
+  if (imagePath.startsWith('/')) {
+    const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    const fullUrl = `${cleanBaseUrl}${imagePath}`;
+    console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
+    return fullUrl;
+  }
+  
+  // For relative paths, add base URL with /
+  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const fullUrl = `${cleanBaseUrl}${imagePath}`;
+  console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
+  return fullUrl;
+};
+
+/**
  * Transform catalog item from API format to component format
  * @param {Object} apiItem - Item data from the API
  * @returns {Object} Transformed item data for components
@@ -61,25 +96,35 @@ export const transformCatalogItem = (apiItem) => {
   let mainImage = '/images/placeholder.png';
   let imagesList = [];
   
-  // Get the OLD_BASE_URL from environment variables
-  const OLD_BASE_URL = process.env.OLD_BASE_URL || 'https://shop4shoot.com';
+  // Get the BASE_URL from environment variables
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com';
   
   // Helper function to prepend the base URL if needed
   const getFullImageUrl = (path) => {
-    if (!path) return '/images/placeholder.png';
+    // Check if path is null, undefined, or not a string
+    if (!path || typeof path !== 'string') {
+      console.warn('🖼️ [Transformer-Local] Invalid path provided:', { path, type: typeof path });
+      return '/images/placeholder.png';
+    }
     
     // If already a full URL, return as is
     if (path.startsWith('http://') || path.startsWith('https://')) {
       return path;
     }
     
-    // If starts with /upload, prepend the OLD_BASE_URL
-    if (path.startsWith('/upload')) {
-      return `${OLD_BASE_URL}${path}`;
+    // If starts with /upload or any absolute path, prepend the BASE_URL
+    if (path.startsWith('/')) {
+      const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+      const fullUrl = `${cleanBaseUrl}${path}`;
+      console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
+      return fullUrl;
     }
     
-    // For local images that start with /images, return as is
-    return path;
+    // For relative paths, add base URL with /
+    const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+    const fullUrl = `${cleanBaseUrl}${path}`;
+    console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
+    return fullUrl;
   };
   
   // Handle the new images structure first if available
@@ -98,14 +143,14 @@ export const transformCatalogItem = (apiItem) => {
     
     // Add gallery images if available
     if (images.gallery && Array.isArray(images.gallery)) {
-      imagesList = [...imagesList, ...images.gallery.map(img => getFullImageUrl(img.src))];
+      imagesList = [...imagesList, ...images.gallery.map(img => img?.src && typeof img.src === 'string' ? getFullImageUrl(img.src) : null).filter(Boolean)];
     }
     
     // If all images are available in the 'all' array, use that
     if (images.all && Array.isArray(images.all) && images.all.length > 0) {
       // Add any additional images not already included
       images.all.forEach(img => {
-        if (img.src) {
+        if (img?.src && typeof img.src === 'string') {
           const fullUrl = getFullImageUrl(img.src);
           if (!imagesList.includes(fullUrl)) {
             imagesList.push(fullUrl);

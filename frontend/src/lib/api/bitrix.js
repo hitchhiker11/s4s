@@ -4,8 +4,8 @@ import axios from 'axios';
 const API_BASE_URL = process.env.NEXT_PUBLIC_BITRIX_URL || 'https://shop4shoot.com/api';
 console.log('SHOP4SHOOT DEBUG: API_BASE_URL in bitrix.js initialized to:', API_BASE_URL);
 const CATALOG_IBLOCK_ID = process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21';
-const BRANDS_IBLOCK_ID = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '21'; // Assuming brands might be in the same iblock or a different one
-const SLIDER_IBLOCK_ID = process.env.NEXT_PUBLIC_SLIDER_IBLOCK_ID || '21'; // Assuming slider data might be in a specific iblock
+const BRANDS_IBLOCK_ID = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '22'; // Assuming brands might be in the same iblock or a different one
+const SLIDER_IBLOCK_ID = process.env.NEXT_PUBLIC_SLIDER_IBLOCK_ID || '27'; // ID инфоблока со слайдерами
 
 // Create axios instance with default config
 const bitrixApi = axios.create({
@@ -272,56 +272,42 @@ export const getBrandWithProducts = async (brandName, params = {}) => {
  */
 export const getAboutSliderData = async (params = {}) => {
   try {
+    // Запрашиваем элементы инфоблока 27 (слайдер) в минимальном формате
     const queryParams = {
       iblock_id: SLIDER_IBLOCK_ID,
-      ...params, 
+      format: 'minimal',
+      ...params,
     };
-    const response = await bitrixApi.get('/about/slider', { params: queryParams });
+
+    const response = await bitrixApi.get('/catalog', { params: queryParams });
     return response.data;
   } catch (error) {
-    // Provide mock data as fallback if API fails
-    console.warn('About slider API failed, using fallback data', error.message);
-    return {
-      slides: [
-        {
-          id: 1,
-          title: 'О нас',
-          image: '/images/about/slide1.jpg',
-          description: 'Магазин, созданный стрелками для стрелков',
-        },
-        {
-          id: 2,
-          title: 'Наши Бренды',
-          image: '/images/about/slide2.jpg',
-          description: 'Только проверенные производители',
-        },
-        {
-          id: 3,
-          title: 'Доставка по РФ',
-          image: '/images/about/slide3.jpg',
-          description: 'Быстрая и надежная доставка в любой регион',
-        },
-      ]
-    };
+    // В случае ошибки возвращаем структурированную ошибку
+    return handleApiError(error, 'getAboutSliderData');
   }
 };
 
 /**
  * Basket API Services
- * Based on the cart_order_doc.md documentation
+ * Based on the basket_api_documentation.md
+ * All basket operations now properly handle fuser_id for persistent basket state
  */
 
 /**
  * Get current user's basket contents
- * @param {Object} params - Query parameters (format: 'full' or 'compact')
+ * @param {Object} params - Query parameters
+ * @param {string|number} [params.fuser_id] - Basket user identifier 
+ * @param {string} [params.format] - Response format: 'full', 'compact', 'minimal'
  * @returns {Promise<Object>} Basket data or error object
  */
 export const getBasket = async (params = {}) => {
   try {
+    console.log('🛒 [API] Getting basket with params:', params);
     const response = await bitrixApi.get('/basket', { params });
-    console.log('Basket data retrieved:', response.data);
+    console.log('✅ [API] Basket retrieved successfully:', response.data);
     return response.data;
   } catch (error) {
+    console.error('❌ [API] Failed to get basket:', error);
     return handleApiError(error, 'getBasket');
   }
 };
@@ -329,81 +315,197 @@ export const getBasket = async (params = {}) => {
 /**
  * Add product to basket
  * @param {Object} productData - Product data to add to basket
- * @param {number|string} productData.product_id - Product ID to add
+ * @param {string|number} productData.fuser_id - Basket user identifier (required)
+ * @param {number|string} productData.product_id - Product ID to add (required)
  * @param {number} [productData.quantity=1] - Quantity to add (default: 1)
- * @param {Array} [productData.properties=[]] - Product properties (color, size, etc.)
+ * @param {Object} [productData.properties={}] - Product properties (color, size, etc.)
  * @returns {Promise<Object>} Result of add operation or error object
  */
 export const addToBasket = async (productData) => {
   try {
+    if (!productData.fuser_id) throw new Error('fuser_id is required');
     if (!productData.product_id) throw new Error('Product ID is required');
     
     // Ensure quantity is at least 1
     const data = {
+      fuser_id: productData.fuser_id,
       product_id: productData.product_id,
       quantity: productData.quantity || 1,
-      properties: productData.properties || []
+      properties: productData.properties || {}
     };
     
+    console.log('🛒 [API] Adding product to basket:', data);
     const response = await bitrixApi.post('/basket', data);
-    console.log('Product added to basket:', response.data);
+    console.log('✅ [API] Product added to basket successfully:', response.data);
+    
+    // Check if the API returned an error in the response data
+    if (response.data && response.data.success === false) {
+      throw new Error(response.data.error || 'Add to basket failed');
+    }
+    
     return response.data;
   } catch (error) {
-    return handleApiError(error, 'addToBasket');
+    console.error('❌ [API] Failed to add product to basket:', error);
+    
+    // If it's an API error with error field, throw it
+    if (error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    }
+    
+    // If it's already our custom error, re-throw it
+    if (error.message !== 'Network Error' && error.message !== 'Request failed with status code 400') {
+      throw error;
+    }
+    
+    // For other errors, use handleApiError but throw the result
+    const errorResult = handleApiError(error, 'addToBasket');
+    throw new Error(errorResult.message);
   }
 };
 
 /**
  * Update basket item quantity
  * @param {Object} updateData - Data for updating basket item
- * @param {number|string} updateData.basket_item_id - Basket item ID to update
- * @param {number} updateData.quantity - New quantity (0 to remove)
+ * @param {string|number} updateData.fuser_id - Basket user identifier (required)
+ * @param {number|string} updateData.basket_item_id - Basket item ID to update (required)
+ * @param {number} updateData.quantity - New quantity (required)
+ * @param {Object} [updateData.properties] - Updated product properties
  * @returns {Promise<Object>} Result of update operation or error object
  */
 export const updateBasketItemQuantity = async (updateData) => {
   try {
+    if (!updateData.fuser_id) throw new Error('fuser_id is required');
     if (!updateData.basket_item_id) throw new Error('Basket item ID is required');
     if (updateData.quantity === undefined) throw new Error('Quantity is required');
     
+    console.log('🛒 [API] Updating basket item quantity:', updateData);
     const response = await bitrixApi.patch('/basket', updateData);
-    console.log('Basket item updated:', response.data);
+    console.log('✅ [API] Basket item quantity updated successfully:', response.data);
+    
+    // Check if the API returned an error in the response data
+    if (response.data && response.data.success === false) {
+      throw new Error(response.data.error || 'Update failed');
+    }
+    
     return response.data;
   } catch (error) {
-    return handleApiError(error, 'updateBasketItemQuantity');
+    console.error('❌ [API] Failed to update basket item quantity:', error);
+    
+    // If it's an API error with error field, throw it
+    if (error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    }
+    
+    // If it's already our custom error, re-throw it
+    if (error.message !== 'Network Error' && error.message !== 'Request failed with status code 400') {
+      throw error;
+    }
+    
+    // For other errors, use handleApiError but throw the result
+    const errorResult = handleApiError(error, 'updateBasketItemQuantity');
+    throw new Error(errorResult.message);
   }
 };
 
 /**
  * Remove item from basket
  * @param {Object} removeData - Data for removing basket item
- * @param {number|string} removeData.basket_item_id - Basket item ID to remove
+ * @param {string|number} removeData.fuser_id - Basket user identifier (required)
+ * @param {number|string} removeData.basket_item_id - Basket item ID to remove (required)
  * @returns {Promise<Object>} Result of remove operation or error object
  */
 export const removeFromBasket = async (removeData) => {
   try {
+    if (!removeData.fuser_id) throw new Error('fuser_id is required');
     if (!removeData.basket_item_id) throw new Error('Basket item ID is required');
     
+    console.log('🛒 [API] Removing item from basket:', removeData);
     const response = await bitrixApi.delete('/basket', { data: removeData });
-    console.log('Basket item removed:', response.data);
+    console.log('✅ [API] Item removed from basket successfully:', response.data);
+    
+    // Check if the API returned an error in the response data
+    if (response.data && response.data.success === false) {
+      throw new Error(response.data.error || 'Remove failed');
+    }
+    
     return response.data;
   } catch (error) {
-    return handleApiError(error, 'removeFromBasket');
+    console.error('❌ [API] Failed to remove item from basket:', error);
+    
+    // If it's an API error with error field, throw it
+    if (error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    }
+    
+    // If it's already our custom error, re-throw it
+    if (error.message !== 'Network Error' && error.message !== 'Request failed with status code 400') {
+      throw error;
+    }
+    
+    // For other errors, use handleApiError but throw the result
+    const errorResult = handleApiError(error, 'removeFromBasket');
+    throw new Error(errorResult.message);
   }
 };
 
 /**
  * Clear entire basket
+ * @param {string|number} fuserId - Basket user identifier (required)
  * @returns {Promise<Object>} Result of clear operation or error object
  */
-export const clearBasket = async () => {
+export const clearBasket = async (fuserId) => {
   try {
+    if (!fuserId) throw new Error('fuser_id is required');
+    
     const response = await bitrixApi.delete('/basket', { 
-      data: { clear_all: 'Y' } 
+      data: { 
+        fuser_id: fuserId,
+        clear_all: 'Y' 
+      } 
     });
     console.log('Basket cleared:', response.data);
     return response.data;
   } catch (error) {
     return handleApiError(error, 'clearBasket');
+  }
+};
+
+/**
+ * Check if a product is available in the requested quantity
+ * @param {Object} stockData - Data for stock validation
+ * @param {number|string} stockData.product_id - Product ID to check (required)
+ * @param {number} stockData.quantity - Quantity to validate (required)
+ * @returns {Promise<Object>} Stock validation result or error object
+ */
+export const checkStock = async (stockData) => {
+  try {
+    if (!stockData.product_id) throw new Error('Product ID is required');
+    if (!stockData.quantity) throw new Error('Quantity is required');
+    
+    const response = await bitrixApi.get('/basket', { 
+      params: {
+        action: 'check_stock',
+        product_id: stockData.product_id,
+        quantity: stockData.quantity
+      }
+    });
+    console.log('Stock check result:', response.data);
+    
+    // For stock check, we don't throw an error if stock is insufficient
+    // We return the response data which contains available/unavailable info
+    return response.data;
+  } catch (error) {
+    console.error('❌ [API] Failed to check stock:', error);
+    
+    // For stock check, throw only on actual API errors, not stock unavailability
+    if (error.response?.status === 400 && error.response?.data?.error) {
+      // If it's a 400 error, it might be insufficient stock - return the error data
+      return error.response.data;
+    }
+    
+    // For other errors, use handleApiError but throw the result
+    const errorResult = handleApiError(error, 'checkStock');
+    throw new Error(errorResult.message);
   }
 };
 
@@ -578,6 +680,141 @@ export const getCatalogItemsBySubCategoryCode = async (categoryCode, subCategory
   }
 };
 
+/**
+ * Forms API Services
+ * For handling form submissions to different info blocks
+ */
+
+/**
+ * Submit form data to a specific info block
+ * @param {Object} formData - Form submission data
+ * @param {number} formData.iblock_id - Info block ID (required)
+ * @param {Object} formData.fields - Form fields data (required)
+ * @returns {Promise<Object>} Form submission result or error object
+ */
+export const submitForm = async (formData) => {
+  try {
+    if (!formData.iblock_id) throw new Error('Info block ID is required');
+    if (!formData.fields) throw new Error('Form fields are required');
+    
+    console.log('📝 [API] Submitting form:', formData);
+    const response = await bitrixApi.post(`/form/?iblock_id=${formData.iblock_id}`, formData);
+    console.log('✅ [API] Form submitted successfully:', response.data);
+    
+    // Check if the API returned an error in the response data
+    if (response.data && response.data.success === false) {
+      throw new Error(response.data.message || 'Form submission failed');
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error('❌ [API] Failed to submit form:', error);
+    
+    // If it's an API error with message field, throw it
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    
+    // If it's already our custom error, re-throw it
+    if (error.message !== 'Network Error' && error.message !== 'Request failed with status code 400') {
+      throw error;
+    }
+    
+    // For other errors, use handleApiError but throw the result
+    const errorResult = handleApiError(error, 'submitForm');
+    throw new Error(errorResult.message);
+  }
+};
+
+/**
+ * Submit request form (Info block ID: 24)
+ * @param {Object} requestData - Request form data
+ * @param {string} requestData.first_name - Customer first name (required)
+ * @param {string} requestData.last_name - Customer last name (required)
+ * @param {string} requestData.phone_number - Customer phone number (required)
+ * @param {string} requestData.email - Customer email (required)
+ * @param {string} [requestData.comment] - Customer comment
+ * @returns {Promise<Object>} Request submission result or error object
+ */
+export const submitRequestForm = async (requestData) => {
+  try {
+    const formData = {
+      iblock_id: 24,
+      fields: {
+        first_name: requestData.first_name,
+        last_name: requestData.last_name,
+        phone_number: requestData.phone_number,
+        email: requestData.email,
+        comment: requestData.comment || ''
+      }
+    };
+    
+    return await submitForm(formData);
+  } catch (error) {
+    throw new Error(`Ошибка при отправке заявки: ${error.message}`);
+  }
+};
+
+/**
+ * Submit callback form (Info block ID: 23)
+ * @param {Object} callbackData - Callback form data
+ * @param {string} callbackData.first_name - Customer first name (required)
+ * @param {string} callbackData.phone_number - Customer phone number (required)
+ * @returns {Promise<Object>} Callback submission result or error object
+ */
+export const submitCallbackForm = async (callbackData) => {
+  try {
+    const formData = {
+      iblock_id: 23,
+      fields: {
+        first_name: callbackData.first_name,
+        phone_number: callbackData.phone_number
+      }
+    };
+    
+    return await submitForm(formData);
+  } catch (error) {
+    throw new Error(`Ошибка при заказе звонка: ${error.message}`);
+  }
+};
+
+/**
+ * Submit pre-order form (Info block ID: 25)
+ * @param {Object} preOrderData - Pre-order form data
+ * @param {string} preOrderData.first_name - Customer first name (required)
+ * @param {string} preOrderData.last_name - Customer last name (required)
+ * @param {string} preOrderData.surname - Customer surname (required)
+ * @param {string} preOrderData.phone_number - Customer phone number (required)
+ * @param {string} preOrderData.email - Customer email (required)
+ * @param {string} [preOrderData.comment] - Customer comment
+ * @param {string} [preOrderData.product_name] - Product name
+ * @param {string} [preOrderData.product_article] - Product article
+ * @param {string} [preOrderData.product_id] - Product ID
+ * @returns {Promise<Object>} Pre-order submission result or error object
+ */
+export const submitPreOrderForm = async (preOrderData) => {
+  try {
+    const formData = {
+      iblock_id: 25,
+      fields: {
+        first_name: preOrderData.first_name,
+        last_name: preOrderData.last_name,
+        surname: preOrderData.surname,
+        phone_number: preOrderData.phone_number,
+        email: preOrderData.email,
+        comment: preOrderData.comment || '',
+        product_name: preOrderData.product_name || '',
+        product_article: preOrderData.product_article || '',
+        product_id: preOrderData.product_id || ''
+      }
+    };
+    
+    return await submitForm(formData);
+  } catch (error) {
+    throw new Error(`Ошибка при оформлении предзаказа: ${error.message}`);
+  }
+};
+
 export default {
   getCatalogItems,
   getCatalogItemById,
@@ -598,6 +835,12 @@ export default {
   updateBasketItemQuantity,
   removeFromBasket,
   clearBasket,
+  checkStock,
   createOrder,
-  getCatalogItemsBySubCategoryCode
+  getCatalogItemsBySubCategoryCode,
+  // Forms API methods
+  submitForm,
+  submitRequestForm,
+  submitCallbackForm,
+  submitPreOrderForm
 }; 

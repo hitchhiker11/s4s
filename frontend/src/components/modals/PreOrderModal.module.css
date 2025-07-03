@@ -4,11 +4,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .modal {
@@ -17,9 +20,12 @@
   border-radius: 8px;
   box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_W43F75 */
   position: relative;
-  width: auto;
+  width: 100%;
   max-width: 928px; /* Figma: Frame 1321315851 width */
+  max-height: 90vh;
   display: flex;
+  margin: auto;
+  overflow-y: auto;
 }
 
 .closeButton {
@@ -31,6 +37,7 @@
   font-size: 24px;
   cursor: pointer;
   color: #1C1C1C;
+  z-index: 2;
 }
 
 .content {
@@ -90,62 +97,117 @@
 }
 
 .input {
-  background-color: rgba(255, 255, 255, 0.35); /* Figma: fill_98IFPR */
+  background: transparent;
   border: none;
-  border-bottom: 2px solid #B6B6B6; /* Figma: stroke_XM7NKW (default bottom) */
-  padding: 10px 8px 10px 0px; /* Figma: layout_7L0EVW padding */
+  border-bottom: 2px solid #B6B6B6;
+  padding: 8px 0 8px 0;
   font-family: 'Rubik', sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 24px;
   color: #1C1C1C;
   width: 100%;
+  outline: none;
+  /* transition: border-color 0.2s; */
+  text-align: left;
 }
 
 .input::placeholder {
-  color: #B6B6B6; /* Figma: fill_U9YD1R */
-  text-align: right;
+  color: #B6B6B6;
+  text-align: left;
+  font-weight: 400;
 }
 
-/* Specific borders from Figma */
-.formSection form input:nth-child(1) {
-  border-top: 2px solid #B6B6B6; /* Figma: stroke_NPEVM7 */
-  border-bottom: none;
-}
-
+/* Remove specific borders from Figma as they conflict with the unified approach */
+.formSection form input:nth-child(1),
 .formSection form input:nth-child(2) {
-  border-top: 2px solid #B6B6B6; /* Figma: stroke_UK0L3C */
-  border-bottom: none;
+  border-top: none;
 }
 
 .textarea {
-  min-height: 80px; /* Adjust as needed */
+  min-height: 80px;
   resize: vertical;
   border-bottom: 2px solid #B6B6B6;
+  text-align: left;
+  
+  
 }
 
 .submitButton {
-  background-color: #E7194A; /* Figma: fill_GDFYHX */
-  color: #FCFCFC; /* Figma: fill_L5JEHW */
+  background-color: #E7194A;
+  color: #FCFCFC;
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
   font-size: 24px;
   line-height: 1.4;
   text-transform: uppercase;
-  padding: 10px 24px; /* Figma: layout_WEYLOG padding */
+  padding: 10px 24px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   align-self: stretch;
-  margin-top: 31px; /* Figma: layout_V9VLP7 gap */
-  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_W43F75 */
+  margin-top: 31px;
+  box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1);
+  letter-spacing: 0.02em;
+  transition: background 0.2s;
+}
+
+.submitButton:hover,
+.submitButton:focus {
+  background: #c9153e;
+}
+
+.inputError {
+  border-bottom: 2px solid #E7194A !important;
+}
+
+.errorText {
+  color: #E7194A;
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.input:disabled,
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton:disabled {
+  background-color: #B6B6B6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submitButton:disabled:hover,
+.submitButton:disabled:focus {
+  background-color: #B6B6B6;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .modal, .content {
+@media (max-width: 900px) {
+  .overlay {
+    padding: 20px;
+    align-items: flex-center;
+    padding-top: 20px;
+  }
+
+  .modal {
     flex-direction: column;
     padding: 20px;
-    gap: 30px;
+    max-width: 100%;
+    width: 100%;
+    gap: 20px;
+    max-height: 95vh;
+    margin: 0;
+  }
+  
+  .content {
+    flex-direction: column;
+    gap: 20px;
   }
 
   .infoSection, .formSection {
@@ -153,13 +215,58 @@
   }
 
   .title, .productName {
-    font-size: 32px;
+    font-size: 24px;
   }
 
-  .input, .productDescription, .availabilityNote, .submitButton {
-    font-size: 18px;
+  .productDescription, .availabilityNote {
+    font-size: 16px;
   }
+
+  .input {
+    font-size: 16px;
+    padding: 12px 0 8px 0;
+  }
+  
   .textarea {
-    font-size: 18px;
+    font-size: 16px;
+  }
+  
+  .submitButton {
+    font-size: 16px;
+    padding: 12px 0;
+    margin-top: 18px;
+  }
+
+  .errorText {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 20px;
+    padding-top: 10px;
+  }
+
+  .modal {
+    padding: 15px;
+    border-radius: 4px;
+  }
+
+  .title, .productName {
+    font-size: 20px;
+  }
+
+  .input, .productDescription, .availabilityNote, .textarea {
+    font-size: 14px;
+  }
+  
+  .submitButton {
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  .errorText {
+    font-size: 11px;
   }
 } 

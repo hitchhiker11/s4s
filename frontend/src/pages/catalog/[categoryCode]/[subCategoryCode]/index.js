@@ -262,7 +262,6 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
                 CATALOG_QUANTITY: product.quantity ? String(product.quantity) : "0",
                 CODE: product.code
               }))} 
-              onAddToCart={handleAddToCart}
             />
             
             {pagination.totalPages > 1 && (

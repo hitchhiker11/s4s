@@ -2,6 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import { useQueryClient } from 'react-query';
 import { useBasket } from '../hooks/useBasket';
+import { useToast } from '../hooks/useToast';
+import QuantityControl from './QuantityControl';
+import ToastContainer from './Toast/ToastContainer';
+import PreOrderModal from './modals/PreOrderModal';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, ANIMATION, mediaQueries } from '../styles/tokens';
 
 const Card = styled.div`
@@ -21,7 +25,7 @@ const Card = styled.div`
     border-bottom-color: ${COLORS.gray500};
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 500px) {
     padding-left: 0;
     padding-right: 0;
   }
@@ -34,7 +38,7 @@ const Card = styled.div`
 
 const ImageContainer = styled.div`
   width: 100%;
-  height: 200px;
+  height: 120px; /* Reduced from 200px for mobile */
   background-color: ${COLORS.white};
   display: flex;
   justify-content: center;
@@ -62,16 +66,18 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background-color: #FEFEFE;
-  padding: ${SPACING.md} ${SPACING.lg};
-  gap: 4px;
+  padding: ${SPACING.sm} ${SPACING.md}; /* Reduced padding */
+  gap: 2px; /* Reduced gap */
   width: 100%;
   text-align: center;
-  // height: 150px; 
+  /* Fixed height for consistency across all cards */
+  height: 80px; /* Reduced from 160px */
   overflow: hidden;
+  box-sizing: border-box;
 
-  @media (min-width: 600px) {
+  @media (min-width: 500px) {
     height: 180px; /* Slightly taller on larger screens */
     padding: ${SPACING.md} ${SPACING.lg};
     gap: ${SPACING.md};
@@ -89,6 +95,9 @@ const BrandTitle = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* Fixed height to ensure consistency */
+  height: 1.1em;
+  flex-shrink: 0;
 
   @media (min-width: 1024px) {
     font-size: 18px;
@@ -99,19 +108,20 @@ const ProductTitle = styled.h3`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
   font-size: clamp(10px, 3vw, 18px);
-  line-height: 1.2;
+  line-height: 1.1; /* Reduced from 1.2 */
   color: ${COLORS.black};
   margin: 0;
   text-align: center;
   width: 100%;
   
-  /* Limit to 2 lines with ellipsis */
+  /* Fixed height for exactly 2 lines to ensure consistency */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 2.4em; /* 2 lines × line-height */
+  height: 2.2em; /* Reduced from 2.4em */
+  flex-shrink: 0;
 
   @media (min-width: 1024px) {
     font-size: 18px;
@@ -126,6 +136,7 @@ const Price = styled.div`
   color: ${COLORS.primary};
   margin-top: auto; /* Push to bottom of flex container */
   padding-top: ${SPACING.xs};
+  flex-shrink: 0;
 
   @media (min-width: 1024px) {
     font-size: ${TYPOGRAPHY.size["3xl"]};
@@ -149,19 +160,28 @@ const CartActionArea = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #FEFEFE;
-  padding: 8px 38px;
+  padding: 4px 20px; /* Reduced padding for mobile */
   width: 100%;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: background-color 0.2s ease;
   flex-shrink: 0; /* Prevent from shrinking */
   opacity: ${props => props.disabled ? 0.7 : 1};
+  /* Fixed height to accommodate both simple button and QuantityControl */
+  min-height: 35px; /* Reduced from 50px for mobile */
+  box-sizing: border-box;
 
   &:hover {
     background-color: ${props => props.disabled ? '#FEFEFE' : COLORS.gray100};
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 500px) {
     padding: ${SPACING.md} ${SPACING.xl};
+    min-height: 60px;
+  }
+
+  @media (max-width: 768px) {
+    min-height: 35px; /* Reduced from 50px */
+    padding: 4px 20px; /* Consistent reduced padding */
   }
 `;
 
@@ -180,44 +200,205 @@ const AddToCartText = styled.span`
 
 const ProductCard = ({ product, onAddToCart }) => {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [quantityLoading, setQuantityLoading] = React.useState(false);
+  const [isPreOrderModalOpen, setIsPreOrderModalOpen] = React.useState(false);
   const queryClient = useQueryClient();
   
-  // Use the basket hook if external handler is not provided
-  const { addToBasket } = useBasket({
-    initialFetch: false, // Don't fetch basket data on mount
-    staleTime: 60000 // 1 minute cache
+  // Toast system
+  const { 
+    toasts, 
+    showSuccessToast, 
+    showErrorToast, 
+    removeToast 
+  } = useToast();
+  
+  // Use the basket hook to manage cart operations and check if item is in cart
+  const { 
+    addToBasket, 
+    updateBasketItem, 
+    removeFromBasket, 
+    basketItems = [],
+    isFuserIdInitialized,
+    checkStock
+  } = useBasket({
+    initialFetch: true, // Fetch basket data to check if item is in cart
+    staleTime: 30000 // 30 seconds cache
   });
+
+  // Find if this product is already in the basket
+  const basketItem = React.useMemo(() => {
+    if (!basketItems || basketItems.length === 0) return null;
+    
+    const productId = parseInt(product.ID || product.id, 10);
+    return basketItems.find(item => 
+      parseInt(item.product_id, 10) === productId
+    );
+  }, [basketItems, product]);
+
+  const isInBasket = Boolean(basketItem);
+  const basketQuantity = basketItem?.quantity || 1;
+
+  // Function to add item to basket with stock check
+  const addToBasketWithStockCheck = async (productId, quantity = 1) => {
+    try {
+      console.log('🔍 [ProductCard] Checking stock before adding to basket:', { productId, quantity });
+      
+      // First check stock availability
+      const stockResponse = await checkStock(productId, quantity);
+      
+      console.log('📋 [ProductCard] Stock check response:', stockResponse);
+      
+      if (stockResponse && stockResponse.success !== undefined) {
+        const availableQuantity = parseInt(stockResponse.available_quantity, 10) || 0;
+        
+        if (!stockResponse.success && stockResponse.available === false) {
+          if (availableQuantity === 0) {
+            // No stock available
+            showErrorToast(`Товар "${product.NAME || product.name}" недоступен на складе`);
+            return false;
+          } else if (availableQuantity > 0 && availableQuantity < quantity) {
+            // Partial stock available - add available quantity
+            console.log(`🔄 [ProductCard] Adding available quantity: ${availableQuantity} instead of ${quantity}`);
+            await addToBasket({ product_id: productId, quantity: availableQuantity });
+            showErrorToast(`Добавлено ${availableQuantity} шт. Больше нет на складе`);
+            return true;
+          }
+        } else if (stockResponse.success && stockResponse.available === true) {
+          // Stock is available in requested quantity
+          console.log(`✅ [ProductCard] Stock available, adding ${quantity} to basket`);
+          await addToBasket({ product_id: productId, quantity });
+          return true;
+        }
+      } else if (stockResponse && stockResponse.error) {
+        // Handle API error responses
+        console.error(`❌ [ProductCard] Stock check error:`, stockResponse.error);
+        showErrorToast(`Ошибка при проверке товара: ${stockResponse.error}`);
+        return false;
+      }
+      
+      // Fallback - try to add anyway
+      await addToBasket({ product_id: productId, quantity });
+      return true;
+    } catch (error) {
+      console.error('❌ [ProductCard] Exception during stock check and add:', error);
+      
+      // Check if it's a stock-related error
+      if (error.message.includes('недостаточно') || error.message.includes('insufficient')) {
+        showErrorToast(error.message);
+      } else {
+        showErrorToast(`Ошибка при добавлении товара в корзину: ${error.message}`);
+      }
+      return false;
+    }
+  };
 
   const handleAddToCart = async (e) => {
     // Prevent navigation to product detail page when clicking add to cart
     e.preventDefault();
     e.stopPropagation();
     
-    const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
-    const hasZeroQuantity = product.CATALOG_QUANTITY === "0" || product.quantity === 0;
-    // Check if product can be added to cart (either available or zero quantity for pre-order)
-    const canAddToCart = (product.CATALOG_AVAILABLE === 'Y' || product.available) || hasZeroQuantity;
+    const productId = parseInt(product.ID || product.id, 10);
 
-    if (!productId || isLoading || !canAddToCart) return;
+    if (!productId || isLoading) return;
 
     setIsLoading(true);
 
     try {
       if (onAddToCart) {
-        // Use provided handler if available
         await onAddToCart(product);
+        showSuccessToast(`Товар "${product.NAME || product.name}" добавлен в корзину`);
       } else {
-        // Otherwise use the basket hook
-        await addToBasket({ product_id: productId, quantity: 1 });
+        const success = await addToBasketWithStockCheck(productId, 1);
+        if (success) {
+          const productName = product.NAME || product.name;
+          showSuccessToast(`Товар "${productName}" добавлен в корзину`);
+        }
       }
       
-      // Invalidate queries to refresh basket count
       queryClient.invalidateQueries(['basket']);
-      queryClient.invalidateQueries(['basketCount']);
     } catch (error) {
       console.error('Error adding product to cart:', error);
+      // Error toast is already shown in addToBasketWithStockCheck
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePreOrder = (e) => {
+    // Prevent navigation to product detail page when clicking pre-order
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsPreOrderModalOpen(true);
+  };
+
+  const handleClosePreOrderModal = () => {
+    setIsPreOrderModalOpen(false);
+  };
+
+  const handleQuantityChange = async (newQuantity) => {
+    if (!basketItem || quantityLoading) return;
+    
+    setQuantityLoading(true);
+    
+    try {
+      const quantity = newQuantity === '' ? 1 : Math.max(1, parseInt(newQuantity, 10) || 1);
+      const productId = parseInt(basketItem.product_id, 10);
+      
+      // Check stock before updating quantity
+      console.log('🔍 [ProductCard] Checking stock for quantity change:', { productId, quantity });
+      
+      const stockResponse = await checkStock(productId, quantity);
+      
+      if (stockResponse && stockResponse.success !== undefined) {
+        const availableQuantity = parseInt(stockResponse.available_quantity, 10) || 0;
+        
+        if (!stockResponse.success && stockResponse.available === false) {
+          if (availableQuantity === 0) {
+            // Remove item completely if no stock available
+            console.log(`❌ [ProductCard] Removing item: no stock available`);
+            await removeFromBasket(basketItem.id);
+            showErrorToast(`Товар "${product.NAME || product.name}" больше не доступен и был удален из корзины`);
+            queryClient.invalidateQueries(['basket']);
+            return;
+          } else if (availableQuantity > 0 && availableQuantity < quantity) {
+            // Update quantity to available amount
+            console.log(`🔄 [ProductCard] Updating quantity to available amount: ${availableQuantity}`);
+            await updateBasketItem(basketItem.id, availableQuantity);
+            // showErrorToast(`Количество изменено на ${availableQuantity} (недостаточно на складе)`);
+            showErrorToast(`Недостаточно на складе (доступно ${availableQuantity} шт.)`);
+            queryClient.invalidateQueries(['basket']);
+            return;
+          }
+        }
+      }
+      
+      // Stock is available or check failed - proceed with update
+      await updateBasketItem(basketItem.id, quantity);
+      queryClient.invalidateQueries(['basket']);
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      showErrorToast(`Ошибка при изменении количества: ${error.message}`);
+    } finally {
+      setQuantityLoading(false);
+    }
+  };
+
+  const handleRemoveFromBasket = async () => {
+    if (!basketItem || quantityLoading) return;
+    
+    setQuantityLoading(true);
+    
+    try {
+      await removeFromBasket(basketItem.id);
+      const productName = product.NAME || product.name;
+      showSuccessToast(`Товар "${productName}" удален из корзины`);
+      queryClient.invalidateQueries(['basket']);
+    } catch (error) {
+      console.error('Error removing from basket:', error);
+      showErrorToast(`Ошибка при удалении товара: ${error.message}`);
+    } finally {
+      setQuantityLoading(false);
     }
   };
 
@@ -225,15 +406,12 @@ const ProductCard = ({ product, onAddToCart }) => {
   const productName = product.NAME || product.name || "Product Name";
   const priceValue = product.PRICE || product.price || 0;
   
-  // Use the correct image path (assuming it's already processed by transformers.js)
   const imageUrl = product.imageUrl || product.image || '/images/no-image.png';
   
-  // Check availability and quantity - UPDATED LOGIC
   const isAvailable = product.CATALOG_AVAILABLE === 'Y' || product.available === true;
-  // Just check quantity for pre-order status, regardless of availability
-  const isPreOrder = product.CATALOG_QUANTITY === "0" || product.quantity === 0;
+  const hasZeroQuantity = product.CATALOG_QUANTITY === "0" || product.quantity === 0;
+  const isPreOrder = !isAvailable || hasZeroQuantity;
   
-  // Get the correct product detail URL from CODE field
   const productCode = product.CODE || product.code || '';
   const detailUrl = product.productLink || product.detailUrl || `/detail/${productCode}`;
 
@@ -245,6 +423,19 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <Card>
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+      
+      {/* PreOrder Modal */}
+      <PreOrderModal
+        isOpen={isPreOrderModalOpen}
+        onClose={handleClosePreOrderModal}
+        productName={productName}
+        productDescription={`${brandName} - ${productName}`}
+        productId={product.ID || product.id}
+        productArticle={product.CODE || product.code || product.article}
+      />
+      
       <a href={detailUrl} style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
         <ImageContainer>
           <Image 
@@ -260,14 +451,30 @@ const ProductCard = ({ product, onAddToCart }) => {
         </Content>
       </a>
       <DividerLine />
-      <CartActionArea 
-        onClick={handleAddToCart}
-        disabled={(!isAvailable && !isPreOrder) || isLoading}
-      >
-        <AddToCartText isPreOrder={isPreOrder}>
-          {isLoading ? 'Добавление...' : isPreOrder ? 'Предзаказ' : 'В корзину'}
-        </AddToCartText>
-      </CartActionArea>
+      
+      {/* Show QuantityControl if item is in basket, otherwise show Add to Cart or PreOrder button */}
+      {isInBasket && isFuserIdInitialized ? (
+        <CartActionArea style={{ cursor: 'default' }}>
+          <QuantityControl
+            quantity={basketQuantity}
+            onQuantityChange={handleQuantityChange}
+            onRemove={handleRemoveFromBasket}
+            isLoading={quantityLoading}
+            size="compact"
+            showRemoveOnOne={true}
+            className="productCardStyle"
+          />
+        </CartActionArea>
+      ) : (
+        <CartActionArea 
+          onClick={isPreOrder ? handlePreOrder : handleAddToCart}
+          disabled={isLoading}
+        >
+          <AddToCartText isPreOrder={isPreOrder}>
+            {isLoading ? 'Загрузка...' : isPreOrder ? 'Предзаказ' : 'В корзину'}
+          </AddToCartText>
+        </CartActionArea>
+      )}
     </Card>
   );
 };

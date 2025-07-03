@@ -90,3 +90,12 @@
     margin-right: 0; /* Remove extra margin if shortLabel handles spacing */
   }
 } 
+
+@media (max-width: 335px) {
+  .tabsContainer {
+    overflow-x: auto; 
+    white-space: nowrap;
+    gap: 25px; 
+    justify-content: center;
+  }
+}

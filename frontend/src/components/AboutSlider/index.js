@@ -5,8 +5,8 @@ import SwiperCore, { Autoplay, Pagination, Navigation } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { aboutSliderMockData } from '../../lib/mocks/mockData';
-import { COLORS, TYPOGRAPHY, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
+import { useAboutSliderData } from '../../lib/hooks/useAboutSliderData';
+import { COLORS, TYPOGRAPHY, mediaQueries } from '../../styles/tokens';
 
 // Инициализируем Swiper-модули
 SwiperCore.use([Autoplay, Pagination, Navigation]);
@@ -142,9 +142,28 @@ const AboutSlider = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState(null);
   
-  // Используем статические данные из mockData
-  const sliderData = aboutSliderMockData.data;
+  // Получаем данные слайдера из API
+  const { data, isLoading, error } = useAboutSliderData();
   
+  // Преобразуем данные API в массив с id и image
+  const sliderData = React.useMemo(() => {
+    if (!data || data.error) return [];
+    if (!Array.isArray(data.data)) return [];
+
+    return data.data
+      .filter((item) => item?.images?.detail?.src)
+      .map((item) => {
+        const relativeSrc = item.images.detail.src;
+        // Если путь относительный, добавляем домен сайта
+        const fullSrc = relativeSrc.startsWith('http') ? relativeSrc : `https://shop4shoot.com${relativeSrc}`;
+
+        return {
+          id: item.id || item.ID,
+          image: fullSrc,
+        };
+      });
+  }, [data]);
+
   const handlePaginationClick = (index) => {
     if (swiperInstance) {
       swiperInstance.slideTo(index);
@@ -165,8 +184,13 @@ const AboutSlider = () => {
     };
   }, [swiperInstance]);
 
-  // Если данных нет, не показываем компонент
-  if (!sliderData || sliderData.length === 0) {
+  // Пока данные загружаются, ничего не отображаем (можно добавить лоадер при необходимости)
+  if (isLoading) {
+    return null;
+  }
+
+  // Если произошла ошибка или данных нет, не показываем компонент
+  if (error || !sliderData || sliderData.length === 0) {
     return null;
   }
 
@@ -186,7 +210,7 @@ const AboutSlider = () => {
         {sliderData.map((slide) => (
           <SwiperSlide key={slide.id}>
             <SlideImageContainer>
-              <SlideImage src={slide.image} alt={slide.title} />
+              <SlideImage src={slide.image} alt={`slide-${slide.id}`} />
               {/* <SlideTitle className="slide-title">{slide.title}</SlideTitle> */}
               {/* <BrandLogo className="brand-logo">
                 {slide.brandLogo.map((logo, index) => (

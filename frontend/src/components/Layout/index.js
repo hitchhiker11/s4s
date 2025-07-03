@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Header from '../Header';
 import Footer from '../Footer';
+import BasketInitializer from '../BasketInitializer';
 
 const Main = styled.main`
   min-height: 100vh;
@@ -21,6 +22,7 @@ const Layout = ({
 }) => {
   return (
     <Main>
+      <BasketInitializer />
       <Header useMocks={useMocksHeader} mockBasketCount={mockBasketCount} />
       <Content>{children}</Content>
       <Footer showMainSection={showMainFooter} />

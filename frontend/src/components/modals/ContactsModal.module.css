@@ -5,7 +5,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .modal {
@@ -142,6 +145,36 @@
   background: #c9153e;
 }
 
+.inputError {
+  border-bottom: 2px solid #E7194A !important;
+}
+
+.errorText {
+  color: #E7194A;
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton:disabled {
+  background-color: #B6B6B6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submitButton:disabled:hover,
+.submitButton:disabled:focus {
+  background-color: #B6B6B6;
+}
+
 @media (max-width: 900px) {
   .modal, .content {
     flex-direction: column;
@@ -161,5 +194,14 @@
   }
   .submitButton {
     margin-top: 12px;
+  }
+  .errorText {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .errorText {
+    font-size: 11px;
   }
 }

@@ -173,85 +173,9 @@
   min-width: 150px; /* Ensure enough space for controls */
 }
 
-.quantityControl {
-  display: flex;
-  align-items: center;
+/* QuantityControl wrapper styles for CartItem */
+.quantityControlWrapper {
   margin-bottom: 15px;
-  /* background-color: #F5F7FA;  */
-  border-radius: 4px;
-  overflow: hidden; /* To make buttons look connected */
-  padding: 2px; /* Slightly larger control on desktop */
-}
-
-.quantityButton {
-  background-color: transparent; 
-  border: none;
-  padding: 10px 14px; /* Increased padding for larger buttons on desktop */
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #E7194A; /* From fill_XK664J on minus, but applying to both for consistency */
-}
-
-.quantityButton:hover:not(:disabled) {
-  background-color: #E0E0E0;
-}
-
-.quantityButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.quantityButton svg {
-  width: 18px; /* Slightly larger icons */
-  height: 18px;
-}
-
-.increaseButton {
-   background-color: #E7194A; /* From fill_XK664J on plus button */
-   color: #FCFCFC; /* From fill_28CY5Q on plus button text */
-}
-
-.increaseButton:hover:not(:disabled) {
-  background-color: #c4143f; /* Darker shade of primary */
-}
-
-
-.quantityDisplay {
-  padding: 10px 18px; /* Increased padding for larger display on desktop */
-  font-family: 'Rubik', sans-serif; /* From style_T9NFYP */
-  font-weight: 500;
-  font-size: 18px; /* Slightly larger font */
-  color: #1C1C1C; /* From fill_NE8O66 */
-  min-width: 35px; /* Slightly wider */
-  text-align: center;
-  border-left: 1px solid #E0E0E0;
-  border-right: 1px solid #E0E0E0;
-}
-
-.removeButton {
-  background: none;
-  border: none;
-  color: #757575; /* Softer color for remove */
-  cursor: pointer;
-  font-family: 'Rubik', sans-serif;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px;
-  border-radius: 4px;
-}
-
-.removeButton:hover {
-  color: #E7194A;
-  background-color: #FCE8EC;
-}
-
-.removeButton svg {
-  width: 16px;
-  height: 16px;
 }
 
 /* ADDED GLOBALLY: Hide mobile-specific price by default (on desktop) */
@@ -321,7 +245,6 @@
   }
   
   /* ADDED: Ensure mobile-specific price is shown on mobile */
-  /* This rule is now inside the main 768px media query */
   .mobilePrice {
     font-size: 20px;
     display: block; 
@@ -341,8 +264,6 @@
   }
 
   /* Style for productPrice when it's a direct child of quantityAndActions */
-  /* This targets the <p> with both .productPrice and .mobilePrice classes */
-  /* This rule is now inside the main 768px media query and not duplicated */
   .quantityAndActions .productPrice {
     text-align: center; 
     width: 100%;       
@@ -350,43 +271,12 @@
     font-weight: 700;
   }
   
-  /* Consolidated from the later (duplicate) media query */
-  .quantityInput {
-    padding: 4px 8px;
-    font-size: 14px;
-    width: 40px; 
-  }
-
-  /* Consolidated and adjusted quantityControl for better centering */
-  .quantityControl {
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    width: auto; /* Let it size by content, parent quantityAndActions centers it */
-    margin-bottom: 0; /* Retained from original and duplicate */
-    padding: 0; /* Reset padding for mobile */
-    /* background-color: #F5F7FA; from desktop - if needed also on mobile, it's inherited or can be added here */
-    /* border-radius: 4px; from desktop - if needed also on mobile, it's inherited or can be added here */
-    /* overflow: hidden; from desktop - if needed also on mobile, it's inherited or can be added here */
-  }
-  
-  .quantityButton {
-    padding: 4px 8px;
-  }
-  
-  .quantityButton svg {
-    width: 16px; /* Reset to original size for mobile */
-    height: 16px;
-  }
-  
-  .quantityDisplay { /* This will be replaced by quantityInput, but keep for reference/fallback */
-    padding: 4px 8px;
-    font-size: 14px;
-    min-width: 30px; /* Reset to original size for mobile */
-  }
-  
-  .removeButton {
-    display: none; /* Original bottom remove button remains hidden on mobile */
+  /* QuantityControl wrapper adjustments for mobile */
+  .quantityControlWrapper {
+    margin-bottom: 0;
+    width: auto;
+    display: flex;
+    justify-content: center;
   }
 }
 
@@ -419,41 +309,4 @@
   .quantityAndActions {
     width: 40%;
   }
-  
-  .quantityButton {
-    padding: 2px 6px;
-  }
-  
-  .quantityDisplay {
-    padding: 2px 6px;
-    font-size: 12px;
-    min-width: 20px;
-  }
-}
-
-/* Styles for the new quantity input field (GLOBAL STYLES) */
-/* These are the base styles, mobile overrides are above in the 768px media query */
-.quantityInput {
-  padding: 10px 18px 10px 3px; /* Increased padding to match larger quantityDisplay */
-  font-family: 'Rubik', sans-serif;
-  font-weight: 500;
-  font-size: 18px; /* Slightly larger font to match quantityDisplay */
-  color: #1C1C1C;
-  min-width: 35px; /* Slightly wider to match quantityDisplay */
-  text-align: center;
-  border: none; 
-  background-color: transparent; /* Default background for input, may be overridden by .quantityControl */
-  width: 60px; /* Slightly wider for desktop */
-  -moz-appearance: textfield; /* Hide spinners on Firefox */
-  outline: none; /* Remove focus outline/border */
-}
-
-.quantityInput::-webkit-outer-spin-button,
-.quantityInput::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0; /* Hide spinners on Chrome, Safari, Edge, Opera */
-}
-
-.quantityInput:focus {
-  outline: none; /* Remove focus outline when clicked */
 }

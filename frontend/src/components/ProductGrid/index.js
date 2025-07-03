@@ -180,6 +180,10 @@ const GridContainer = styled.div`
 
 const PreOrderWrapper = styled.div`
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking below content size */
+  /* overflow: hidden; */ /* Remove this to allow toasts to be visible */
   ${props => props.customStyles}
 `;
 
@@ -217,7 +221,6 @@ const ProductGrid = ({
   subtitle = "",
   viewAllLink = "#", 
   viewAllText = "Смотреть все",
-  onAddToCart,
   useGradientTitle = false,
   sectionClassName = '',
   gridContainerClassName = '',
@@ -280,7 +283,6 @@ const ProductGrid = ({
               )}
               <ProductCard
                 product={product}
-                onAddToCart={onAddToCart}
                 {...productCardProps}
               />
             </PreOrderWrapper>
@@ -311,7 +313,6 @@ ProductGrid.propTypes = {
   subtitle: PropTypes.string,
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
-  onAddToCart: PropTypes.func,
   useGradientTitle: PropTypes.bool,
   sectionClassName: PropTypes.string,
   gridContainerClassName: PropTypes.string,

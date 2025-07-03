@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS, TYPOGRAPHY, SPACING, mediaQueries, SHADOWS } from '../../styles/tokens';
+import RequestModal from '../modals/RequestModal';
 
 const SubscriptionContainer = styled.section`
   width: 100%;
@@ -172,6 +173,8 @@ const ClubSubscription = () => {
     phone: ''
   });
 
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -182,13 +185,28 @@ const ClubSubscription = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted with data:', formData);
-    // Here you would typically send the data to an API
-    // For now, we'll just log it
+    
+    // Open RequestModal with current form data
+    setIsRequestModalOpen(true);
+  };
+
+  const handleCloseRequestModal = () => {
+    setIsRequestModalOpen(false);
   };
 
   return (
     <SubscriptionContainer>
+      {/* RequestModal */}
+      <RequestModal
+        isOpen={isRequestModalOpen}
+        onClose={handleCloseRequestModal}
+        initialValues={{
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email
+        }}
+      />
+      
       <ContentWrapper>
         <FormContainer>
           <FormHeading>

@@ -129,6 +129,9 @@ const SwiperContainer = styled.div`
 const ProductCardWrapper = styled.div`
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking below content size */
+  /* overflow: hidden; */ /* Remove this to allow toasts to be visible */
   
   /* Remove all auto height/flex behaviors causing the issue */
   display: block;
@@ -147,8 +150,7 @@ const ProductSlider = ({
   products = [],
   title = "Products",
   viewAllLink = "#",
-  viewAllText = "Смотреть все",
-  onAddToCart
+  viewAllText = "Смотреть все"
 }) => {
   const displayProducts = Array.isArray(products) ? products : [];
   const spaceBetweenValue = 0; // убираем spaceBetween, теперь отступы только через margin
@@ -181,7 +183,6 @@ const ProductSlider = ({
                 <ProductCardWrapper>
                   <ProductCard
                     product={product}
-                    onAddToCart={onAddToCart}
                   />
                 </ProductCardWrapper>
               </SwiperSlide>
@@ -211,7 +212,6 @@ ProductSlider.propTypes = {
   title: PropTypes.string,
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
-  onAddToCart: PropTypes.func,
 };
 
 export default ProductSlider;

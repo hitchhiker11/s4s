@@ -163,13 +163,19 @@ const SectionTitle = styled.h2`
 // Компонент главной страницы
 const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initialBestsellers }) => {
   // Initialize basket data when the page loads
-  const { refetchBasket, basketCount, addToBasket } = useBasket();
+  const { refetchBasket, basketCount, isFuserIdInitialized } = useBasket({
+    initialFetch: true,
+    autoInitialize: true,
+    staleTime: 60000 // 1 minute
+  });
   
-  // Fetch basket data on component mount
+  // Fetch basket data on component mount, but only after fuser_id is initialized
   useEffect(() => {
-    console.log('Fetching basket data on homepage load');
-    refetchBasket();
-  }, [refetchBasket]);
+    if (isFuserIdInitialized) {
+      console.log('fuser_id initialized, fetching basket data on homepage load');
+      refetchBasket();
+    }
+  }, [refetchBasket, isFuserIdInitialized]);
 
   // Use data from SSR via hydration, fallback to mock data if needed
   const { data: categoriesData, isError: categoriesIsError } = useQuery('homeCategories', 
@@ -177,7 +183,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     // Removed initialData, rely on hydration
   ); 
   const { data: newArrivalsData, isError: newArrivalsIsError } = useQuery('homeNewArrivals', 
-    () => getCatalogItems({ 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:asc' })
+    () => getCatalogItems({ 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:desc' })
     // Removed initialData
   );
   const { data: brandsData, isError: brandsIsError } = useQuery('homeBrands', 
@@ -253,8 +259,6 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       imageUrl: product.image, // Ensure imageUrl is set from image
       productLink: product.detailUrl, // Ensure productLink is set from detailUrl
       CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N', // Add required CATALOG_AVAILABLE field
-      CATALOG_QUANTITY: product.quantity ? String(product.quantity) : "0", // Add CATALOG_QUANTITY field
-      CODE: product.code // Add CODE field
     }));
     
     console.log('New arrivals for display:', mappedProducts);
@@ -303,8 +307,6 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       imageUrl: product.image, // Ensure imageUrl is set from image
       productLink: product.detailUrl, // Ensure productLink is set from detailUrl
       CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N', // Add required CATALOG_AVAILABLE field
-      CATALOG_QUANTITY: product.quantity ? String(product.quantity) : "0", // Add CATALOG_QUANTITY field
-      CODE: product.code // Add CODE field
     }));
     
     console.log('Bestsellers for display:', mappedProducts);
@@ -312,15 +314,11 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     return mappedProducts.length > 0 ? mappedProducts : mockBestsellers;
   }, [bestsellersData, bestsellersIsError, initialBestsellers]);
 
-  // Update the handleAddToCart function to use addToBasket
-  const handleAddToCart = async (product) => {
-    const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
-    try {
-      await addToBasket({ product_id: productId, quantity: 1 });
-      console.log('Product added to cart:', productId);
-    } catch (error) {
-      console.error('Error adding product to cart:', error);
-    }
+  // Updated add to cart handler with stock check
+  const handleAddToCart = (productId) => {
+    console.log(`Adding product ${productId} to cart from HomePage - ProductCard will handle stock check`);
+    // Note: Stock check is now handled directly in ProductCard component via addToBasketWithStockCheck
+    // This function is kept for backwards compatibility but actual logic is in ProductCard
   };
 
   // Define render functions for cards
@@ -346,7 +344,8 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
         productLink: product.productLink || product.detailUrl, // Ensure productLink exists
         CATALOG_AVAILABLE: product.CATALOG_AVAILABLE || (product.inStock ? 'Y' : 'N'), // Ensure CATALOG_AVAILABLE exists
       }}
-      onAddToCart={handleAddToCart}
+      // Remove onAddToCart to let ProductCard handle it with toasts
+      // onAddToCart={handleAddToCart}
       additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
     />
   );
@@ -413,4 +412,151 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
                 }
               }
             `}
-            sectionStyle={`
+            sectionStyle={`              overflow: hidden;
+            `}
+            cardStyle={{ 
+              overflow: 'hidden',
+            }}
+          />
+        </div>
+        {/* New Arrivals Section using Responsive Wrapper */}
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+          <ResponsiveProductSection 
+            title="Новые поступления"
+            subtitle="посмотрите наши новинки"
+            viewAllLink="/catalog?filter=new"
+            items={displayNewArrivals} // Use 'items' prop name
+            renderItem={renderProductCard} // Pass the render function
+            // Remove onAddToCart to let ProductCard handle it with toasts
+            // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+          />
+       </div>
+        {/* Our Brands Section using Responsive Wrapper */}
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+          <ResponsiveCategorySection 
+            title="Наши бренды"
+            subtitle="если хотите пополнить коллекцию"
+            viewAllLink="/brands"
+            items={displayBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
+            renderItem={renderCategoryCard} // Pass the render function
+            // cardStyle={{ maxWidth: '280px' }}
+          />
+        </div>
+        
+        {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}
+        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
+            <ResponsiveProductSection 
+              title="Хиты продаж 🔥"
+              subtitle="посмотрите самые популярные продукты"
+            viewAllLink="/catalog?filter=bestsellers"
+            items={displayBestsellers} // Use 'items' prop name
+            renderItem={renderProductCard} // Pass the render function
+            useGradientTitle={true}
+            // Remove onAddToCart to let ProductCard handle it with toasts
+            // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+          />
+        </div>
+        {/* Featured Brand Section */}
+        <BrandFeature brandData={hardcodedFeaturedBrandData} />
+
+        {/* Club Subscription Section */}
+        <ClubSubscription />
+      </HomePageContainer>
+    </Layout>
+  );
+};
+
+// Предварительная загрузка данных на стороне сервера
+export async function getServerSideProps() {
+  const queryClient = new QueryClient();
+  
+  const catalogIblockId = process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21';
+  const brandsIblockId = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '21';
+  const sliderIblockId = process.env.NEXT_PUBLIC_SLIDER_IBLOCK_ID || '27';
+
+  console.log('[SSR] Initializing getServerSideProps...');
+  console.log(`[SSR] Using catalogIblockId: ${catalogIblockId}, brandsIblockId: ${brandsIblockId}, sliderIblockId: ${sliderIblockId}`);
+
+  try {
+    console.log('[SSR] Prefetching homeCategories...');
+    await queryClient.prefetchQuery('homeCategories', () => {
+      console.log('[SSR] Executing getCatalogSections query function with simplified params');
+      return getCatalogSections({ iblock_id: catalogIblockId, tree_mode: 'flat', depth: 3 });
+    });
+    const categoriesResult = queryClient.getQueryData('homeCategories');
+    console.log('[SSR] homeCategories prefetched. Result:', JSON.stringify(categoriesResult, null, 2));
+
+    console.log('[SSR] Prefetching homeNewArrivals...');
+    await queryClient.prefetchQuery('homeNewArrivals', () => {
+      console.log('[SSR] Executing getCatalogItems (New Arrivals) query function');
+      return getCatalogItems({ iblock_id: catalogIblockId, 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:desc' });
+    });
+    const newArrivalsResult = queryClient.getQueryData('homeNewArrivals');
+    console.log('[SSR] homeNewArrivals prefetched. Result:', JSON.stringify(newArrivalsResult, null, 2));
+
+    console.log('[SSR] Prefetching homeBrands...');
+    await queryClient.prefetchQuery('homeBrands', () => {
+      console.log('[SSR] Executing getBrands query function');
+      return getBrands({ iblock_id: brandsIblockId, with_product_count: 'Y', limit: 8 });
+    });
+    const brandsResult = queryClient.getQueryData('homeBrands');
+    console.log('[SSR] homeBrands prefetched. Result:', JSON.stringify(brandsResult, null, 2));
+    
+    console.log('[SSR] Prefetching homeBestsellers...');
+    await queryClient.prefetchQuery('homeBestsellers', () => {
+      console.log('[SSR] Executing getCatalogItems (Bestsellers) query function');
+      return getCatalogItems({ iblock_id: catalogIblockId, 'property[BESTSELLER]': 'Y', limit: 10, sort: 'sort:asc' });
+    });
+    const bestsellersResult = queryClient.getQueryData('homeBestsellers');
+    console.log('[SSR] homeBestsellers prefetched. Result:', JSON.stringify(bestsellersResult, null, 2));
+
+    console.log('[SSR] Prefetching aboutSliderData...');
+    await queryClient.prefetchQuery(['aboutSliderData'], () => {
+      console.log('[SSR] Executing getAboutSliderData query function');
+      return getAboutSliderData({ iblock_id: sliderIblockId });
+    });
+    const sliderDataResult = queryClient.getQueryData(['aboutSliderData']);
+    console.log('[SSR] aboutSliderData prefetched. Result:', JSON.stringify(sliderDataResult, null, 2));
+    
+    // Prefetch basket data on server side
+    console.log('[SSR] Prefetching basket data...');
+    await queryClient.prefetchQuery(['basket', 'full'], () => {
+      console.log('[SSR] Executing getBasket query function');
+      return getBasket();
+    });
+    const basketResult = queryClient.getQueryData(['basket', 'full']);
+    console.log('[SSR] basket data prefetched. Result:', JSON.stringify(basketResult, null, 2));
+    
+    const initialCategoriesVal = (categoriesResult && !categoriesResult.error && categoriesResult.data) ? categoriesResult.data : [];
+    const initialNewArrivalsVal = (newArrivalsResult && !newArrivalsResult.error && newArrivalsResult.data) ? newArrivalsResult.data : [];
+    const initialBrandsVal = (brandsResult && !brandsResult.error && brandsResult.data) ? brandsResult.data : [];
+    const initialBestsellersVal = (bestsellersResult && !bestsellersResult.error && bestsellersResult.data) ? bestsellersResult.data : [];
+
+    console.log('[SSR] initialCategories to be passed as props:', JSON.stringify(initialCategoriesVal, null, 2));
+    console.log('[SSR] initialBrands to be passed as props:', JSON.stringify(initialBrandsVal, null, 2));
+
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+        initialCategories: initialCategoriesVal,
+        initialNewArrivals: initialNewArrivalsVal,
+        initialBrands: initialBrandsVal,
+        initialBestsellers: initialBestsellersVal,
+      },
+    };
+  } catch (error) {
+    console.error('[SSR] Error prefetching homepage data:', error);
+    // Fallback to empty arrays for initial props in case of a major error during prefetch setup
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient), // Still pass dehydrated state, may contain partial/error states
+        initialCategories: [],
+        initialNewArrivals: [],
+        initialBrands: [],
+        initialBestsellers: []
+      },
+    };
+  }
+}
+
+export default HomePage; 

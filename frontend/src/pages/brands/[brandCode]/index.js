@@ -174,7 +174,6 @@ const BrandProductsPage = ({ initialData, brandCode, seo }) => {
           <ProductGrid
             showTitleRow={false}
             products={products}
-            onAddToCart={handleAddToCart}
             gridContainerClassName={gridContainerClassName}
             preOrderWrapperProps={preOrderWrapperProps}
             gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
@@ -196,7 +195,6 @@ const BrandProductsPage = ({ initialData, brandCode, seo }) => {
             showViewAllLink={false}
             items={recentlyViewed}
             title="Недавно просмотренные"
-            onAddToCart={handleAddToCart}
             
           />
         )}

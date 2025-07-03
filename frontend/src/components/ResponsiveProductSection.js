@@ -9,33 +9,26 @@ import productGridStyles from '../styles/ProductGridResponsive.module.css'; // I
  * ResponsiveProductSection - Renders either ProductGrid (desktop) or ProductSlider (mobile)
  * based on the current viewport size
  */
-const ResponsiveProductSection = ({ items, renderItem, onAddToCart, ...props }) => {
+const ResponsiveProductSection = ({ items, renderItem, ...props }) => {
   // Log the items for debugging
   if (process.env.NODE_ENV === 'development') {
     console.log(`${props.title || 'Product Section'} - Mobile?: ${typeof window !== 'undefined' && window.innerWidth < 768} - Items:`, items?.length ?? 0, items);
   }
 
-  // Props for ProductSlider (expects 'products' and 'onAddToCart')
+  // Props for ProductSlider (expects 'products')
   const productSliderProps = {
     ...props,
     products: items, // Pass items as products to the slider
-    onAddToCart // Pass handler down
   };
 
-  // Props for ProductGrid (expects 'products' and 'onAddToCart' directly)
+  // Props for ProductGrid (expects 'products' directly)
   // NOTE: ProductGrid doesn't use renderItem, it maps internally using ProductCard
   const productGridProps = {
     ...props,
     products: items, // Pass items as products
-    onAddToCart, // Pass handler directly
     gridContainerClassName: productGridStyles.productGridContainer, // Add responsive grid class
     preOrderWrapperProps: { className: productGridStyles.preOrderWrapper } // Add responsive wrapper class
   };
-
-  // We need to check if ProductGrid actually uses renderItem or maps internally.
-  // Assuming ProductGrid maps internally like its original ItemGrid counterpart might have:
-  // If ProductGrid *does* require renderItem, we need to pass it:
-  // const productGridProps = { ...props, products: items, renderItem, onAddToCart };
 
   return (
     <ResponsiveContainer
@@ -68,7 +61,6 @@ ResponsiveProductSection.propTypes = {
   subtitle: PropTypes.string,
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
-  onAddToCart: PropTypes.func,
   useGradientTitle: PropTypes.bool,
   debug: PropTypes.bool
 };
