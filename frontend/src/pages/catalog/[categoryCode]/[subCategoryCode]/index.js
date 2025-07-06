@@ -17,6 +17,7 @@ import ProductGrid from '../../../../components/ProductGrid';
 import Pagination from '../../../../components/Pagination';
 import SubscriptionForm from '../../../../components/SubscriptionForm';
 import { useBasket } from '../../../../hooks/useBasket';
+import CategoryCard from '../../../../components/CategoryCard';
 
 // Стили
 import { SIZES, COLORS, mediaQueries } from '../../../../styles/tokens';
@@ -71,6 +72,59 @@ const EmptyState = styled.div`
   font-size: 18px;
 `;
 
+// Grid для плиток под-подкатегорий (третий уровень)
+const CategoriesGrid = styled.div`
+  max-width: ${SIZES.containerMaxWidth};
+  display: grid;
+  width: 100%;
+  margin-bottom: 24px;
+
+  /* 3 колонки по умолчанию как на уровне подкатегорий */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  ${mediaQueries.sm} { 
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  ${mediaQueries.md} { 
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  ${mediaQueries.lg} {
+    column-gap: 23px;
+    row-gap: 23px;
+  }
+`;
+
+// Обёртки для мобильного отображения последней строки (повтор логики из уровня категорий)
+const SingleCardWrapper = styled.div`
+  grid-column: 1 / -1; /* На мобильных одна карточка на всю ширину */
+
+  ${mediaQueries.md} {
+    grid-column: auto;
+  }
+`;
+
+const DoubleCardWrapperFirst = styled.div`
+  grid-column: 1 / 3; /* Первая карточка занимает две колонки */
+
+  ${mediaQueries.md} {
+    grid-column: auto;
+  }
+`;
+
+const DoubleCardWrapperSecond = styled.div`
+  grid-column: 3 / 4; /* Вторая карточка – одну колонку */
+
+  ${mediaQueries.md} {
+    grid-column: auto;
+  }
+`;
+
 // Трансформация данных из API
 const transformCategory = (apiCategory) => {
   if (!apiCategory) return null;
@@ -81,6 +135,87 @@ const transformCategory = (apiCategory) => {
     code: apiCategory.fields?.CODE || '',
     image: apiCategory.fields?.PICTURE ? `/upload/${apiCategory.fields.PICTURE}` : null,
   };
+};
+
+// Трансформация дочерних подкатегорий (3-ий уровень)
+const transformSubcategories = (apiSubcategories, parentCategoryCode, parentSubCategoryCode) => {
+  if (!apiSubcategories || !Array.isArray(apiSubcategories)) return [];
+
+  return apiSubcategories.map((subcat) => ({
+    id: subcat.id,
+    name: subcat.name,
+    code: subcat.fields?.CODE || '',
+    link: `/catalog/${parentCategoryCode}/${parentSubCategoryCode}/${subcat.fields?.CODE || subcat.id}`,
+    imageUrl: subcat.fields?.PICTURE ? `/upload/${subcat.fields.PICTURE}` : null,
+  }));
+};
+
+// Компонент-обёртка карточек с поддержкой последней строки
+const CategoryCardWrapper = ({ categories, allProductsCard }) => {
+  const allCategories = allProductsCard ? [allProductsCard, ...categories] : categories;
+
+  const totalCards = allCategories.length;
+  const remainder = totalCards % 3;
+
+  const standardCardsCount = remainder === 0 ? totalCards : totalCards - remainder;
+  const standardCategories = allCategories.slice(0, standardCardsCount);
+  const lastRowCategories = allCategories.slice(standardCardsCount);
+
+  return (
+    <CategoriesGrid>
+      {/* Стандартные карточки */}
+      {standardCategories.map((category, index) => (
+        <CategoryCard
+          key={category.id}
+          title={category.title || category.name}
+          imageUrl={category.imageUrl || category.image}
+          link={category.link}
+          additionalStyles={{
+            maxWidth: '260px',
+            ...(index === 0 && allProductsCard ? {
+              backgroundColor: COLORS.primary,
+              color: COLORS.white,
+              fontWeight: 700,
+            } : {}),
+          }}
+        />
+      ))}
+
+      {/* Обработка последней строки для 1 или 2 карточек на мобильных */}
+      {lastRowCategories.length === 1 && (
+        <SingleCardWrapper>
+          <CategoryCard
+            key={lastRowCategories[0].id}
+            title={lastRowCategories[0].title || lastRowCategories[0].name}
+            imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
+            link={lastRowCategories[0].link}
+            additionalStyles={{ maxWidth: '260px' }}
+          />
+        </SingleCardWrapper>
+      )}
+
+      {lastRowCategories.length === 2 && (
+        <>
+          <DoubleCardWrapperFirst>
+            <CategoryCard
+              key={lastRowCategories[0].id}
+              title={lastRowCategories[0].title || lastRowCategories[0].name}
+              imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
+              link={lastRowCategories[0].link}
+            />
+          </DoubleCardWrapperFirst>
+          <DoubleCardWrapperSecond>
+            <CategoryCard
+              key={lastRowCategories[1].id}
+              title={lastRowCategories[1].title || lastRowCategories[1].name}
+              imageUrl={lastRowCategories[1].imageUrl || lastRowCategories[1].image}
+              link={lastRowCategories[1].link}
+            />
+          </DoubleCardWrapperSecond>
+        </>
+      )}
+    </CategoriesGrid>
+  );
 };
 
 const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialProducts, seo }) => {
@@ -214,6 +349,34 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     loadBitrixCore();
   }, []);
 
+  // Запрашиваем под-подкатегории текущей подкатегории
+  const { data: subSubCategoriesData, isError: subSubCategoriesIsError, isLoading: subSubCategoriesIsLoading } = useQuery(
+    ['subSubcategories', subCategory?.id],
+    () => getSubcategories(subCategory.id, { tree_mode: 'flat' }),
+    {
+      enabled: !!subCategory?.id,
+      staleTime: 1000 * 60 * 5,
+    }
+  );
+
+  // Преобразуем под-подкатегории
+  const subSubCategories = React.useMemo(() => {
+    if (subSubCategoriesData?.data) {
+      return transformSubcategories(subSubCategoriesData.data, categoryCode, subCategoryCode);
+    }
+    return [];
+  }, [subSubCategoriesData, categoryCode, subCategoryCode]);
+
+  // Карточка "Все товары"
+  const allProductsCard = React.useMemo(() => ({
+    id: 'all-products',
+    name: 'Все товары',
+    title: 'Все',
+    link: `/catalog/${categoryCode}/${subCategoryCode}/all`,
+    imageUrl: null,
+    isAllProducts: true,
+  }), [categoryCode, subCategoryCode]);
+
   // Если категория или подкатегория не найдена
   if (!category || !subCategory) {
     return (
@@ -248,24 +411,29 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
       <Container>
         <Title>{subCategory.name}</Title>
 
-        {productsIsLoading ? (
+        {/* Если есть под-подкатегории, показываем сетку плиток. Иначе – товары. */}
+        {subSubCategoriesIsLoading ? (
+          <LoadingState>Загрузка подкатегорий...</LoadingState>
+        ) : subSubCategories && subSubCategories.length > 0 ? (
+          <CategoryCardWrapper categories={subSubCategories} allProductsCard={allProductsCard} />
+        ) : productsIsLoading ? (
           <LoadingState>Загрузка товаров...</LoadingState>
         ) : products && products.length > 0 ? (
           <>
-            <ProductGrid 
+            <ProductGrid
               showTitleRow={false}
-              products={products.map(product => ({
+              products={products.map((product) => ({
                 ...product,
                 imageUrl: product.image,
                 productLink: product.detailUrl,
                 CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N',
-                CATALOG_QUANTITY: product.quantity ? String(product.quantity) : "0",
-                CODE: product.code
-              }))} 
+                CATALOG_QUANTITY: product.quantity ? String(product.quantity) : '0',
+                CODE: product.code,
+              }))}
             />
-            
+
             {pagination.totalPages > 1 && (
-              <Pagination 
+              <Pagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
                 totalItems={pagination.totalItems}

@@ -75,6 +75,29 @@ export const getCatalogItemById = async (itemId, params = {}) => {
 };
 
 /**
+ * Get single catalog item by ID or Code
+ * @param {Object} params - { id, code, with_offers, with_related, ... }
+ */
+export const getCatalogItem = async (params = {}) => {
+  try {
+    const queryParams = {
+      iblock_id: CATALOG_IBLOCK_ID,
+      ...params,
+    };
+
+    // require id or code
+    if (!queryParams.id && !queryParams.code) {
+      throw new Error('id or code parameter is required');
+    }
+
+    const response = await bitrixApi.get('/catalog_item', { params: queryParams });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, 'getCatalogItem');
+  }
+};
+
+/**
  * Sections (Categories) API Services
  */
 
@@ -818,6 +841,7 @@ export const submitPreOrderForm = async (preOrderData) => {
 export default {
   getCatalogItems,
   getCatalogItemById,
+  getCatalogItem,
   getCatalogSections,
   getCatalogSectionById,
   getBrands,

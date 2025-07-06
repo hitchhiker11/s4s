@@ -9,10 +9,16 @@ const QuantityControl = ({
   onRemove,
   isLoading = false,
   showRemoveOnOne = true,
-  size = 'default', // 'default', 'compact', 'small'
+  size = 'default', // 'default', 'large', 'compact', 'small'
   orientation = 'horizontal', // 'horizontal', 'vertical'
   className = '',
-  disabled = false
+  disabled = false,
+  containerStyle = {},
+  buttonStyle = {},
+  inputStyle = {},
+  decreaseButtonStyle = {},
+  increaseButtonStyle = {},
+  removeButtonStyle = {}
 }) => {
   const handleDecreaseQuantity = () => {
     if (quantity > 1 && !isLoading && !disabled) {
@@ -61,11 +67,12 @@ const QuantityControl = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} style={containerStyle}>
       {quantity === 1 && showRemoveOnOne && onRemove ? (
         <button 
           onClick={handleDecreaseQuantity}
           className={`${styles.quantityButton} ${styles.removeIconButton}`}
+          style={{ ...buttonStyle, ...removeButtonStyle }}
           aria-label="Удалить товар"
           disabled={isLoading || disabled}
         >
@@ -79,6 +86,7 @@ const QuantityControl = ({
         <button 
           onClick={handleDecreaseQuantity}
           className={`${styles.quantityButton} ${styles.decreaseButton}`}
+          style={{ ...buttonStyle, ...decreaseButtonStyle }}
           aria-label="Уменьшить количество"
           disabled={isLoading || disabled}
         >
@@ -93,6 +101,7 @@ const QuantityControl = ({
       <input 
         type="number"
         className={styles.quantityInput}
+        style={inputStyle}
         value={quantity === '' ? '' : quantity}
         onChange={handleQuantityInputChange}
         onBlur={handleQuantityInputBlur}
@@ -104,6 +113,7 @@ const QuantityControl = ({
       <button 
         onClick={handleIncreaseQuantity} 
         className={`${styles.quantityButton} ${styles.increaseButton}`}
+        style={{ ...buttonStyle, ...increaseButtonStyle }}
         aria-label="Увеличить количество"
         disabled={isLoading || disabled}
       >
@@ -123,10 +133,16 @@ QuantityControl.propTypes = {
   onRemove: PropTypes.func, // Optional, if not provided, won't show remove on quantity = 1
   isLoading: PropTypes.bool,
   showRemoveOnOne: PropTypes.bool,
-  size: PropTypes.oneOf(['default', 'compact', 'small']),
+  size: PropTypes.oneOf(['default', 'large', 'compact', 'small']),
   orientation: PropTypes.oneOf(['horizontal', 'vertical']),
   className: PropTypes.string,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  containerStyle: PropTypes.object,
+  buttonStyle: PropTypes.object,
+  inputStyle: PropTypes.object,
+  decreaseButtonStyle: PropTypes.object,
+  increaseButtonStyle: PropTypes.object,
+  removeButtonStyle: PropTypes.object
 };
 
 export default QuantityControl; 

@@ -17,7 +17,6 @@
 .modal {
   background-color: #FCFCFC; /* Figma: fill_L5JEHW */
   padding: 50px;
-  border-radius: 8px;
   box-shadow: 4px 4px 0px 0px rgba(182, 182, 182, 1); /* Figma: effect_W43F75 */
   position: relative;
   width: 100%;
@@ -142,7 +141,6 @@
   text-transform: uppercase;
   padding: 10px 24px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   align-self: stretch;
   margin-top: 31px;
@@ -250,7 +248,6 @@
 
   .modal {
     padding: 15px;
-    border-radius: 4px;
   }
 
   .title, .productName {

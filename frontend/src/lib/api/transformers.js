@@ -103,7 +103,7 @@ export const transformCatalogItem = (apiItem) => {
   const getFullImageUrl = (path) => {
     // Check if path is null, undefined, or not a string
     if (!path || typeof path !== 'string') {
-      console.warn('🖼️ [Transformer-Local] Invalid path provided:', { path, type: typeof path });
+      // console.warn('🖼️ [Transformer-Local] Invalid path provided:', { path, type: typeof path });
       return '/images/placeholder.png';
     }
     
@@ -116,14 +116,14 @@ export const transformCatalogItem = (apiItem) => {
     if (path.startsWith('/')) {
       const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
       const fullUrl = `${cleanBaseUrl}${path}`;
-      console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
+      // console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
       return fullUrl;
     }
     
     // For relative paths, add base URL with /
     const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
     const fullUrl = `${cleanBaseUrl}${path}`;
-    console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
+    // console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
     return fullUrl;
   };
   
@@ -194,7 +194,7 @@ export const transformCatalogItem = (apiItem) => {
     image: mainImage,
     images: imagesList.length > 0 ? imagesList : ['/images/placeholder.png'],
     description: fields.PREVIEW_TEXT || fields.DETAIL_TEXT || '',
-    detailUrl: fields.DETAIL_PAGE_URL || `/catalog/${fields.CODE || id}`,
+    detailUrl: fields.DETAIL_PAGE_URL || `/detail/${fields.CODE || id}`,
     inStock: stockStatus,
     quantityAvailable: quantityAvailable,
     quantity: parseInt(fields.CATALOG_QUANTITY || 0, 10),

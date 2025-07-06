@@ -2,9 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 import styles from './ProductDetailCard.module.css';
+import QuantityControl from '../QuantityControl';
 // Removed heroicons import which was causing the build error
 
-const ProductDetailCard = ({ product, onAddToCart }) => {
+const ProductDetailCard = ({
+  product,
+  onAddToCart,
+  onPreOrder,
+  isInBasket = false,
+  basketQuantity = 1,
+  onQuantityChange,
+  onRemove,
+  quantityLoading = false,
+}) => {
   if (!product) {
     return <div>Товар не найден.</div>;
   }
@@ -17,6 +27,37 @@ const ProductDetailCard = ({ product, onAddToCart }) => {
 
   // Minimum swipe distance (in pixels)
   const minSwipeDistance = 50;
+
+  // Responsive check for mobile viewport to adjust QuantityControl size
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const updateIsMobile = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth <= 768);
+      }
+    };
+
+    updateIsMobile(); // initial
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
+
+  // Предзаказ отображается, если товар недоступен ИЛИ явно указан нулевой остаток.
+  // В некоторых ответах API количество может быть не передано — в таком случае ориентируемся
+  // только на флаг наличия. Также поддерживаем поле `quantityAvailable`, которое может
+  // приходить как boolean-признак остатка (transformCatalogItem выставляет его на основе
+  // CATALOG_QUANTITY).
+  const isPreOrder = (() => {
+    // 1. Флаг доступности — boolean (inStock) или строка ('Y'/'N')
+    const availabilityFlag = product?.inStock ?? product?.CATALOG_AVAILABLE;
+    const availableByFlag = availabilityFlag === true || availabilityFlag === 'Y';
+
+    // 2. Некоторые реализации Битрикса возвращают количество = 0, даже если товар
+    //    доступен для заказа (фактический остаток ведётся в SKU, складских модулях и т.д.).
+    //    Поэтому для отображения кнопки "В корзину" достаточно флага `inStock | CATALOG_AVAILABLE`.
+    return !availableByFlag;
+  })();
 
   const handleThumbnailClick = (image) => {
     setSelectedImage(image);
@@ -156,12 +197,33 @@ const ProductDetailCard = ({ product, onAddToCart }) => {
           </button>
         </div> */}
 
-        <button 
-            onClick={() => onAddToCart({ productId: product.id, quantity, price: currentPrice })} 
+        {/* Интегрируем QuantityControl, если товар уже в корзине */}
+        {isInBasket && !isPreOrder ? (
+          <QuantityControl
+            quantity={basketQuantity}
+            onQuantityChange={onQuantityChange}
+            onRemove={onRemove}
+            isLoading={quantityLoading}
+            removeButtonStyle={{
+              paddingLeft: '0',
+              marginLeft: '0',
+            }}
+            size={isMobile ? 'compact' : 'large'}
+          />
+        ) : (
+          <button
+            onClick={() => {
+              if (isPreOrder && typeof onPreOrder === 'function') {
+                onPreOrder(product);
+              } else if (typeof onAddToCart === 'function') {
+                onAddToCart({ productId: product.id, quantity, price: currentPrice });
+              }
+            }}
             className={styles.addToCartButton}
-        >
-          В корзину
-        </button>
+          >
+            {isPreOrder ? 'Предзаказ' : 'В корзину'}
+          </button>
+        )}
 
         {/* Placeholder for Wishlist button */}
         {/* <button className={styles.wishlistButton}>
@@ -193,6 +255,12 @@ ProductDetailCard.propTypes = {
     reviewCount: PropTypes.number, // Optional
   }).isRequired,
   onAddToCart: PropTypes.func.isRequired,
+  onPreOrder: PropTypes.func,
+  isInBasket: PropTypes.bool,
+  basketQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onQuantityChange: PropTypes.func,
+  onRemove: PropTypes.func,
+  quantityLoading: PropTypes.bool,
 };
 
 export default ProductDetailCard; 
