@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
 import { getCatalogSections, getBrands, getCatalogItems, getAboutSliderData, getBasket } from '../lib/api/bitrix';
 import { transformSections, transformBrands, transformCatalogItems } from '../lib/api/transformers';
-// Import mock data for fallback
-import { mockCategories, mockNewArrivals, mockBrands, mockBestsellers } from '../lib/mockData';
 
 // Components
 import AboutSlider from '../components/AboutSlider';
@@ -169,6 +167,8 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     staleTime: 60000 // 1 minute
   });
   
+  const catalogIblockId = process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21';
+  
   // Fetch basket data on component mount, but only after fuser_id is initialized
   useEffect(() => {
     if (isFuserIdInitialized) {
@@ -179,20 +179,39 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
 
   // Use data from SSR via hydration, fallback to mock data if needed
   const { data: categoriesData, isError: categoriesIsError } = useQuery('homeCategories', 
-    () => getCatalogSections({ tree_mode: 'flat', depth: 3  })
-    // Removed initialData, rely on hydration
+    () => getCatalogSections({ iblock_id: catalogIblockId, tree_mode: 'flat', depth: 3  }),
+    {
+      initialData: initialCategories && initialCategories.length > 0 ? { data: initialCategories } : undefined,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
   ); 
   const { data: newArrivalsData, isError: newArrivalsIsError } = useQuery('homeNewArrivals', 
-    () => getCatalogItems({ 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:desc' })
-    // Removed initialData
+    () => getCatalogItems({ 
+      iblock_id: catalogIblockId, 
+      limit: 8, 
+      sort: 'date_create:desc',
+      active: 'Y',
+      in_stock: 'Y',
+      has_price: 'Y'
+    }),
+    {
+      initialData: initialNewArrivals && initialNewArrivals.length > 0 ? { data: initialNewArrivals } : undefined,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
   );
   const { data: brandsData, isError: brandsIsError } = useQuery('homeBrands', 
-    () => getBrands({ with_product_count: 'Y', limit: 8 })
-    // Removed initialData
+    () => getBrands({ with_products_count: 'Y', limit: 8, image_resize: '150x150', with_products: 'Y' }),
+    {
+      initialData: initialBrands && initialBrands.length > 0 ? { data: initialBrands } : undefined,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
   );
   const { data: bestsellersData, isError: bestsellersIsError } = useQuery('homeBestsellers', 
-    () => getCatalogItems({ 'property[BESTSELLER]': 'Y', limit: 5, sort: 'sort:asc' })
-    // Removed initialData
+    () => getCatalogItems({ iblock_id: catalogIblockId, 'property[BESTSELLER]': 'Y', limit: 8, sort: 'sort:asc' }),
+    {
+      initialData: initialBestsellers && initialBestsellers.length > 0 ? { data: initialBestsellers } : undefined,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
   );
 
   const displayCategories = useMemo(() => {
@@ -263,7 +282,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     
     console.log('New arrivals for display:', mappedProducts);
     
-    return mappedProducts.length > 0 ? mappedProducts : mockNewArrivals;
+    return mappedProducts;
   }, [newArrivalsData, newArrivalsIsError, initialNewArrivals]);
 
   const displayBrands = useMemo(() => {
@@ -274,20 +293,18 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       dataToUse = initialBrands;
     }
     
-    // Transform brands and add required fields for ResponsiveCategorySection
+    // Transform brands using updated transformer for new API
     const transformedBrands = transformBrands(Array.isArray(dataToUse) ? dataToUse : []);
     
-    // Map to match expected props for ResponsiveCategorySection
-    const mappedBrands = transformedBrands.map(brand => ({
+    console.log('🏷️ [HomePage] Brands for display:', transformedBrands);
+    
+    // No more fallback to mockBrands - using real API data only
+    return transformedBrands.map(brand => ({
       ...brand,
-      title: brand.name, // Add 'title' field from 'name'
-      imageUrl: brand.image, // Ensure imageUrl is set from image
-      link: brand.url, // Ensure link is set from url
+      showTitle: false,
+      disableRotation: true,
+      rotation: 0 // Убираем случайный поворот на главной
     }));
-    
-    console.log('Brands for display:', mappedBrands);
-    
-    return mappedBrands.length > 0 ? mappedBrands : mockBrands;
   }, [brandsData, brandsIsError, initialBrands]);
 
   const displayBestsellers = useMemo(() => {
@@ -311,7 +328,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     
     console.log('Bestsellers for display:', mappedProducts);
     
-    return mappedProducts.length > 0 ? mappedProducts : mockBestsellers;
+    return mappedProducts;
   }, [bestsellersData, bestsellersIsError, initialBestsellers]);
 
   // Updated add to cart handler with stock check
@@ -370,92 +387,95 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
         <SearchBar />
         
         {/* Categories Section using Responsive Wrapper */}
-        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
-          <ResponsiveCategorySection 
-            title="Каталог товаров" 
-            viewAllLink="/catalog"
-            items={displayCategories.map(category => ({...category, disableRotation: true}))} // Disable rotation
-            renderItem={renderCategoryCard} // Pass the render function
-            containerStyle={`
-              /* Styling for image positioning */
-              & > a [class^="CategoryCard__CardImageContainer"] {
-                justify-content: flex-end !important;  /* Align to right */
-                align-items: flex-end !important;  /* Align to bottom */
-                overflow: hidden;  /* Ensure overflow is hidden */
-              }
+        <ResponsiveCategorySection 
+          title="Каталог товаров" 
+          viewAllLink="/catalog"
+          items={displayCategories.map(category => ({...category, disableRotation: true}))} // Disable rotation
+          renderItem={renderCategoryCard} // Pass the render function
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          containerStyle={`
+            /* Styling for image positioning */
+            & > a [class^="CategoryCard__CardImageContainer"] {
+              justify-content: flex-end !important;  /* Align to right */
+              align-items: flex-end !important;  /* Align to bottom */
+              overflow: hidden;  /* Ensure overflow is hidden */
+            }
 
+            & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
+              max-width: 130% !important;  /* Make images larger to allow partial overflow */
+              max-height: 130% !important;
+              transform: translateX(17%) translateY(20%) !important;  
+              object-fit: contain !important;
+              object-position: bottom right !important;
+            }
+
+            & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
+              max-width: 130% !important;
+              max-height: 130% !important;
+              transform: translateX(-45%) translateY(-20%) !important;  
+              object-fit: contain !important;
+              object-position: top left !important;
+            }
+
+            @media (max-width: ${BREAKPOINTS.lg - 1}px) {
               & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
-                max-width: 130% !important;  /* Make images larger to allow partial overflow */
-                max-height: 130% !important;
-                transform: translateX(17%) translateY(20%) !important;  
-                object-fit: contain !important;
-                object-position: bottom right !important;
+                max-width: 120% !important;
+                transform: translateX(-10%) translateY(10%) !important;
               }
-
+              
               & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
-                max-width: 130% !important;
-                max-height: 130% !important;
-                transform: translateX(-45%) translateY(-20%) !important;  
-                object-fit: contain !important;
-                object-position: top left !important;
+                max-width: 120% !important;
+                transform: translateX(-25%) translateY(-20%) !important;
               }
-
-              @media (max-width: ${BREAKPOINTS.lg - 1}px) {
-                & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
-                  max-width: 120% !important;
-                  transform: translateX(-10%) translateY(10%) !important;
-                }
-                
-                & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
-                  max-width: 120% !important;
-                  transform: translateX(-25%) translateY(-20%) !important;
-                }
-              }
-            `}
-            sectionStyle={`              overflow: hidden;
-            `}
-            cardStyle={{ 
-              overflow: 'hidden',
-            }}
-          />
-        </div>
+            }
+          `}
+          sectionStyle={`              overflow: hidden;
+          `}
+          cardStyle={{ 
+            overflow: 'hidden',
+          }}
+        />
         {/* New Arrivals Section using Responsive Wrapper */}
-        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
-          <ResponsiveProductSection 
-            title="Новые поступления"
-            subtitle="посмотрите наши новинки"
-            viewAllLink="/catalog?filter=new"
-            items={displayNewArrivals} // Use 'items' prop name
-            renderItem={renderProductCard} // Pass the render function
-            // Remove onAddToCart to let ProductCard handle it with toasts
-            // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
-          />
-       </div>
-        {/* Our Brands Section using Responsive Wrapper */}
-        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
-          <ResponsiveCategorySection 
-            title="Наши бренды"
-            subtitle="если хотите пополнить коллекцию"
-            viewAllLink="/brands"
-            items={displayBrands.map(brand => ({ ...brand, showTitle: false }))} // Use 'items', ensure showTitle handled
-            renderItem={renderCategoryCard} // Pass the render function
-            // cardStyle={{ maxWidth: '280px' }}
-          />
-        </div>
+        <ResponsiveProductSection 
+          title="Новые поступления"
+          subtitle="посмотрите наши новинки"
+          viewAllLink="/catalog?filter=new"
+          items={displayNewArrivals} // Use 'items' prop name
+          renderItem={renderProductCard} // Pass the render function
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          alwaysSlider={true} // Always use slider regardless of screen width
+          // Remove onAddToCart to let ProductCard handle it with toasts
+          // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+        />
+        {/* Our Brands Section using Responsive Wrapper with Slider on Desktop */}
+        <ResponsiveCategorySection 
+          title="Наши бренды"
+          subtitle="если хотите пополнить коллекцию"
+          viewAllLink="/brands"
+          items={displayBrands} // showTitle and disableRotation already applied in useMemo
+          renderItem={renderCategoryCard} // Pass the render function
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          alwaysSlider={true} // Always use slider for brands regardless of screen width
+          // cardStyle={{ maxWidth: '280px' }}
+        />
         
         {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}
-        <div style={{ padding: `0 0 0 ${SPACING.md}` }}>
-            <ResponsiveProductSection 
-              title="Хиты продаж 🔥"
-              subtitle="посмотрите самые популярные продукты"
-            viewAllLink="/catalog?filter=bestsellers"
-            items={displayBestsellers} // Use 'items' prop name
-            renderItem={renderProductCard} // Pass the render function
-            useGradientTitle={true}
-            // Remove onAddToCart to let ProductCard handle it with toasts
-            // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
-          />
-        </div>
+        <ResponsiveProductSection 
+          title="Хиты продаж 🔥"
+          subtitle="посмотрите самые популярные продукты"
+          viewAllLink="/catalog?filter=bestsellers"
+          items={displayBestsellers} // Use 'items' prop name
+          renderItem={renderProductCard} // Pass the render function
+          useGradientTitle={true}
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          alwaysSlider={true} // Always use slider regardless of screen width
+          // Remove onAddToCart to let ProductCard handle it with toasts
+          // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+        />
         {/* Featured Brand Section */}
         <BrandFeature brandData={hardcodedFeaturedBrandData} />
 
@@ -489,15 +509,27 @@ export async function getServerSideProps() {
     console.log('[SSR] Prefetching homeNewArrivals...');
     await queryClient.prefetchQuery('homeNewArrivals', () => {
       console.log('[SSR] Executing getCatalogItems (New Arrivals) query function');
-      return getCatalogItems({ iblock_id: catalogIblockId, 'property[ISNEW]': 'Y', limit: 10, sort: 'date_create:desc' });
+      return getCatalogItems({ 
+        iblock_id: catalogIblockId, 
+        limit: 8, 
+        sort: 'date_create:desc',
+        active: 'Y',
+        in_stock: 'Y',
+        has_price: 'Y'
+      });
     });
     const newArrivalsResult = queryClient.getQueryData('homeNewArrivals');
     console.log('[SSR] homeNewArrivals prefetched. Result:', JSON.stringify(newArrivalsResult, null, 2));
 
     console.log('[SSR] Prefetching homeBrands...');
     await queryClient.prefetchQuery('homeBrands', () => {
-      console.log('[SSR] Executing getBrands query function');
-      return getBrands({ iblock_id: brandsIblockId, with_product_count: 'Y', limit: 8 });
+      console.log('[SSR] Executing getBrands query function with new API');
+      return getBrands({ 
+        with_products_count: 'Y', 
+        limit: 8,
+        image_resize: '150x150',
+        with_products: 'Y'
+      });
     });
     const brandsResult = queryClient.getQueryData('homeBrands');
     console.log('[SSR] homeBrands prefetched. Result:', JSON.stringify(brandsResult, null, 2));
@@ -505,7 +537,7 @@ export async function getServerSideProps() {
     console.log('[SSR] Prefetching homeBestsellers...');
     await queryClient.prefetchQuery('homeBestsellers', () => {
       console.log('[SSR] Executing getCatalogItems (Bestsellers) query function');
-      return getCatalogItems({ iblock_id: catalogIblockId, 'property[BESTSELLER]': 'Y', limit: 10, sort: 'sort:asc' });
+      return getCatalogItems({ iblock_id: catalogIblockId, 'property[BESTSELLER]': 'Y', limit: 8, sort: 'sort:asc' });
     });
     const bestsellersResult = queryClient.getQueryData('homeBestsellers');
     console.log('[SSR] homeBestsellers prefetched. Result:', JSON.stringify(bestsellersResult, null, 2));

@@ -6,7 +6,7 @@ const Toast = ({
   message, 
   isVisible, 
   onClose, 
-  type = 'error', // 'error', 'success', 'warning', 'info'
+  type = 'error', 
   duration = 7000,
   autoClose = true 
 }) => {

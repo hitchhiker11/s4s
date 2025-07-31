@@ -290,7 +290,7 @@ const Footer = ({ showMainSection = true }) => {
               <NavLinks>
                 <NavLink href="/catalog">Все товары</NavLink>
                 <NavLink href="/catalog?filter=new">Новые поступления</NavLink>
-                <NavLink href="/catalog?filter=sale">Большие скидки</NavLink>
+                {/* <NavLink href="/catalog?filter=sale">Большие скидки</NavLink> */}
               </NavLinks>
             </CatalogSection>
             

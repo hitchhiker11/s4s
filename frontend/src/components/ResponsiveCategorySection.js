@@ -1,26 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ResponsiveContainer from './ResponsiveContainer';
+import ResponsiveContainer, { useViewport } from './ResponsiveContainer';
 import ItemGrid from './ItemGrid';
 import CategorySlider from './CategorySlider';
 
 /**
  * ResponsiveCategorySection - Renders either ItemGrid (desktop) or CategorySlider (mobile)
- * based on the current viewport size
+ * based on the current viewport size. Can be forced to use slider on desktop up to 1550px.
  */
 const ResponsiveCategorySection = ({ 
   items, 
   renderItem, 
   cardStyle, 
   containerStyle, 
-  sectionStyle, 
+  sectionStyle,
+  useSliderOnDesktop = false,
+  showNavigationOnDesktop = true,
+  alwaysSlider = false, // Force slider regardless of screen width
   ...props 
 }) => {
+  const { width } = useViewport();
   const categorySliderProps = {
     ...props,
     categories: items,
     renderItem,
     cardStyle,
+    showNavigation: useSliderOnDesktop ? showNavigationOnDesktop : false, // Show navigation only when forced to use slider on desktop
   };
 
   const itemGridProps = { 
@@ -32,6 +37,16 @@ const ResponsiveCategorySection = ({
     sectionStyle,
   };
 
+  // If forced to use slider on desktop, use CategorySlider for both desktop and mobile
+  // but only up to 1550px width. Above 1550px, always use grid
+  // Exception: if alwaysSlider is true, use slider regardless of width
+  if (useSliderOnDesktop && (alwaysSlider || width <= 1550)) {
+    return (
+      <CategorySlider {...categorySliderProps} />
+    );
+  }
+
+  // Default behavior: ItemGrid for desktop, CategorySlider for mobile
   return (
     <ResponsiveContainer
       DesktopComponent={ItemGrid}
@@ -62,6 +77,9 @@ ResponsiveCategorySection.propTypes = {
   cardStyle: PropTypes.object,
   containerStyle: PropTypes.string,
   sectionStyle: PropTypes.string,
+  useSliderOnDesktop: PropTypes.bool,
+  showNavigationOnDesktop: PropTypes.bool,
+  alwaysSlider: PropTypes.bool,
 };
 
 ResponsiveCategorySection.defaultProps = {

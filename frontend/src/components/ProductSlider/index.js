@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import ProductCard from '../ProductCard';
@@ -12,9 +13,29 @@ import 'swiper/css/navigation';
 
 const SliderSection = styled.section`
   width: 100%;
-  padding: ${SPACING.lg} 0 0 0;
+  padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   background-color: ${COLORS.white};
-  position: relative; /* Add position context */
+  
+  ${mediaQueries.sm} {
+    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
+  }
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+  }
+
+  ${mediaQueries.lg} {
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+  }
+  
+  /* Show navigation buttons on section hover */
+  &:hover .swiper-button-prev,
+  &:hover .swiper-button-next {
+    opacity: ${props => props.showNavigation ? 1 : 0};
+  }
+  
+  /* Custom styles override */
+  ${props => props.customStyles && props.customStyles}
 `;
 
 const HeaderContainer = styled.div`
@@ -23,11 +44,7 @@ const HeaderContainer = styled.div`
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto ${SPACING.lg};
-  // padding: 0 ${SPACING.md};
-
-  ${mediaQueries.sm} {
-    padding: 0 ${SPACING.lg};
-  }
+  /* No horizontal padding since SliderSection now handles all padding */
 `;
 
 const TitleRow = styled.div`
@@ -36,11 +53,16 @@ const TitleRow = styled.div`
   align-items: center;
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
-  padding: ${SPACING.sm} ${SPACING.sm};
+  padding: ${SPACING.sm} 0; /* Only vertical padding, horizontal handled by SliderSection */
+
   max-height: 28px;
   ${mediaQueries.sm} {
-  max-height: 45px;
-    padding: 0 ${SPACING.lg};
+    max-height: 45px;
+    padding: ${SPACING.md} 0; /* Only vertical padding */
+  }
+  
+  ${mediaQueries.lg} {
+    border-top: 4px solid ${COLORS.gray400}; /* 4px border for desktop */
   }
 `;
 
@@ -72,60 +94,89 @@ const ViewAllLink = styled.a`
   }
 `;
 
-// Completely restructured SwiperContainer to ensure proper height handling
 const SwiperContainer = styled.div`
   position: relative;
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
-  padding-bottom: ${SPACING.md};
   
-  /* Override Swiper's default height calculation */
   .swiper {
-    position: relative;
-    // padding-left: ${SPACING.md};
-    // padding-right: ${SPACING.md};
-    overflow: visible;
-    
-    ${mediaQueries.sm} {
-      // padding-left: ${SPACING.lg};
-      padding-right: ${SPACING.lg};
-    }
+    /* No additional padding since SliderSection now handles all padding */
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  /* Fix the wrapper height calculation issue */
-  .swiper-wrapper {
-    display: flex;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  /* Fix individual slide height */
   .swiper-slide {
+    width: 70%; /* Match Figma design width for mobile */
+    max-width: 173px; /* Based on mobile design */
     min-width: 173px;
-    max-width: 173px;
-    width: 173px;
-    
-    /* Override Swiper's default height calculation */
-    height: auto !important;
-    
-    /* Fix flexbox alignment */
-    display: block !important;
-    
-    /* Use consistent spacing between cards */
-    &:not(:last-child) {
-      margin-right: ${SPACING.sm};
+    height: auto;
+    display: flex;
+  }
+  
+  /* For tablet - intermediate size */
+  ${mediaQueries.md} {
+    .swiper-slide {
+      width: 220px; /* Intermediate size for tablet */
+      min-width: 220px;
+      max-width: 220px;
+      flex-shrink: 0;
+    }
+  }
+  
+  /* For desktop - uniform width slides for consistency - match CategorySlider */
+  ${mediaQueries.lg} {
+    .swiper-slide {
+      width: 280px; /* Fixed width for uniformity - same as CategorySlider */
+      min-width: 280px; /* Prevent shrinking */
+      max-width: 280px; /* Consistent maximum */
+      flex-shrink: 0; /* Prevent flex shrinking */
+    }
+  }
+  
+  /* For extra large screens - slightly larger but still uniform */
+  ${mediaQueries.xl} {
+    .swiper-slide {
+      width: 300px;
+      min-width: 300px;
+      max-width: 300px;
     }
   }
 
-  /* Hide navigation arrows */
+  /* Navigation arrows styling - conditional */
   .swiper-button-prev,
   .swiper-button-next {
-    display: none;
+    display: ${props => props.showNavigation ? 'flex' : 'none'};
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: ${COLORS.white};
+    border: 2px solid ${COLORS.gray300};
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    color: ${COLORS.black};
+
+    &:after {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background: ${COLORS.gray100};
+      border-color: ${COLORS.gray400};
+    }
+  }
+
+  .swiper-button-prev {
+    left: 10px;
+  }
+
+  .swiper-button-next {
+    right: 10px;
   }
 `;
 
-// Completely restructured ProductCardWrapper
 const ProductCardWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -150,31 +201,42 @@ const ProductSlider = ({
   products = [],
   title = "Products",
   viewAllLink = "#",
-  viewAllText = "Смотреть все"
+  showViewAllLink = true,
+  viewAllText = "Смотреть все",
+  showNavigation = false,
+  sliderSectionStyles = "", // New prop for custom section styles
+  gridSectionStyles = "" // Accept this prop but use sliderSectionStyles instead
 }) => {
   const displayProducts = Array.isArray(products) ? products : [];
-  const spaceBetweenValue = 0; // убираем spaceBetween, теперь отступы только через margin
+  const spaceBetweenValue = 12; // Фиксированные отступы между карточками в слайдере
 
   if (process.env.NODE_ENV === 'development') {
     console.log(`ProductSlider (${title}) rendering with:`, displayProducts.length);
   }
 
+  // Use sliderSectionStyles if provided, otherwise fall back to gridSectionStyles for compatibility
+  const customStyles = sliderSectionStyles || gridSectionStyles;
+
   return (
-    <SliderSection>
+    <SliderSection showNavigation={showNavigation} customStyles={customStyles}>
       <HeaderContainer>
         <TitleRow>
           <Title>{title}</Title>
-          {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+          {showViewAllLink && viewAllLink && (
+            <Link href={viewAllLink} passHref legacyBehavior>
+              <ViewAllLink>{viewAllText}</ViewAllLink>
+            </Link>
+          )}
         </TitleRow>
       </HeaderContainer>
 
       {displayProducts.length > 0 ? (
-        <SwiperContainer>
+        <SwiperContainer showNavigation={showNavigation}>
           <Swiper
             modules={[Navigation]}
             spaceBetween={spaceBetweenValue}
             slidesPerView={'auto'}
-            navigation
+            navigation={showNavigation}
             grabCursor={true}
             // Remove inline overflow style
           >
@@ -211,7 +273,11 @@ ProductSlider.propTypes = {
   ),
   title: PropTypes.string,
   viewAllLink: PropTypes.string,
+  showViewAllLink: PropTypes.bool,
   viewAllText: PropTypes.string,
+  showNavigation: PropTypes.bool,
+  sliderSectionStyles: PropTypes.string, // Add propType for custom styles
+  gridSectionStyles: PropTypes.string, // Add propType for compatibility
 };
 
 export default ProductSlider;

@@ -250,16 +250,20 @@ export const getCatalogItemsByCategory = async (sectionId, params = {}) => {
  */
 export const getBrands = async (params = {}) => {
   try {
-    // Set defaults for common parameters, ensuring correct iblock_id for brands
     const queryParams = {
-      iblock_id: BRANDS_IBLOCK_ID,
-      with_product_count: params.with_product_count || 'Y',
+      action: 'brands',
+      iblock_id: CATALOG_IBLOCK_ID, // 21
+      brands_iblock_id: BRANDS_IBLOCK_ID, // 22
+      with_products_count: params.with_products_count || 'Y',
       ...params,
     };
     
-    const response = await bitrixApi.get('/brands', { params: queryParams });
+    console.log('🏷️ [API] Getting brands with params:', queryParams);
+    const response = await bitrixApi.get('/catalog', { params: queryParams });
+    console.log('✅ [API] Brands retrieved successfully:', response.data);
     return response.data;
   } catch (error) {
+    console.error('❌ [API] Failed to get brands:', error);
     return handleApiError(error, 'getBrands');
   }
 };
@@ -286,6 +290,113 @@ export const getBrandWithProducts = async (brandName, params = {}) => {
     return response.data;
   } catch (error) {
     return handleApiError(error, 'getBrandWithProducts');
+  }
+};
+
+/**
+ * Get catalog items for a specific brand using brand_id
+ * @param {number|string} brandId - Brand ID (required)
+ * @param {Object} params - Additional query parameters
+ * @param {number} [params.limit] - Limit results (default: 12)
+ * @param {number} [params.page] - Page number (default: 1)
+ * @param {string} [params.sort] - Sorting (e.g. "date_create:desc")
+ * @param {string} [params.include_subbrands] - Include first-level subbrands ("Y"/"N")
+ * @param {string} [params.deep_subbrands] - Deep search through all subbrands ("Y"/"N")
+ * @param {number|string} [params.section_id] - Filter by section (can combine with brand)
+ * @param {string} [params.include_subsections] - Include subsections when filtering by section ("Y"/"N")
+ * @returns {Promise<Object>} Catalog items data or error object
+ */
+export const getCatalogItemsByBrand = async (brandId, params = {}) => {
+  try {
+    if (!brandId) throw new Error('Brand ID is required');
+    
+    const queryParams = {
+      iblock_id: CATALOG_IBLOCK_ID,
+      brand_id: brandId,
+      limit: params.limit || 12,
+      page: params.page || 1,
+      sort: params.sort || 'date_create:desc',
+      ...params,
+    };
+    
+    console.log('🏷️ [API] Getting catalog items by brand:', { brandId, params: queryParams });
+    const response = await bitrixApi.get('/catalog', { params: queryParams });
+    console.log('✅ [API] Brand catalog items retrieved successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ [API] Failed to get catalog items by brand:', error);
+    return handleApiError(error, 'getCatalogItemsByBrand');
+  }
+};
+
+/**
+ * Get brand details by code (uses search to find exact match)
+ * @param {string} brandCode - Brand code (required)
+ * @param {Object} params - Additional query parameters
+ * @returns {Promise<Object>} Brand data or error object
+ */
+export const getBrandByCode = async (brandCode, params = {}) => {
+  try {
+    if (!brandCode) throw new Error('Brand code is required');
+    
+    console.log('🏷️ [API] Getting brand by code:', brandCode);
+    
+    // Strategy 1: Try with search parameter first
+    let brandsResponse = await getBrands({ 
+      search: brandCode, 
+      limit: 50,
+      ...params 
+    });
+    
+    // Find exact code match (case-insensitive)
+    let exactMatch = null;
+    if (!brandsResponse.error && brandsResponse.data?.length) {
+      exactMatch = brandsResponse.data.find(brand => 
+        brand.code && brand.code.toLowerCase() === brandCode.toLowerCase()
+      );
+    }
+    
+    // Strategy 2: If not found with search, get all brands and search manually
+    if (!exactMatch) {
+      console.log('🔍 [API] Brand not found with search, trying to get all brands...');
+      brandsResponse = await getBrands({ 
+        limit: 200, // Get more brands
+        ...params 
+      });
+      
+      if (!brandsResponse.error && brandsResponse.data?.length) {
+        exactMatch = brandsResponse.data.find(brand => 
+          brand.code && brand.code.toLowerCase() === brandCode.toLowerCase()
+        );
+      }
+    }
+    
+    // Strategy 3: Try with name search if code search failed
+    if (!exactMatch) {
+      console.log('🔍 [API] Brand not found by code, trying name search...');
+      brandsResponse = await getBrands({ 
+        search: brandCode.replace(/-/g, ' '), // Replace dashes with spaces
+        limit: 50,
+        ...params 
+      });
+      
+      if (!brandsResponse.error && brandsResponse.data?.length) {
+        exactMatch = brandsResponse.data.find(brand => 
+          (brand.code && brand.code.toLowerCase() === brandCode.toLowerCase()) ||
+          (brand.name && brand.name.toLowerCase().replace(/\s+/g, '-') === brandCode.toLowerCase())
+        );
+      }
+    }
+    
+    if (!exactMatch) {
+      throw new Error(`Brand with code "${brandCode}" not found`);
+    }
+    
+    console.log('✅ [API] Brand found by code:', exactMatch);
+    return exactMatch;
+  } catch (error) {
+    console.error('❌ [API] Failed to get brand by code:', error);
+    return handleApiError(error, 'getBrandByCode');
   }
 };
 
@@ -535,29 +646,123 @@ export const checkStock = async (stockData) => {
 /**
  * Create order from current basket
  * @param {Object} orderData - Order data
- * @param {string} orderData.name - Customer name (required)
- * @param {string} orderData.phone - Customer phone (required)
- * @param {string} orderData.email - Customer email (required)
- * @param {string} [orderData.surname] - Customer surname
- * @param {string} [orderData.patronymic] - Customer patronymic
+ * @param {string|number} orderData.fuser_id - Basket user identifier (required)
+ * @param {string} orderData.customer_name - Customer name (required)
+ * @param {string} orderData.customer_lastname - Customer lastname (required)
+ * @param {string} orderData.customer_phone - Customer phone (required)
+ * @param {string} orderData.customer_email - Customer email (required)
+ * @param {string} [orderData.customer_middlename] - Customer middlename
+ * @param {string} orderData.cdek_code - CDEK pickup point code (required)
+ * @param {string} orderData.delivery_address - Delivery address (required)
+ * @param {number} [orderData.payment_system_id] - Payment system ID (default: 3 - Robokassa)
  * @param {string} [orderData.comment] - Order comment
- * @param {number|string} [orderData.payment_method] - Payment method ID
- * @param {number|string} [orderData.delivery_method] - Delivery method ID
- * @param {string} [orderData.delivery_address] - Delivery address
+ * @param {string} [orderData.clear_basket] - Clear basket after order (Y/N, default: Y)
  * @returns {Promise<Object>} Order creation result or error object
  */
 export const createOrder = async (orderData) => {
   try {
     // Validate required fields
-    if (!orderData.name) throw new Error('Customer name is required');
-    if (!orderData.phone) throw new Error('Customer phone is required');
-    if (!orderData.email) throw new Error('Customer email is required');
+    if (!orderData.fuser_id) throw new Error('fuser_id is required');
+    if (!orderData.customer_name) throw new Error('Customer name is required');
+    if (!orderData.customer_lastname) throw new Error('Customer lastname is required');
+    if (!orderData.customer_phone) throw new Error('Customer phone is required');
+    if (!orderData.customer_email) throw new Error('Customer email is required');
+    if (!orderData.cdek_code) throw new Error('CDEK code is required');
+    if (!orderData.delivery_address) throw new Error('Delivery address is required');
     
-    const response = await bitrixApi.post('/order_create', orderData);
+    const response = await bitrixApi.post('/order', orderData);
     console.log('Order created:', response.data);
     return response.data;
   } catch (error) {
     return handleApiError(error, 'createOrder');
+  }
+};
+
+/**
+ * Get order status
+ * @param {number|string} orderId - Order ID (required)
+ * @returns {Promise<Object>} Order status data or error object
+ */
+export const getOrderStatus = async (orderId) => {
+  try {
+    if (!orderId) throw new Error('Order ID is required');
+    
+    // Используем прямой запрос к удаленному API для заказов
+    const directApiUrl = `${API_BASE_URL}/order?action=get_status&order_id=${orderId}`;
+    console.log('Making direct API call to:', directApiUrl);
+    
+    const response = await fetch(directApiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      mode: 'cors', // Explicitly set CORS mode
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API response error:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, response: ${errorText.substring(0, 200)}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Non-JSON response received:', text.substring(0, 500));
+      throw new Error(`Expected JSON response but got ${contentType}. Response: ${text.substring(0, 200)}`);
+    }
+    
+    const data = await response.json();
+    console.log('Order status retrieved:', data);
+    return data;
+  } catch (error) {
+    console.error('Error getting order status:', error);
+    return handleApiError(error, 'getOrderStatus');
+  }
+};
+
+/**
+ * Get payment form for order
+ * @param {number|string} orderId - Order ID (required)
+ * @returns {Promise<Object>} Payment form data or error object
+ */
+export const getPaymentForm = async (orderId) => {
+  try {
+    if (!orderId) throw new Error('Order ID is required');
+    
+    // Используем прямой запрос к удаленному API для заказов
+    const directApiUrl = `${API_BASE_URL}/order?action=get_payment_form&order_id=${orderId}`;
+    console.log('Making direct API call to:', directApiUrl);
+    
+    const response = await fetch(directApiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      mode: 'cors', // Explicitly set CORS mode
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API response error:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, response: ${errorText.substring(0, 200)}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Non-JSON response received:', text.substring(0, 500));
+      throw new Error(`Expected JSON response but got ${contentType}. Response: ${text.substring(0, 200)}`);
+    }
+    
+    const data = await response.json();
+    console.log('Payment form retrieved:', data);
+    return data;
+  } catch (error) {
+    console.error('Error getting payment form:', error);
+    return handleApiError(error, 'getPaymentForm');
   }
 };
 
@@ -846,6 +1051,8 @@ export default {
   getCatalogSectionById,
   getBrands,
   getBrandWithProducts,
+  getCatalogItemsByBrand,
+  getBrandByCode,
   getAboutSliderData,
   buildCatalogFilterParams,
   // New category-related methods
@@ -860,7 +1067,10 @@ export default {
   removeFromBasket,
   clearBasket,
   checkStock,
+  // Order API methods
   createOrder,
+  getOrderStatus,
+  getPaymentForm,
   getCatalogItemsBySubCategoryCode,
   // Forms API methods
   submitForm,

@@ -4,17 +4,20 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import { dehydrate, QueryClient } from 'react-query';
-import { mockCategories, mockNewArrivals, mockBrands, mockBestsellers } from '../../lib/mockData';
+import { getBrands } from '../../lib/api/bitrix';
+import { transformBrands } from '../../lib/api/transformers';
 
-import { catalogApi } from '../../lib/api';
+
 import { loadBitrixCore } from '../../lib/auth';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import CategoryCard from '../../components/CategoryCard';
 import ProductCard from '../../components/ProductCard';
+import Pagination from '../../components/Pagination';
 import SubscriptionForm from '../../components/SubscriptionForm';
 import ResponsiveProductSection from '../../components/ResponsiveProductSection';
+import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { SIZES, COLORS, mediaQueries } from '../../styles/tokens';
 import productGridStyles from '../../styles/ProductGridResponsive.module.css';
 
@@ -315,52 +318,64 @@ const LoadingState = styled.div`
   color: #666;
 `;
 
-const mockRecentlyViewedProducts = [
-  // Populate with product data similar to ProductGrid's expected format
-  {
-    id: 'rv1',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv1',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv2',
-    imageUrl: '/images/new-products/aim2.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv2',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv3',
-    imageUrl: '/images/new-products/aim3.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv3',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv4',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv4',
-    CATALOG_AVAILABLE: 'Y'
-  },
-];
+// Mock data removed - now using real recently viewed data from useRecentlyViewed hook
 
 /**
  * Страница брендов по дизайну из Figma
  */
-const BrandsPage = ({ seo }) => {
+const BrandsPage = ({ seo, initialBrands }) => {
   // Получаем query-параметры из URL
   const router = useRouter();
+  const { page = 1 } = router.query;
+  const currentPage = parseInt(page, 10) || 1;
+  const BRANDS_PER_PAGE = 12;
+
+  // Recently viewed products hook
+  const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
+
+  // First, try to get brands with pagination
+  const { data: brandsData, isLoading: brandsLoading, isError: brandsIsError } = useQuery(
+    ['allBrands', currentPage],
+    () => {
+      console.log('🏷️ [BrandsPage] Fetching brands for page:', currentPage, 'with limit:', BRANDS_PER_PAGE);
+      return getBrands({ 
+        limit: BRANDS_PER_PAGE,
+        page: currentPage,
+        with_products_count: 'Y',
+        image_resize: '150x150',
+        with_products: 'Y'
+      });
+    },
+    {
+      initialData: (currentPage === 1 && initialBrands) ? { data: initialBrands } : undefined,
+      keepPreviousData: true, // Keep previous data while loading new page
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      onSuccess: (data) => {
+        console.log('🏷️ [BrandsPage] Brands data received for page', currentPage, ':', data);
+      },
+      onError: (error) => {
+        console.error('🏷️ [BrandsPage] Error fetching brands for page', currentPage, ':', error);
+      }
+    }
+  );
+
+  // Fallback: if pagination doesn't work, get all brands for client-side pagination
+  const { data: allBrandsData } = useQuery(
+    ['allBrands', 'all'],
+    () => {
+      console.log('🏷️ [BrandsPage] Fetching ALL brands for client-side pagination');
+      return getBrands({ 
+        limit: 200, // Get many brands
+        with_products_count: 'Y',
+        image_resize: '150x150',
+        with_products: 'Y'
+      });
+    },
+    {
+      enabled: brandsData && !brandsData.meta?.total_pages, // Only if main query doesn't support pagination
+      staleTime: 10 * 60 * 1000, // 10 minutes
+    }
+  );
 
   // Form inputs state
   const [formInputs, setFormInputs] = useState({
@@ -391,25 +406,88 @@ const BrandsPage = ({ seo }) => {
     { href: '/brands', label: 'Бренды' }
   ];
   
-  // Массив брендов для отображения
-  const brands = mockBrands;
+  // Prepare brands for display using real API data
+  const { brands, isClientPagination } = React.useMemo(() => {
+    let dataToUse = [];
+    
+    // Use allBrandsData for client pagination if available
+    if (allBrandsData?.data && (!brandsData?.meta?.total_pages)) {
+      dataToUse = allBrandsData.data;
+      console.log('🏷️ [BrandsPage] Using allBrandsData for client pagination');
+    } else if (!brandsIsError && brandsData?.data) {
+      dataToUse = brandsData.data;
+    } else if (Array.isArray(initialBrands) && initialBrands.length > 0) {
+      dataToUse = initialBrands;
+    }
+    
+    const transformedBrands = transformBrands(Array.isArray(dataToUse) ? dataToUse : []);
+    
+    console.log('🏷️ [BrandsPage] Raw dataToUse:', dataToUse);
+    console.log('🏷️ [BrandsPage] Transformed brands count:', transformedBrands.length);
+    console.log('🏷️ [BrandsPage] Current page:', currentPage);
+    
+    const brandsWithStyles = transformedBrands.map(brand => ({
+      ...brand,
+      disableRotation: true,
+      rotation: 0 // Убираем случайный поворот
+    }));
+    
+    // Check if we need client-side pagination (if API doesn't provide meta or always returns all brands)
+    const hasServerPagination = brandsData?.meta?.total_pages && brandsData.meta.total_pages > 1;
+    const needsClientPagination = !hasServerPagination && brandsWithStyles.length > BRANDS_PER_PAGE;
+    
+    if (needsClientPagination) {
+      console.log('🏷️ [BrandsPage] Using client-side pagination');
+      const startIndex = (currentPage - 1) * BRANDS_PER_PAGE;
+      const endIndex = startIndex + BRANDS_PER_PAGE;
+      return {
+        brands: brandsWithStyles.slice(startIndex, endIndex),
+        isClientPagination: true
+      };
+    }
+    
+    return {
+      brands: brandsWithStyles,
+      isClientPagination: false
+    };
+  }, [brandsData, allBrandsData, brandsIsError, initialBrands, currentPage, BRANDS_PER_PAGE]);
 
-  // Недавно просмотренные товары
-  const recentlyViewed = mockRecentlyViewedProducts;
+  // Pagination logic (after brands is defined)
+  const totalPages = React.useMemo(() => {
+    if (isClientPagination) {
+      // For client pagination, calculate based on all transformed brands
+      const dataForCount = allBrandsData?.data || brandsData?.data;
+      const allBrandsCount = dataForCount ? transformBrands(dataForCount).length : 0;
+      return Math.ceil(allBrandsCount / BRANDS_PER_PAGE) || 1;
+    }
+    return brandsData?.meta?.total_pages || Math.ceil((brands.length || 0) / BRANDS_PER_PAGE) || 1;
+  }, [brandsData, allBrandsData, brands.length, isClientPagination, BRANDS_PER_PAGE]);
+  
+  const totalBrands = React.useMemo(() => {
+    if (isClientPagination) {
+      // For client pagination, count all transformed brands
+      const dataForCount = allBrandsData?.data || brandsData?.data;
+      return dataForCount ? transformBrands(dataForCount).length : 0;
+    }
+    return brandsData?.meta?.total_count || brands.length || 0;
+  }, [brandsData, allBrandsData, brands.length, isClientPagination]);
+  
+  // Debug pagination
+  console.log('🏷️ [BrandsPage] Pagination debug:', {
+    currentPage,
+    totalPages,
+    totalBrands,
+    brandsLength: brands.length,
+    isClientPagination,
+    meta: brandsData?.meta
+  });
 
-  // Placeholder add to cart handler
-  const handleAddToCartRecentlyViewed = (productId) => {
-    console.log(`Adding product ${productId} to cart (from HomePage)`);
-    // Add actual cart logic here later
+  const handlePageChange = (newPage) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, page: newPage }
+    });
   };
-
-  const renderRecentlyViewedProductCard = (product) => (
-    <ProductCard 
-      key={product.id} 
-      product={product} // Pass the whole product object
-      onAddToCart={handleAddToCartRecentlyViewed} 
-    />
-  );
 
   return (
     <>
@@ -430,16 +508,46 @@ const BrandsPage = ({ seo }) => {
         <Title>Бренды Shop4Shoot</Title>
         
         {/* Сетка брендов - всегда максимум 4 колонки */}
+        {brandsLoading ? (
+          <CategoriesGrid>
+            {/* Loading skeleton */}
+            {Array.from({ length: 8 }, (_, index) => (
+              <CategoryCard 
+                key={`loading-${index}`}
+                imageUrl="/images/placeholder.png"
+                link="#"
+                disableRotation={true}
+                style={{ opacity: 0.6 }}
+              />
+            ))}
+          </CategoriesGrid>
+        ) : brandsIsError ? (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <p>Ошибка загрузки брендов. Показаны тестовые данные.</p>
+          </div>
+        ) : null}
+        
         <CategoriesGrid>
           {brands.map(brand => (
             <CategoryCard 
               key={brand.id}
               imageUrl={brand.imageUrl} 
               link={brand.link}
-              disableRotation={true}
+              disableRotation={brand.disableRotation}
+              rotation={brand.rotation}
             />
           ))}
         </CategoriesGrid>
+
+        {/* Pagination */}
+        {(totalPages > 1 || totalBrands > BRANDS_PER_PAGE) && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.max(totalPages, Math.ceil(totalBrands / BRANDS_PER_PAGE))}
+            totalItems={totalBrands}
+            onPageChange={handlePageChange}
+          />
+        )}
         
         {/* Недавно просмотренные товары */}
         {/* {recentlyViewed.length > 0 && (
@@ -456,14 +564,19 @@ const BrandsPage = ({ seo }) => {
           </RecentlyViewedSection>
         )} */}
         
-        <ResponsiveProductSection 
-          title="Недавно просмотренные"
-          subtitle=""
-          viewAllLink="/catalog?filter=new"
-          showViewAllLink={false}
-          items={mockRecentlyViewedProducts} // Use 'items' prop name
-          gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;" // Styles for the outer section
-        />
+        {hasRecentlyViewed && (
+          <ResponsiveProductSection 
+            title="Недавно просмотренные"
+            subtitle=""
+            viewAllLink="/catalog?filter=new"
+            showViewAllLink={false}
+            items={recentlyViewed}
+            useSliderOnDesktop={true} // Use slider instead of grid on desktop
+            showNavigationOnDesktop={true} // Show navigation arrows on hover
+            alwaysSlider={true} // Always use slider regardless of screen width
+            gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
+          />
+        )}
 
         <SubscriptionForm />
           {/* Секция подписки */}
@@ -533,13 +646,55 @@ const BrandsPage = ({ seo }) => {
  * Получение данных на сервере для SSR
  */
 export async function getServerSideProps(context) {
-  // Для страницы брендов нет необходимости в загрузке каталога, только SEO
-  // Можно добавить SEO-данные здесь, если нужно
-  return {
-    props: {
-      seo: {},
-    },
-  };
+  const { page = 1 } = context.query;
+  const currentPage = parseInt(page, 10) || 1;
+  const BRANDS_PER_PAGE = 12;
+  
+  const queryClient = new QueryClient();
+  
+  try {
+    // Prefetch brands data for SSR using new API with pagination
+    await queryClient.prefetchQuery(['allBrands', currentPage], () => {
+      console.log('[SSR] Prefetching brands for brands page with new API, page:', currentPage);
+      return getBrands({ 
+        limit: BRANDS_PER_PAGE,
+        page: currentPage,
+        with_products_count: 'Y',
+        image_resize: '150x150',
+        with_products: 'Y'
+      });
+    });
+    
+    const brandsResult = queryClient.getQueryData(['allBrands', currentPage]);
+    console.log('[SSR] Brands prefetched for brands page. Result:', brandsResult ? 'Success' : 'Failed');
+    
+    const initialBrandsVal = (brandsResult && !brandsResult.error && brandsResult.data) ? brandsResult.data : [];
+    
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+        seo: {
+          TITLE: 'Бренды Shop4Shoot - Ведущие производители',
+          DESCRIPTION: 'Широкий выбор брендов в нашем интернет-магазине. Качественная продукция от проверенных производителей.',
+          KEYWORDS: 'бренды, производители, shop4shoot, качество, оригинал'
+        },
+        initialBrands: initialBrandsVal,
+      },
+    };
+  } catch (error) {
+    console.error('[SSR] Error prefetching brands:', error);
+    
+    return {
+      props: {
+        seo: {
+          TITLE: 'Бренды Shop4Shoot',
+          DESCRIPTION: 'Бренды, представленные в нашем интернет-магазине',
+          KEYWORDS: 'бренды, shop4shoot, производители'
+        },
+        initialBrands: [],
+      },
+    };
+  }
 }
 
 export default BrandsPage; 

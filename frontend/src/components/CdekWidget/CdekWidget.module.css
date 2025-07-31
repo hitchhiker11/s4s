@@ -1,17 +1,210 @@
 .widgetContainer {
-  width: 100%; /* Or a specific width like 800px as recommended */
-  min-height: 600px; /* Recommended minimum height */
-  height: 600px; /* Start with a fixed height, can be made responsive */
-  border: 1px solid #eee; /* Optional: to see the widget area */
-  margin: 20px 0; /* Optional: for spacing */
+  background-color: #ffffff;
+  /* border-radius: 8px; */
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  min-height: 150px;
+  font-family: 'Rubik', sans-serif;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Add media queries for responsive adjustments if needed */
-@media (max-width: 835px) {
+.placeholderContainer {
+  border: 2px dashed #d0d0d0;
+  padding: 40px 20px;
+  text-align: center;
+  color: #757575;
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.placeholderText {
+  margin: 5px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.widgetHeader {
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.widgetTitle {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #1C1C1C;
+  margin: 0 0 10px 0;
+  word-break: break-word;
+}
+
+.selectedDeliveryInfo {
+  background-color: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  /* border-radius: 6px; */
+  padding: 12px;
+  margin-top: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+.selectedAddress,
+.selectedPrice {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  color: #1C1C1C;
+  word-break: break-word;
+}
+
+.selectedPrice {
+  margin-bottom: 0;
+  color: #0ea5e9;
+  font-weight: 600;
+}
+
+.widgetContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #E7194A;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.openWidgetButton {
+  background-color: #E7194A; /* fill_XK664J */
+  color: #FCFCFC; /* fill_28CY5Q */
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500; /* style_AFSPBA */
+  font-size: 16px; /* Match Figma */
+  padding: 12px 24px;
+  margin-top: 16px;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: center;
+  /* width: 100%; */
+  transition: background-color 0.2s ease;
+  box-shadow: 4px 4px 0 rgba(182, 182, 182, 1); /* Match Figma shadow */
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+.openWidgetButton:hover {
+  background-color: #c4143f; /* Darker shade for hover */
+}
+
+.openWidgetButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .widgetContainer {
-    /* Adjust width/height for smaller screens if necessary */
-    /* For example, make it full width and adjust height */
-    min-height: 500px;
-    height: auto; /* Or a more suitable height for mobile */
+    padding: 10px 16px;
+    width: 100vw;
+    max-width: 100vw;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+    overflow-x: auto;
   }
+  
+  .widgetTitle {
+    font-size: 16px;
+  }
+  
+  .selectedDeliveryInfo {
+    padding: 10px;
+  }
+  
+  .selectedAddress,
+  .selectedPrice {
+    font-size: 13px;
+  }
+  
+  .openWidgetButton {
+    padding: 10px 10px;
+    font-size: 14px;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .placeholderContainer {
+    padding: 20px 8px;
+    font-size: 14px;
+    width: 100vw;
+    max-width: 100vw;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+  }
+  .widgetHeader,
+  .widgetContent,
+  .loadingContainer {
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+/* Focus styles for accessibility */
+.openWidgetButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(231, 25, 74, 0.3);
 } 

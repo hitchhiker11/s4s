@@ -16,7 +16,9 @@ import Breadcrumbs from '../../../../../components/Breadcrumbs';
 import ProductGrid from '../../../../../components/ProductGrid';
 import Pagination from '../../../../../components/Pagination';
 import SubscriptionForm from '../../../../../components/SubscriptionForm';
+import ResponsiveProductSection from '../../../../../components/ResponsiveProductSection';
 import { useBasket } from '../../../../../hooks/useBasket';
+import { useRecentlyViewed } from '../../../../../hooks/useRecentlyViewed';
 
 // Styles
 import { mediaQueries } from '../../../../../styles/tokens';
@@ -78,6 +80,9 @@ const SubSubCategoryProductsPage = ({ initialCategory, initialSubCategory, initi
   const ITEMS_PER_PAGE = 12;
 
   const { addToBasket } = useBasket({ initialFetch: false, staleTime: 60000 });
+
+  // Recently viewed products hook
+  const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
 
   // Fetch categories
   const { data: categoryData } = useQuery(['category', categoryCode], () => getCategoryByCode(categoryCode, { limit: 1 }), {
@@ -208,6 +213,20 @@ const SubSubCategoryProductsPage = ({ initialCategory, initialSubCategory, initi
           </>
         ) : (
           <EmptyState>В этой категории пока нет товаров.</EmptyState>
+        )}
+
+        {/* Recently Viewed Products Section */}
+        {hasRecentlyViewed && (
+          <ResponsiveProductSection 
+            title="Недавно просмотренные"
+            subtitle=""
+            showViewAllLink={false}
+            items={recentlyViewed}
+            useSliderOnDesktop={true} // Use slider instead of grid on desktop
+            showNavigationOnDesktop={true} // Show navigation arrows on hover
+            alwaysSlider={true} // Always use slider regardless of screen width
+            gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
+          />
         )}
 
         <SubscriptionForm />

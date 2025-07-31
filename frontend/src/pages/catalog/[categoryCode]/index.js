@@ -17,6 +17,7 @@ import CategoryCard from '../../../components/CategoryCard';
 import ResponsiveProductSection from '../../../components/ResponsiveProductSection';
 import SubscriptionForm from '../../../components/SubscriptionForm'; 
 import ProductCard from '../../../components/ProductCard';
+import CategoryGridWrapper from '../../../components/CategoryGridWrapper';
 
 import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens';
 
@@ -50,34 +51,7 @@ const PageTitle = styled.h1`
   }
 `;
 
-// Update the CategoriesGrid for proper mobile layout
-const CategoriesGrid = styled.div`
-  max-width: ${SIZES.containerMaxWidth};
-  display: grid;
-  width: 100%;
-  margin-bottom: 24px;
-  
-  /* Default to 3 columns for mobile layout, matching the screenshot */
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 12px;
-  
-  ${mediaQueries.sm} { 
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  
-  ${mediaQueries.md} { 
-    /* For desktop, use auto-fill for dynamic layout */
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-  }
-  
-  ${mediaQueries.lg} { 
-    column-gap: 23px;
-    row-gap: 23px;
-  }
-`;
+
 
 // Copied RecentlyViewed related styles from /catalog/index.js
 const RecentlyViewedSection = styled.div`
@@ -196,40 +170,9 @@ const mockRecentlyViewedProducts = [
     />
   );
 
-// Create styled wrappers for the special last row cards
-const SingleCardWrapper = styled.div`
-  grid-column: 1 / -1; /* Make it span all 3 columns on mobile */
-  
-  ${mediaQueries.md} {
-    grid-column: auto; /* Reset for desktop */
-  }
-`;
 
-const DoubleCardWrapperFirst = styled.div`
-  grid-column: 1 / 3; /* First card spans 2 columns on mobile */
-  
-  ${mediaQueries.md} {
-    grid-column: auto; /* Reset for desktop */
-  }
-`;
 
-const DoubleCardWrapperSecond = styled.div`
-  grid-column: 3 / 4; /* Second card spans 1 column on mobile */
-  
-  ${mediaQueries.md} {
-    grid-column: auto; /* Reset for desktop */
-  }
-`;
 
-// Специальная карточка "Все товары"
-const AllProductsCard = styled(CategoryCard)`
-  background-color: ${COLORS.primary};
-  
-  h3 {
-    color: ${COLORS.white};
-    font-weight: 700;
-  }
-`;
 
 // Преобразуем данные из API в формат для наших компонентов
 const transformCategory = (apiCategory) => {
@@ -256,78 +199,7 @@ const transformSubcategories = (apiSubcategories, parentCategoryCode) => {
   }));
 };
 
-// Update the CategoryCardWrapper with a version that handles both mobile and desktop
-const CategoryCardWrapper = ({ categories, allProductsCard }) => {
-  // Add "All Products" card at the beginning if provided
-  const allCategories = allProductsCard 
-    ? [allProductsCard, ...categories]
-    : categories;
-    
-  // For mobile layout, we need special handling for the last row
-  const totalCards = allCategories.length;
-  const remainder = totalCards % 3;
-  
-  // If remainder is 1 or 2, we need special handling for the last 1 or 2 cards in mobile view
-  const standardCardsCount = remainder === 0 ? totalCards : totalCards - remainder;
-  const standardCategories = allCategories.slice(0, standardCardsCount);
-  const lastRowCategories = allCategories.slice(standardCardsCount);
 
-  return (
-    <CategoriesGrid>
-      {/* Standard cards render normally in both mobile and desktop */}
-      {standardCategories.map((category, index) => (
-        <CategoryCard 
-          key={category.id}
-          title={category.title || category.name} 
-          imageUrl={category.imageUrl || category.image}
-          link={category.link}
-          additionalStyles={{ 
-            maxWidth: '260px',
-            ...(index === 0 && allProductsCard ? { 
-              backgroundColor: COLORS.primary,
-              color: COLORS.white,
-              fontWeight: 700
-            } : {})
-          }} 
-        />
-      ))}
-
-      {/* For mobile: Special handling for last 1 or 2 cards to match the design */}
-      {lastRowCategories.length === 1 && (
-        <SingleCardWrapper>
-          <CategoryCard 
-            key={lastRowCategories[0].id}
-            title={lastRowCategories[0].title || lastRowCategories[0].name} 
-            imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
-            link={lastRowCategories[0].link}
-            additionalStyles={{ maxWidth: '260px' }} 
-          />
-        </SingleCardWrapper>
-      )}
-      
-      {lastRowCategories.length === 2 && (
-        <>
-          <DoubleCardWrapperFirst>
-            <CategoryCard 
-              key={lastRowCategories[0].id}
-              title={lastRowCategories[0].title || lastRowCategories[0].name}
-              imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
-              link={lastRowCategories[0].link}
-            />
-          </DoubleCardWrapperFirst>
-          <DoubleCardWrapperSecond>
-            <CategoryCard 
-              key={lastRowCategories[1].id}
-              title={lastRowCategories[1].title || lastRowCategories[1].name}
-              imageUrl={lastRowCategories[1].imageUrl || lastRowCategories[1].image}
-              link={lastRowCategories[1].link}
-            />
-          </DoubleCardWrapperSecond>
-        </>
-      )}
-    </CategoriesGrid>
-  );
-};
 
 const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewProducts, seo }) => {
   const router = useRouter();
@@ -487,8 +359,8 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
         {subCategoriesIsLoading ? (
           <LoadingState>Загрузка подкатегорий...</LoadingState>
         ) : subCategories && subCategories.length > 0 ? (
-          // Используем CategoryCardWrapper с форматированными подкатегориями и картой "Все товары"
-          <CategoryCardWrapper 
+          // Используем новый CategoryGridWrapper с форматированными подкатегориями и картой "Все товары"
+          <CategoryGridWrapper 
             categories={subCategories} 
             allProductsCard={allProductsCard}
           />
@@ -507,6 +379,10 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
             showViewAllLink={true}
             items={formattedNewProducts}
             renderItem={renderRecentlyViewedProductCard}
+            useSliderOnDesktop={true} // Use slider instead of grid on desktop
+            showNavigationOnDesktop={true} // Show navigation arrows on hover
+            alwaysSlider={true} // Always use slider regardless of screen width
+
             gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
           />
         ) : (

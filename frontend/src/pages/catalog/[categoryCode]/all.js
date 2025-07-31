@@ -243,6 +243,9 @@ const CategoryAllProductsPage = ({ initialCategory, initialProducts, seo }) => {
           <EmptyState>В этой категории пока нет товаров.</EmptyState>
         )}
 
+        {/* Recently Viewed Products Section */}
+        {/* Add recently viewed section if needed */}
+        
         <SubscriptionForm />
       </Container>
       <Footer />

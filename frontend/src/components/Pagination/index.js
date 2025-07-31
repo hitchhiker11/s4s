@@ -7,8 +7,12 @@ const PaginationContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 40px 0;
+  margin: 20px 0;
   width: 100%;
+  
+  ${mediaQueries.md} {
+    margin: 40px 0;
+  }
 `;
 
 const ButtonsContainer = styled.div`
@@ -16,30 +20,72 @@ const ButtonsContainer = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  padding: 0 8px;
+  overflow-x: auto;
+  gap: 4px;
+  
+  /* Скрываем скроллбар на мобильных */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  
+  ${mediaQueries.sm} {
+    gap: 6px;
+    padding: 0 12px;
+  }
+  
+  ${mediaQueries.md} {
+    margin-bottom: 15px;
+    padding: 0 16px;
+    gap: 8px;
+    overflow-x: visible;
+  }
 `;
 
 const PageButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin: 0 5px;
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  margin: 0;
   background-color: ${props => props.active ? COLORS.primary : 'white'};
   color: ${props => props.active ? 'white' : COLORS.black};
   border: 1px solid ${props => props.active ? COLORS.primary : '#E5E5E5'};
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   opacity: ${props => props.disabled ? 0.5 : 1};
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 500;
   transition: all 0.2s;
+  flex-shrink: 0;
 
   &:hover {
     background-color: ${props => props.active || props.disabled ? '' : '#F5F5F5'};
   }
 
+  ${mediaQueries.sm} {
+    min-width: 36px;
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+    border-radius: 7px;
+  }
+
   ${mediaQueries.md} {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  ${mediaQueries.lg} {
+    min-width: 50px;
     width: 50px;
     height: 50px;
     font-size: 16px;
@@ -48,9 +94,24 @@ const PageButton = styled.button`
 
 const NavigationButton = styled(PageButton)`
   width: auto;
-  padding: 0 15px;
+  min-width: auto;
+  padding: 0 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  
+  ${mediaQueries.sm} {
+    padding: 0 12px;
+    font-size: 12px;
+  }
+  
   ${mediaQueries.md} {
+    padding: 0 15px;
+    font-size: 14px;
+  }
+  
+  ${mediaQueries.lg} {
     padding: 0 20px;
+    font-size: 16px;
   }
 `;
 
@@ -58,15 +119,39 @@ const PageButtonsContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 4px;
+  flex-shrink: 1;
+  min-width: 0;
+  
+  ${mediaQueries.sm} {
+    gap: 6px;
+  }
+  
+  ${mediaQueries.md} {
+    gap: 8px;
+  }
 `;
 
 const PaginationInfo = styled.div`
-  font-size: 14px;
+  font-size: 12px;
   color: ${COLORS.gray700};
-  margin-top: 10px;
+  margin-top: 8px;
   text-align: center;
+  padding: 0 16px;
+  line-height: 1.4;
 
+  ${mediaQueries.sm} {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  
   ${mediaQueries.md} {
+    font-size: 14px;
+    margin-top: 10px;
+    padding: 0;
+  }
+  
+  ${mediaQueries.lg} {
     font-size: 16px;
   }
 `;
@@ -83,26 +168,38 @@ const Pagination = ({ currentPage, totalPages, totalItems, onPageChange }) => {
   // Если страниц меньше 2, не показываем пагинацию
   if (totalPages <= 1) return null;
 
+  // Функция для определения количества отображаемых кнопок в зависимости от ширины экрана
+  const getMaxButtons = () => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      if (width < 576) return 3; // xs - очень маленькие экраны
+      if (width < 768) return 5; // sm - маленькие экраны  
+      return 7; // md и больше - полный набор
+    }
+    return 5; // fallback для SSR
+  };
+
   // Определяем, какие кнопки страниц показывать
-  // Всегда показываем 5 страниц, если доступно
+  const maxButtons = getMaxButtons();
   let pageButtons = [];
   let startPage, endPage;
 
-  if (totalPages <= 5) {
-    // Если страниц 5 или меньше, показываем все
+  if (totalPages <= maxButtons) {
+    // Если страниц меньше или равно максимуму, показываем все
     startPage = 1;
     endPage = totalPages;
   } else {
-    // Если страниц больше 5, показываем группу страниц вокруг текущей
-    if (currentPage <= 3) {
+    // Если страниц больше максимума, показываем группу страниц вокруг текущей
+    const halfButtons = Math.floor(maxButtons / 2);
+    if (currentPage <= halfButtons + 1) {
       startPage = 1;
-      endPage = 5;
-    } else if (currentPage + 2 >= totalPages) {
-      startPage = totalPages - 4;
+      endPage = maxButtons;
+    } else if (currentPage + halfButtons >= totalPages) {
+      startPage = totalPages - maxButtons + 1;
       endPage = totalPages;
     } else {
-      startPage = currentPage - 2;
-      endPage = currentPage + 2;
+      startPage = currentPage - halfButtons;
+      endPage = currentPage + halfButtons;
     }
   }
 

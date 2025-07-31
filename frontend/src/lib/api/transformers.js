@@ -232,9 +232,26 @@ export const transformSection = (apiSection) => {
   const sectionCode = fields.CODE || apiSection.code || '';
   const sectionName = apiSection.name || fields.NAME || 'Unnamed Category';
   
-  // Image handling with local mappings
-  const localImage = categoryImageMap[sectionCode] || categoryImageMap[sectionName];
-  const apiImage = fields.PICTURE || apiSection.picture || null;
+  // Image handling: приоритет новым полям с прямыми ссылками
+  let imageUrl = '/images/categories/placeholder.jpg';
+  
+  // 1. Проверяем новые поля с прямыми ссылками (приоритет)
+  if (fields.PICTURE_SRC || fields.PICTURE_PREVIEW_SRC) {
+    // Используем превью для карточек, оригинал как fallback
+    const directImageUrl = fields.PICTURE_PREVIEW_SRC || fields.PICTURE_SRC;
+    if (directImageUrl) {
+      imageUrl = getFullImageUrl(directImageUrl);
+    }
+  }
+  // 2. Fallback на локальные изображения по коду/названию
+  else if (categoryImageMap[sectionCode] || categoryImageMap[sectionName]) {
+    imageUrl = categoryImageMap[sectionCode] || categoryImageMap[sectionName];
+  }
+  // 3. Fallback на старое поле PICTURE (только если нет прямых ссылок)
+  else if (fields.PICTURE || apiSection.picture) {
+    const pictureId = fields.PICTURE || apiSection.picture;
+    imageUrl = getFullImageUrl(`/upload/${pictureId}`);
+  }
   
   // Construct URL correctly - prefer using symbolic code over ID
   const sectionUrl = fields.SECTION_PAGE_URL || apiSection.section_page_url;
@@ -244,7 +261,8 @@ export const transformSection = (apiSection) => {
     id: String(sectionId), // Ensure ID is string
     name: sectionName,
     code: sectionCode,
-    image: localImage || (apiImage ? `/upload/${apiImage}` : '/images/categories/placeholder.jpg'),
+    image: imageUrl,
+    imageUrl: imageUrl, // Добавляем для совместимости с компонентами
     count: parseInt(apiSection.element_count || fields.ELEMENT_CNT, 10) || 0,
     url: url,
     children: Array.isArray(apiSection.children) 
@@ -266,33 +284,71 @@ export const transformSections = (apiSections = []) => {
 
 /**
  * Transform brand from API format to component format
- * @param {Object} apiBrand - Brand data from the API (structure from /brands endpoint)
+ * @param {Object} apiBrand - Brand data from the new brands API
  * @returns {Object} Transformed brand data for components
  */
 export const transformBrand = (apiBrand) => {
-  if (!apiBrand || typeof apiBrand !== 'object' || !apiBrand.brand) return null;
+  if (!apiBrand || typeof apiBrand !== 'object' || !apiBrand.name) return null;
   
-  const brandName = apiBrand.brand;
-  const brandId = brandName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const {
+    id,
+    name,
+    code,
+    sort,
+    preview_text,
+    detail_text,
+    preview_picture,
+    products_count
+  } = apiBrand;
 
-  // Try to find local image, fallback to API logo, then construct a path, then placeholder
-  const localImage = brandImageMap[brandName];
-  const apiLogo = apiBrand.logo || apiBrand.UF_LOGO; // Assuming API might send `logo` or `UF_LOGO`
-  const constructedImagePath = `/images/brands/${brandId}.png`; // Default assumption for brand image path
+  // Handle new image structure with resized versions
+  let imageUrl = null;
+  if (preview_picture) {
+    // Prefer resized image if available, fallback to original
+    if (preview_picture.resized?.src) {
+      imageUrl = preview_picture.resized.src;
+    } else if (preview_picture.src) {
+      imageUrl = preview_picture.src;
+    }
+    
+    // Ensure full URL
+    if (imageUrl && !imageUrl.startsWith('http')) {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com';
+      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      imageUrl = imageUrl.startsWith('/') ? `${cleanBaseUrl}${imageUrl}` : `${cleanBaseUrl}/${imageUrl}`;
+    }
+  }
+
+  // Use code as slug, fallback to transformed name
+  const slug = code || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9а-яё-]/g, '');
+  
+  // Try to find local image, fallback to API image, then placeholder
+  const localImage = brandImageMap[name];
 
   return {
-    id: brandId,
-    name: brandName,
-    image: localImage || apiLogo || constructedImagePath, // Fallback chain
-    count: parseInt(apiBrand.product_count, 10) || 0,
-    // URL for brands page, assuming a route like /brands/[brandIdOrName]
-    url: `/brands/${brandId}`,
-    description: apiBrand.description || '',
+    id: String(id), // Ensure ID is string
+    name: name,
+    code: code || slug,
+    slug: slug, // For URL generation
+    title: name, // For compatibility with existing components
+    image: localImage || imageUrl || '/images/brands/placeholder.png',
+    imageUrl: localImage || imageUrl || '/images/brands/placeholder.png',
+    url: `/brands/${slug}`,
+    link: `/brands/${slug}`, // For compatibility with existing components
+    previewText: preview_text || '',
+    detailText: detail_text || '',
+    description: preview_text || detail_text || '', // For compatibility
+    productsCount: parseInt(products_count, 10) || 0,
+    count: parseInt(products_count, 10) || 0, // For compatibility
+    sort: parseInt(sort, 10) || 500,
+    showTitle: false, // For compatibility with existing components (brands show logos, not titles)
+    disableRotation: true, // Brands don't need rotation effects
+    rotation: 0, // No rotation for brands
     // Products array from API should already be in catalog item format if fetched with products
     products: Array.isArray(apiBrand.products)
       ? transformCatalogItems(apiBrand.products) 
       : [],
-    raw: apiBrand, // Optionally include raw API brand
+    raw: apiBrand, // Include raw API brand for debugging
   };
 };
 

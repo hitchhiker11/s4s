@@ -22,7 +22,7 @@ const CardWrapper = styled.div`
     border-bottom-color: ${COLORS.gray500};
   }
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     border-right-width: 4px;
     border-bottom-width: 4px;
     
@@ -44,6 +44,11 @@ const ImageLinkWrapper = styled.a`
   overflow: hidden;
 
   ${mediaQueries.md} {
+    aspect-ratio: 4 / 3; /* Slightly shorter on tablet */
+  }
+
+  ${mediaQueries.lg} {
+    aspect-ratio: 1 / 1; /* Back to square on desktop */
     padding: ${SPACING.lg};
   }
 `;
@@ -58,8 +63,7 @@ const CardImageContainer = styled.div`
   inset: 0;
   padding: ${SPACING.xs};
 
-  ${mediaQueries.md} {
-  
+  ${mediaQueries.lg} {
     padding: ${SPACING.lg};
   }
 `;
@@ -81,7 +85,7 @@ const TextContent = styled.div`
   max-width: 100%;
   overflow: hidden; /* Prevent text overflow */
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     padding: ${SPACING.xl} ${SPACING.lg};
   }
 `;
@@ -108,7 +112,7 @@ const Brand = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     font-size: 23.27px;
     margin-bottom: ${SPACING.sm};
   }
@@ -130,7 +134,7 @@ const Name = styled.h3`
   word-wrap: break-word;
   hyphens: auto;
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     font-size: 18px;
     -webkit-line-clamp: 3; /* Allow 3 lines on larger screens */
   }
@@ -148,7 +152,7 @@ const Price = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     font-size: 35px;
   }
 `;
@@ -165,7 +169,7 @@ const Badge = styled.div`
   padding: 4px 8px;
   z-index: 10;
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     font-size: 12px;
     padding: 6px 12px;
   }
@@ -186,7 +190,7 @@ const AddToCartContainer = styled.div`
   width: 100%;
   max-width: 100%;
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     padding: ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   }
 `;
@@ -216,7 +220,7 @@ const ToastContainer = styled.div`
   word-wrap: break-word;
   text-align: center;
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     font-size: 14px;
     padding: ${SPACING.md} 40px ${SPACING.md} ${SPACING.lg};
     max-width: 320px;
@@ -246,7 +250,7 @@ const ToastCloseButton = styled.button`
     border-radius: 2px;
   }
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     top: 8px;
     right: 8px;
     font-size: 16px;
@@ -280,7 +284,7 @@ const AddToCartButton = styled.button`
     cursor: not-allowed;
   }
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     font-size: 14px;
     padding: ${SPACING.sm} 0;
   }
@@ -300,7 +304,7 @@ const LoadingSpinner = styled.div`
     to { transform: rotate(360deg); }
   }
   
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     width: 14px;
     height: 14px;
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+ import React from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Header from '../../components/Header';
@@ -12,6 +12,7 @@ import ToastContainer from '../../components/Toast/ToastContainer';
 import styles from '../../styles/pages/ProductPage.module.css';
 import { useBasket } from '../../hooks/useBasket';
 import { useToast } from '../../hooks/useToast';
+import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { useState } from 'react';
 
 // TODO: Replace with real API call
@@ -30,30 +31,14 @@ const mockProductData = {
   recommended: true,
 };
 
-const mockRecentlyViewed = [
-  {
-    id: 'rv1',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'Бренд',
-    name: 'Недавно просмотренный 1',
-    price: 2100,
-    productLink: '/detail/rv1',
-    CATALOG_AVAILABLE: 'Y',
-  },
-  {
-    id: 'rv2',
-    imageUrl: '/images/new-products/aim2.png',
-    brand: 'Бренд',
-    name: 'Недавно просмотренный 2',
-    price: 2100,
-    productLink: '/detail/rv2',
-    CATALOG_AVAILABLE: 'Y',
-  },
-];
+// Mock data removed - now using real recently viewed data from useRecentlyViewed hook
 
 const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) => {
   const router = useRouter();
   const { productCode } = router.query;
+
+  // Recently viewed products hook
+  const { recentlyViewed, addRecentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
 
   // Basket operations and data
   const {
@@ -81,6 +66,13 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
 
   // Pre-order modal state
   const [isPreOrderModalOpen, setIsPreOrderModalOpen] = React.useState(false);
+
+  // Add current product to recently viewed when component mounts and productData is available
+  React.useEffect(() => {
+    if (productData && productData.id) {
+      addRecentlyViewed(productData);
+    }
+  }, [productData, addRecentlyViewed]);
 
   const handleAddToCart = async (product) => {
     const productId = parseInt(product.productId || product.id || product.ID, 10);
@@ -202,13 +194,18 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
         productArticle={productData.article}
       />
 
-      <ResponsiveProductSection
-        title="Недавно просмотренные"
-        subtitle=""
-        items={mockRecentlyViewed}
-        showViewAllLink={false}
-        renderItem={renderRecentlyViewedCard}
-      />
+      {hasRecentlyViewed && (
+        <ResponsiveProductSection
+          title="Недавно просмотренные"
+          subtitle=""
+          items={recentlyViewed}
+          showViewAllLink={false}
+          renderItem={renderRecentlyViewedCard}
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          alwaysSlider={true} // Always use slider regardless of screen width
+        />
+      )}
       <Footer />
     </>
   );

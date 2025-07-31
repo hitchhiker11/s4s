@@ -239,7 +239,7 @@ const SearchBar = () => {
     } else if (type === 'category') {
       path = `/catalog/${data.slug}`;
     } else if (type === 'product') {
-      path = `/product/${data.slug}`;
+      path = `/detail/${data.slug}`;
     } else if (type === 'search') {
       // This case might be for a "see all results for 'query'" link
       path = `/search?q=${encodeURIComponent(data.query)}`;

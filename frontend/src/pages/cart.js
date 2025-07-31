@@ -13,49 +13,12 @@ import DeliveryInfoForm from '../components/DeliveryInfoForm/DeliveryInfoForm';
 import ToastContainer from '../components/Toast/ToastContainer';
 import { useBasket } from '../hooks/useBasket';
 import { useToast } from '../hooks/useToast';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { getBasketItemImageUrl } from '../lib/imageUtils';
-import { checkStock } from '../lib/api/bitrix';
+import { checkStock, createOrder, getPaymentForm, getOrderStatus } from '../lib/api/bitrix';
 import styles from '../styles/pages/CartPage.module.css';
 
-// Mock data only for recently viewed products
-const mockRecentlyViewedProducts = [
-  {
-    id: 'rv1',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv1',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv2',
-    imageUrl: '/images/new-products/aim2.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv2',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv3',
-    imageUrl: '/images/new-products/aim3.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv3',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv4',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv4',
-    CATALOG_AVAILABLE: 'Y'
-  },
-];
+// Mock data removed - now using real recently viewed data from useRecentlyViewed hook
 
 const breadcrumbItems = [
   { href: '/', label: 'Главная' },
@@ -65,15 +28,82 @@ const breadcrumbItems = [
 const CartPage = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('cart');
-  const [loadingItems, setLoadingItems] = useState(new Set()); // Track which items are loading
   
-  // Toast system
+  // Recently viewed products hook
+  const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
+  
+  // All state declarations first
+  const [loadingItems, setLoadingItems] = useState(new Set()); // Track which items are loading
+  const [cdekDeliveryPrice, setCdekDeliveryPrice] = useState(0); // CDEK delivery price
+  const [selectedDelivery, setSelectedDelivery] = useState(null); // Selected delivery info
+  const [userFormData, setUserFormData] = useState({});
+  
+  // Order state
+  const [orderId, setOrderId] = useState(null);
+  const [orderNumber, setOrderNumber] = useState(null);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [isOrderLoading, setIsOrderLoading] = useState(false);
+  const [isExistingOrder, setIsExistingOrder] = useState(false);
+  const [isOrderStatusLoading, setIsOrderStatusLoading] = useState(false);
+
+  // CDEK Widget state management to persist across tab switches
+  const [cdekWidgetReady, setCdekWidgetReady] = useState(false);
+  const [cdekScriptLoaded, setCdekScriptLoaded] = useState(false);
+  
+  // Toast system - объявляем рано, чтобы использовать в useEffect
   const { 
     toasts, 
     showSuccessToast, 
     showErrorToast, 
     removeToast 
   } = useToast();
+
+  // Check for order_id parameter and handle existing orders
+  const { order_id } = router.query;
+  
+  useEffect(() => {
+    const handleExistingOrder = async () => {
+      if (!router.isReady || !order_id) return;
+      
+      setIsOrderStatusLoading(true);
+      try {
+        console.log('🔍 [Cart] Проверка статуса существующего заказа:', order_id);
+        
+        const orderStatus = await getOrderStatus(order_id);
+        
+        if (orderStatus.success && orderStatus.data) {
+          const { is_paid, order_number } = orderStatus.data;
+          
+          if (is_paid) {
+            // Заказ уже оплачен - редирект на страницу успеха
+            console.log('✅ [Cart] Заказ уже оплачен, редирект на payment-success');
+            router.push(`/payment-success?order_id=${order_id}&order_number=${order_number}`);
+            return;
+          } else {
+            // Заказ не оплачен - показать страницу payment
+            console.log('💳 [Cart] Заказ не оплачен, переход к оплате');
+            setOrderId(order_id);
+            setOrderNumber(order_number);
+            setIsExistingOrder(true);
+            setActiveTab('payment');
+          }
+        } else {
+          // Ошибка получения статуса заказа
+          console.error('❌ [Cart] Ошибка получения статуса заказа:', orderStatus.error);
+          showErrorToast('Заказ не найден или произошла ошибка');
+          router.push('/cart');
+        }
+      } catch (error) {
+        console.error('❌ [Cart] Исключение при проверке статуса заказа:', error);
+        showErrorToast('Ошибка при проверке статуса заказа');
+        router.push('/cart');
+      } finally {
+        setIsOrderStatusLoading(false);
+      }
+    };
+
+    handleExistingOrder();
+  }, [router.isReady, order_id, router, showErrorToast]);
   
   // Ref to track if we've already checked stock for current basket items
   const checkedBasketItemsRef = useRef(new Set());
@@ -89,8 +119,10 @@ const CartPage = () => {
     updateBasketItem,
     removeFromBasket,
     addToBasket,
+    clearBasket,
     refetchBasket,
     isFuserIdInitialized,
+    fuserId,
     checkStock: basketCheckStock
   } = useBasket({
     initialFetch: true,
@@ -233,18 +265,22 @@ const CartPage = () => {
     setActiveTab(tabId);
   };
 
-  // Handle adding products from "Recently Viewed" section
-  const handleAddToCartRecentlyViewed = (product) => {
-    console.log(`Adding recently viewed product to cart from Cart page - ProductCard will handle stock check`);
-    // Note: Stock check is now handled directly in ProductCard component via addToBasketWithStockCheck
-    // This function is kept for backwards compatibility but actual logic is in ProductCard
+  // Handle CDEK delivery price changes
+  // const handleDeliveryPriceChange = (price) => {
+  //   console.log('🚚 [Cart] CDEK delivery price changed:', price);
+  //   setCdekDeliveryPrice(price);
+  // };
+
+  // Handle CDEK delivery selection
+  const handleDeliverySelect = (deliveryData) => {
+    console.log('🚚 [Cart] CDEK delivery selected:', deliveryData);
+    setSelectedDelivery(deliveryData);
   };
 
   const renderRecentlyViewedProductCard = (product) => (
     <ProductCard 
       key={product.id} 
       product={product}
-      onAddToCart={handleAddToCartRecentlyViewed}
     />
   );
 
@@ -306,22 +342,140 @@ const CartPage = () => {
     }
   };
 
-  const handleProceedToCheckout = () => {
+  // Функция для обработки оплаты заказа
+  const handlePayment = async () => {
+    if (!orderId) {
+      showErrorToast('Ошибка: не найден идентификатор заказа');
+      return;
+    }
+    
+    setIsPaymentLoading(true);
+    try {
+      console.log('💳 [Cart] Получение данных для оплаты заказа:', orderId);
+      
+      const paymentResponse = await getPaymentForm(orderId);
+      
+      if (paymentResponse.success && paymentResponse.data) {
+        const { direct_payment_url, payment_form } = paymentResponse.data;
+        
+        // Приоритет у прямой ссылки
+        if (direct_payment_url && direct_payment_url.trim()) {
+          console.log('💳 [Cart] Редирект на прямую ссылку оплаты:', direct_payment_url);
+          window.location.href = direct_payment_url;
+        } else if (payment_form && payment_form.trim()) {
+          console.log('💳 [Cart] Отправка формы оплаты');
+          
+          // Создаем временный контейнер для формы
+          const formContainer = document.createElement('div');
+          formContainer.innerHTML = payment_form.trim();
+          
+          // Ищем форму в HTML
+          const form = formContainer.querySelector('form');
+          if (form) {
+            form.style.display = 'none';
+            document.body.appendChild(formContainer);
+            
+            setTimeout(() => {
+              form.submit();
+              setTimeout(() => {
+                if (document.body.contains(formContainer)) {
+                  document.body.removeChild(formContainer);
+                }
+              }, 1000);
+            }, 100);
+          } else {
+            throw new Error('Не найдена форма оплаты в ответе сервера');
+          }
+        } else {
+          throw new Error('Не получены данные для оплаты');
+        }
+      } else {
+        throw new Error(paymentResponse.error?.message || 'Ошибка при получении данных оплаты');
+      }
+    } catch (error) {
+      console.error('❌ [Cart] Ошибка при переходе к оплате:', error);
+      showErrorToast(error.message || 'Ошибка при переходе к оплате');
+      setIsPaymentLoading(false);
+    }
+  };
+
+  const handleProceedToCheckout = async () => {
     if (activeTab === 'cart') {
       setActiveTab('delivery');
     } else if (activeTab === 'delivery') {
-      // Would validate delivery form data here
-      setActiveTab('payment');
+      // Валидация обязательных полей
+      if (!userFormData.firstName || !userFormData.phoneNumber || !userFormData.email) {
+        showErrorToast('Пожалуйста, заполните обязательные поля: Имя, Телефон, Email');
+        return;
+      }
+      if (!selectedDelivery || (!selectedDelivery.delivery && !selectedDelivery.code)) {
+        showErrorToast('Пожалуйста, выберите пункт выдачи');
+        return;
+      }
+      
+      // Создание заказа
+      setIsOrderLoading(true);
+      try {
+        if (!fuserId) {
+          throw new Error('Не удается получить идентификатор корзины');
+        }
+        
+        const deliveryAddress = `${selectedDelivery.address?.city || ''}, ${selectedDelivery.address?.address || ''}`;
+        
+        const orderData = {
+          fuser_id: fuserId,
+          customer_name: userFormData.firstName,
+          customer_lastname: userFormData.lastName || '',
+          customer_middlename: userFormData.patronymic || '',
+          customer_phone: userFormData.phoneNumber,
+          customer_email: userFormData.email,
+          cdek_code: selectedDelivery.delivery || selectedDelivery.code || '',
+          delivery_address: deliveryAddress,
+          comment: userFormData.comment || ''
+        };
+        
+        console.log('🛒 [Cart] Создание заказа с данными:', orderData);
+        
+        const response = await createOrder(orderData);
+        
+        if (response.success) {
+          setOrderId(response.data.order_id);
+          setOrderNumber(response.data.order_number);
+          showSuccessToast(`Заказ №${response.data.order_number} успешно создан!`);
+          
+          // Очищаем корзину после успешного создания заказа
+          try {
+            await clearBasket(fuserId);
+            console.log('✅ [Cart] Корзина очищена после создания заказа');
+          } catch (clearError) {
+            console.warn('⚠️ [Cart] Не удалось очистить корзину:', clearError);
+            // Не показываем ошибку пользователю, так как заказ уже создан
+          }
+          
+          setActiveTab('payment');
+        } else {
+          throw new Error(response.error?.message || 'Ошибка создания заказа');
+        }
+      } catch (error) {
+        console.error('❌ [Cart] Ошибка создания заказа:', error);
+        showErrorToast(error.message || 'Ошибка при создании заказа');
+      } finally {
+        setIsOrderLoading(false);
+      }
     } else if (activeTab === 'payment') {
-      // Would handle final payment processing here
-      console.log('Finalizing order...');
+      // На шаге payment кнопка будет обрабатываться через handlePayment
+      await handlePayment();
     }
   };
 
   const getButtonText = () => {
     if (activeTab === 'cart') return 'Перейти к оформлению';
-    if (activeTab === 'delivery') return 'Продолжить';
-    if (activeTab === 'payment') return 'Оплатить заказ';
+    if (activeTab === 'delivery') {
+      return isOrderLoading ? 'Создание заказа...' : 'Продолжить';
+    }
+    if (activeTab === 'payment') {
+      return isPaymentLoading ? 'Переход к оплате...' : 'Оплатить заказ';
+    }
     return 'Продолжить';
   };
 
@@ -341,9 +495,9 @@ const CartPage = () => {
 
   // Calculate order summary values
   const subtotal = basketTotalPrice || 0;
-  const shippingCost = basketItems && basketItems.length > 0 ? 650 : 0; // Example shipping cost
+  const shippingCost = 0; // Temporarily set to 0 as per user request
   const packagingCost = 0; // Free packaging
-  const total = subtotal + shippingCost + packagingCost;
+  const total = subtotal + packagingCost; // + shippingCost; // Commented out shipping cost addition
 
   // Format cart items for the CartItem component
   const formattedCartItems = basketItems?.map(item => {
@@ -441,43 +595,122 @@ const CartPage = () => {
             <section className={styles.contentSection}>
               {activeTab === 'delivery' && (
                 <>
-                  <DeliveryInfoForm />
+                  <DeliveryInfoForm 
+                    isActiveTab={activeTab === 'delivery'}
+                    // onDeliveryPriceChange={handleDeliveryPriceChange}
+                    onDeliverySelect={handleDeliverySelect}
+                    onUserDataChange={setUserFormData}
+                    // CDEK Widget state props
+                    cdekWidgetReady={cdekWidgetReady}
+                    setCdekWidgetReady={setCdekWidgetReady}
+                    cdekScriptLoaded={cdekScriptLoaded}
+                    setCdekScriptLoaded={setCdekScriptLoaded}
+                    selectedDelivery={selectedDelivery}
+                    setSelectedDelivery={setSelectedDelivery}
+                  />
                 </>
               )}
               {activeTab === 'payment' && (
                 <>
-                  <h1 className={styles.mainTitle}>Оплата</h1>
-                  <div className={styles.placeholderContent}>
-                    <p>Здесь будет форма для выбора способа оплаты и ввода платежных данных.</p>
-                  </div>
+                  {isOrderStatusLoading ? (
+                    <div className={styles.loaderContainer}>
+                      <p>Загрузка информации о заказе...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className={styles.mainTitle}>Оплата заказа</h1>
+                      {orderId && (
+                        <div className={styles.orderInfo}>
+                          <h2 className={styles.orderInfoTitle}>
+                            {isExistingOrder ? 'Информация о заказе' : 'Ваш заказ сформирован'}
+                          </h2>
+                          <div className={styles.orderDetails}>
+                            <div className={styles.orderInfoRow}>
+                              <span>Номер заказа:</span>
+                              <strong>№{orderNumber || orderId}</strong>
+                            </div>
+                            {!isExistingOrder && (
+                              <>
+                                <div className={styles.orderInfoRow}>
+                                  <span>Получатель:</span>
+                                  <span>{userFormData.firstName} {userFormData.lastName}</span>
+                                </div>
+                                <div className={styles.orderInfoRow}>
+                                  <span>Телефон:</span>
+                                  <span>{userFormData.phoneNumber}</span>
+                                </div>
+                                <div className={styles.orderInfoRow}>
+                                  <span>Email:</span>
+                                  <span>{userFormData.email}</span>
+                                </div>
+                                {selectedDelivery && (
+                                  <div className={styles.orderInfoRow}>
+                                    <span>Пункт выдачи:</span>
+                                    <span>{selectedDelivery.address?.name || 'СДЭК'}, {selectedDelivery.address?.city}, {selectedDelivery.address?.address}</span>
+                                  </div>
+                                )}
+                                {userFormData.comment && (
+                                  <div className={styles.orderInfoRow}>
+                                    <span>Комментарий:</span>
+                                    <span>{userFormData.comment}</span>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                            {isExistingOrder && (
+                              <div className={styles.orderInfoRow}>
+                                <span>Статус:</span>
+                                <span>Ожидает оплаты</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      <div className={styles.paymentInfo}>
+                        <p>После нажатия кнопки "Оплатить заказ" вы будете перенаправлены на безопасную страницу оплаты Робокассы.</p>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </section>
           )}
 
           <aside className={styles.orderDetailsSection}>
-             <OrderSummary
-                subtotal={subtotal}
-                packagingCost={packagingCost}
-                shippingCost={shippingCost}
-                total={total}
-                onCheckout={handleProceedToCheckout}
-                buttonText={getButtonText()}
-                isCheckoutDisabled={activeTab === 'cart' && (!formattedCartItems || formattedCartItems.length === 0)}
-              />
+             {!isOrderStatusLoading && (
+               <OrderSummary
+                  subtotal={subtotal}
+                  packagingCost={packagingCost}
+                  shippingCost={shippingCost}
+                  total={total}
+                  onCheckout={handleProceedToCheckout}
+                  buttonText={getButtonText()}
+                  isCheckoutDisabled={
+                    (activeTab === 'cart' && (!formattedCartItems || formattedCartItems.length === 0)) ||
+                    (activeTab === 'delivery' && isOrderLoading) ||
+                    (activeTab === 'payment' && (isPaymentLoading || isExistingOrder && !orderId))
+                  }
+                  isLoading={isOrderLoading || isPaymentLoading}
+                />
+             )}
           </aside>
         </div>
       </main>
 
       {/* Recently Viewed Products Section */}
-      <ResponsiveProductSection 
-        title="Рекомендуемые"
-        subtitle=""
-        viewAllLink="/catalog?filter=new"
-        items={mockRecentlyViewedProducts}
-        renderItem={renderRecentlyViewedProductCard}
-        onAddToCart={handleAddToCartRecentlyViewed}
-      />
+      {hasRecentlyViewed && (
+        <ResponsiveProductSection 
+          title="Недавно просмотренные"
+          subtitle=""
+          viewAllLink="/catalog"
+          showViewAllLink={false}
+          items={recentlyViewed}
+          renderItem={renderRecentlyViewedProductCard}
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          alwaysSlider={true} // Always use slider regardless of screen width
+        />
+      )}
 
       <Footer />
     </>

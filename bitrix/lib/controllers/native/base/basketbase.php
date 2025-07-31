@@ -1,0 +1,768 @@
+<?php
+namespace Artamonov\Rest\Controllers\Native\Base;
+
+use Bitrix\Main\{Loader, Context, Web\Json, Application};
+use Bitrix\Sale;
+use Bitrix\Currency;
+use CUser;
+use Bitrix\Catalog;
+
+/**
+ * Базовый класс для работы с корзиной неавторизованных пользователей
+ */
+abstract class BasketBase
+{
+    protected ?int $fuserId = null;
+    protected ?int $providedFuserId = null;
+    protected bool $isFuserFromRequest = false;
+    protected string $sessionBasketKey = 'API_BASKET_ITEMS';
+    protected string $siteId;
+    protected ?Sale\Basket $basket = null;
+    protected array $tempUserData = [];
+    protected string $sessionKey = 'TEMP_USER_DATA';
+    protected bool $debugMode = false;
+    protected array $debugLog = [];
+
+    public function __construct()
+    {
+        if (!config()->get('useNativeRoute')) {
+            $this->errorResponse(403, 'Native routes disabled');
+        }
+        
+        $this->loadModules();
+        
+        $this->siteId = Context::getCurrent()->getSite();
+        
+        $this->initializeFuserFromRequest();
+        $this->initializeTempUserData();
+    }
+
+    protected function loadModules(): void
+    {
+        $modules = ['sale', 'catalog', 'iblock'];
+        foreach ($modules as $module) {
+            if (!Loader::includeModule($module)) {
+                $this->errorResponse(500, "Module {$module} not loaded");
+            }
+        }
+    }
+
+    protected function initializeFuserFromRequest(): void
+    {
+        $request = Context::getCurrent()->getRequest();
+        $requestData = [];
+        
+        // Получаем данные из разных источников
+        if ($request->getRequestMethod() === 'GET') {
+            $fuserId = $request->get('fuser_id');
+        } else {
+            $input = file_get_contents('php://input');
+            if ($input) {
+                $data = json_decode($input, true);
+                $fuserId = $data['fuser_id'] ?? null;
+                $requestData = $data;
+            } else {
+                $fuserId = $request->get('fuser_id');
+            }
+        }
+
+        if ($fuserId) {
+            // Ограничиваем FUSER_ID диапазоном MySQL INT (максимум 2147483647)
+            $fuserId = (int)$fuserId;
+            if ($fuserId > 2147483647) {
+                $fuserId = $fuserId % 2147483647; // Приводим к допустимому диапазону
+            }
+            
+            $this->providedFuserId = $fuserId;
+            $this->isFuserFromRequest = true;
+        }
+
+        $this->initializeUserSession();
+    }
+
+    protected function initializeUserSession(): void
+    {
+        global $USER;
+        if (!$USER || !is_object($USER)) {
+            $USER = new CUser();
+        }
+
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        if ($this->providedFuserId) {
+            if ($this->validateAndUseFuser($this->providedFuserId)) {
+                $this->fuserId = $this->providedFuserId;
+            } else {
+                $this->fuserId = $this->createSpecificFuser($this->providedFuserId);
+            }
+        } else {
+            $this->fuserId = $this->getOrCreateAutoFuser();
+        }
+    }
+
+    protected function validateAndUseFuser(int $fuserId): bool
+    {
+        try {
+            // Проверяем существование FUSER
+            $sql = "SELECT ID FROM b_sale_fuser WHERE ID = " . intval($fuserId);
+            $result = \Bitrix\Main\Application::getConnection()->query($sql);
+            $fuserData = $result->fetch();
+            
+            if ($fuserData) {
+                // Обновляем дату последнего обращения
+                $updateSql = "UPDATE b_sale_fuser SET DATE_UPDATE = NOW() WHERE ID = " . intval($fuserId);
+                \Bitrix\Main\Application::getConnection()->query($updateSql);
+                
+                $this->setFuserInSession($fuserId);
+                return true;
+            }
+            
+            return false;
+            
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    protected function createSpecificFuser(int $fuserId): int
+    {
+        try {
+            // Убедимся, что ID не превышает лимиты MySQL
+            if ($fuserId > 2147483647) {
+                $fuserId = $fuserId % 2147483647;
+            }
+            
+            // Прямая вставка в таблицу с конкретным ID
+            $sql = "INSERT INTO b_sale_fuser (ID, DATE_INSERT, DATE_UPDATE) VALUES (" . intval($fuserId) . ", NOW(), NOW())";
+            \Bitrix\Main\Application::getConnection()->query($sql);
+            
+            $this->setFuserInSession($fuserId);
+            return $fuserId;
+            
+        } catch (\Exception $e) {
+            // Если не удалось создать с конкретным ID, создаем автоинкрементный
+            return $this->getOrCreateAutoFuser();
+        }
+    }
+
+    protected function getOrCreateAutoFuser(): int
+    {
+        try {
+            $sql = "INSERT INTO b_sale_fuser (DATE_INSERT, DATE_UPDATE) VALUES (NOW(), NOW())";
+            \Bitrix\Main\Application::getConnection()->query($sql);
+            $fuserId = \Bitrix\Main\Application::getConnection()->getInsertedId();
+            
+            $this->setFuserInSession($fuserId);
+            return $fuserId;
+            
+        } catch (\Exception $e) {
+            $this->errorResponse(500, 'Cannot create FUSER');
+        }
+    }
+
+    protected function setFuserInSession(int $fuserId): void
+    {
+        $_SESSION['SALE_USER_ID'] = $fuserId;
+        $_SESSION['BX_SALE_FUSER'] = $fuserId;
+        $_SESSION['FUSER_ID'] = $fuserId;
+        
+        // Также устанавливаем в глобальные переменные
+        $GLOBALS['SALE_FUSER'] = $fuserId;
+        $GLOBALS['FUSER_ID'] = $fuserId;
+    }
+
+    protected function initializeTempUserData(): void
+    {
+        if (isset($_SESSION[$this->sessionKey])) {
+            $this->tempUserData = $_SESSION[$this->sessionKey];
+        }
+    }
+
+    protected function getBasket(): Sale\Basket
+    {
+        if ($this->basket === null) {
+            try {
+                // Создаем простую корзину - НЕ загружаем в неё элементы через ORM
+                $this->basket = Sale\Basket::create($this->siteId);
+            } catch (\Exception $e) {
+                $this->basket = Sale\Basket::create($this->siteId);
+            }
+        }
+        
+        return $this->basket;
+    }
+
+    protected function loadBasket(): Sale\Basket
+    {
+        return $this->getBasket();
+    }
+
+    protected function getAllBasketItems(): array
+    {
+        $basket = $this->getBasket();
+        $format = Context::getCurrent()->getRequest()->get('format') ?? 'full';
+        
+        $basketData = $this->formatBasket($basket, $format);
+        
+        return $basketData;
+    }
+
+    protected function checkProductAvailability(int $productId, float $quantity): array
+    {
+        $this->addDebugLog('Checking product availability', [
+            'product_id' => $productId,
+            'requested_quantity' => $quantity
+        ]);
+        
+        // Проверяем существование товара
+        $productCheck = \CIBlockElement::GetList(
+            [],
+            ['ID' => $productId, 'ACTIVE' => 'Y'],
+            false,
+            false,
+            ['ID', 'NAME', 'ACTIVE']
+        );
+        
+        if (!($productData = $productCheck->Fetch())) {
+            $this->addDebugLog('Product not found', [
+                'product_id' => $productId
+            ]);
+            return [
+                'available' => false,
+                'error' => 'Товар не найден',
+                'product_id' => $productId
+            ];
+        }
+        
+        // Проверяем наличие на складе
+        $catalogProduct = \CCatalogProduct::GetByID($productId);
+        if (!$catalogProduct) {
+            $this->addDebugLog('Product catalog data not found', [
+                'product_id' => $productId
+            ]);
+            return [
+                'available' => false,
+                'error' => 'Товар не найден в каталоге',
+                'product_id' => $productId
+            ];
+        }
+        
+        $availableQuantity = floatval($catalogProduct['QUANTITY']);
+        $canBuyZero = $catalogProduct['CAN_BUY_ZERO'] === 'Y';
+        $isQuantityTrace = $catalogProduct['QUANTITY_TRACE'] === 'Y';
+        
+        $this->addDebugLog('Product availability data', [
+            'product_id' => $productId,
+            'name' => $productData['NAME'],
+            'available_quantity' => $availableQuantity,
+            'can_buy_zero' => $canBuyZero,
+            'quantity_trace' => $isQuantityTrace
+        ]);
+        
+        // Если не ведется количественный учет или можно покупать при отсутствии
+        if (!$isQuantityTrace || $canBuyZero) {
+            return [
+                'available' => true,
+                'product_id' => $productId,
+                'requested_quantity' => $quantity,
+                'available_quantity' => $isQuantityTrace ? $availableQuantity : null,
+                'can_buy_zero' => $canBuyZero,
+                'quantity_trace' => $isQuantityTrace
+            ];
+        }
+        
+        // Проверяем достаточность товара
+        if ($availableQuantity < $quantity) {
+            $this->addDebugLog('Insufficient stock', [
+                'requested' => $quantity,
+                'available' => $availableQuantity
+            ]);
+            return [
+                'available' => false,
+                'error' => 'Недостаточно товара на складе',
+                'product_id' => $productId,
+                'requested_quantity' => $quantity,
+                'available_quantity' => $availableQuantity
+            ];
+        }
+        
+        return [
+            'available' => true,
+            'product_id' => $productId,
+            'requested_quantity' => $quantity,
+            'available_quantity' => $availableQuantity
+        ];
+    }
+
+    protected function addProductToBasket(int $productId, int $quantity, array $properties = []): array
+    {
+        // Проверяем существование товара и наличие на складе
+        $availability = $this->checkProductAvailability($productId, $quantity);
+        if (!$availability['available']) {
+            return [
+                'success' => false,
+                'error' => $availability['error']
+            ];
+        }
+
+        try {
+            // Проверяем, есть ли уже такой товар в корзине через SQL
+            $existingItemSql = "SELECT ID, QUANTITY FROM b_sale_basket WHERE FUSER_ID = " . intval($this->fuserId) . " AND PRODUCT_ID = " . intval($productId) . " AND LID = '" . $this->siteId . "' AND (ORDER_ID IS NULL OR ORDER_ID = 0)";
+            $existingResult = \Bitrix\Main\Application::getConnection()->query($existingItemSql);
+            $existingItem = $existingResult->fetch();
+
+            if ($existingItem) {
+                // Обновляем количество
+                $newQuantity = $existingItem['QUANTITY'] + $quantity;
+                $updateSql = "UPDATE b_sale_basket SET QUANTITY = " . intval($newQuantity) . ", DATE_UPDATE = NOW() WHERE ID = " . intval($existingItem['ID']);
+                \Bitrix\Main\Application::getConnection()->query($updateSql);
+                
+                return [
+                    'success' => true,
+                    'message' => 'Количество товара увеличено',
+                    'basket_item_id' => $existingItem['ID'],
+                    'action' => 'updated'
+                ];
+            } else {
+                // Получаем данные товара
+                $productElement = \CIBlockElement::GetList(
+                    [],
+                    ['ID' => $productId],
+                    false,
+                    false,
+                    ['ID', 'NAME', 'IBLOCK_ID']
+                )->Fetch();
+                
+                if (!$productElement) {
+                    return [
+                        'success' => false,
+                        'error' => 'Не удалось получить данные товара'
+                    ];
+                }
+                
+                // Получаем цену товара
+                $priceData = \CPrice::GetList(
+                    [],
+                    [
+                        'PRODUCT_ID' => $productId,
+                        'CATALOG_GROUP_ID' => 1 // BASE price
+                    ]
+                )->Fetch();
+                
+                if (!$priceData) {
+                    return [
+                        'success' => false,
+                        'error' => 'Цена товара не найдена'
+                    ];
+                }
+
+                // Создаем элемент корзины напрямую в базе данных через SQL
+                $insertSql = "INSERT INTO b_sale_basket (
+                    FUSER_ID, PRODUCT_ID, PRODUCT_PRICE_ID, PRICE, CURRENCY, QUANTITY, 
+                    LID, NAME, PRODUCT_PROVIDER_CLASS, MODULE, DATE_INSERT, DATE_UPDATE,
+                    WEIGHT, MEASURE_CODE, MEASURE_NAME, SORT, SUBSCRIBE, BARCODE_MULTI,
+                    RESERVED, DELAY, CAN_BUY, CUSTOM_PRICE
+                ) VALUES (
+                    " . intval($this->fuserId) . ",
+                    " . intval($productId) . ",
+                    " . intval($priceData['ID']) . ",
+                    " . floatval($priceData['PRICE']) . ",
+                    '" . ($priceData['CURRENCY'] ?: 'RUB') . "',
+                    " . intval($quantity) . ",
+                    '" . $this->siteId . "',
+                    '" . addslashes($productElement['NAME']) . "',
+                    'CCatalogProductProvider',
+                    'catalog',
+                    NOW(),
+                    NOW(),
+                    0,
+                    796,
+                    'шт',
+                    100,
+                    'Y',
+                    'N',
+                    'N',
+                    'N',
+                    'Y',
+                    'N'
+                )";
+
+                \Bitrix\Main\Application::getConnection()->query($insertSql);
+                $basketItemId = \Bitrix\Main\Application::getConnection()->getInsertedId();
+
+                // Добавляем свойства товара
+                if (!empty($properties)) {
+                    foreach ($properties as $name => $value) {
+                        $propertySql = "INSERT INTO b_sale_basket_props (BASKET_ID, NAME, VALUE, CODE, SORT) VALUES (
+                            " . intval($basketItemId) . ",
+                            '" . addslashes($name) . "',
+                            '" . addslashes($value) . "',
+                            '" . addslashes(strtoupper($name)) . "',
+                            100
+                        )";
+                        \Bitrix\Main\Application::getConnection()->query($propertySql);
+                    }
+                }
+            
+                return [
+                    'success' => true,
+                    'message' => 'Товар добавлен в корзину',
+                    'basket_item_id' => $basketItemId,
+                    'action' => 'added'
+                ];
+            }
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Ошибка добавления: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    protected function updateBasketItemQuantity(int $basketItemId, float $quantity): array
+    {
+        try {
+            // Проверяем, существует ли элемент в корзине текущего пользователя
+            $itemSql = "SELECT ID, PRODUCT_ID, QUANTITY FROM b_sale_basket WHERE ID = " . intval($basketItemId) . " AND FUSER_ID = " . intval($this->fuserId) . " AND (ORDER_ID IS NULL OR ORDER_ID = 0)";
+            $itemResult = \Bitrix\Main\Application::getConnection()->query($itemSql);
+            $item = $itemResult->fetch();
+            
+            if (!$item) {
+                return [
+                    'success' => false,
+                    'error' => 'Элемент корзины не найден или принадлежит другому пользователю'
+                ];
+            }
+            
+            // Если количество равно 0, удаляем элемент
+            if ($quantity <= 0) {
+                return $this->removeProductFromBasket($basketItemId);
+            }
+            
+            // Проверяем доступность товара
+            $availability = $this->checkProductAvailability($item['PRODUCT_ID'], $quantity);
+            if (!$availability['available']) {
+                return [
+                    'success' => false,
+                    'error' => $availability['error']
+                ];
+            }
+            
+            // Обновляем количество
+            $updateSql = "UPDATE b_sale_basket SET QUANTITY = " . floatval($quantity) . ", DATE_UPDATE = NOW() WHERE ID = " . intval($basketItemId);
+            \Bitrix\Main\Application::getConnection()->query($updateSql);
+            
+            return [
+                'success' => true,
+                'basket_item_id' => $basketItemId,
+                'product_id' => $item['PRODUCT_ID'],
+                'old_quantity' => $item['QUANTITY'],
+                'new_quantity' => $quantity
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Ошибка обновления: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    protected function removeProductFromBasket(int $basketItemId): array
+    {
+        try {
+            // Проверяем, существует ли элемент в корзине текущего пользователя
+            $itemSql = "SELECT ID, PRODUCT_ID FROM b_sale_basket WHERE ID = " . intval($basketItemId) . " AND FUSER_ID = " . intval($this->fuserId) . " AND (ORDER_ID IS NULL OR ORDER_ID = 0)";
+            $itemResult = \Bitrix\Main\Application::getConnection()->query($itemSql);
+            $item = $itemResult->fetch();
+            
+            if (!$item) {
+                return [
+                    'success' => false,
+                    'error' => 'Элемент корзины не найден или принадлежит другому пользователю'
+                ];
+            }
+            
+            // Удаляем свойства элемента
+            $propsSql = "DELETE FROM b_sale_basket_props WHERE BASKET_ID = " . intval($basketItemId);
+            \Bitrix\Main\Application::getConnection()->query($propsSql);
+            
+            // Удаляем элемент корзины
+            $deleteSql = "DELETE FROM b_sale_basket WHERE ID = " . intval($basketItemId);
+            \Bitrix\Main\Application::getConnection()->query($deleteSql);
+            
+            return [
+                'success' => true,
+                'basket_item_id' => $basketItemId,
+                'product_id' => $item['PRODUCT_ID']
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Ошибка удаления: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    protected function clearBasket(): array
+    {
+        try {
+            // Удаляем все свойства элементов корзины
+            $basketItemsSql = "SELECT ID FROM b_sale_basket WHERE FUSER_ID = " . intval($this->fuserId) . " AND (ORDER_ID IS NULL OR ORDER_ID = 0)";
+            $basketItemsResult = \Bitrix\Main\Application::getConnection()->query($basketItemsSql);
+            
+            $itemIds = [];
+            while ($item = $basketItemsResult->fetch()) {
+                $itemIds[] = $item['ID'];
+            }
+            
+            if (!empty($itemIds)) {
+                $propsSql = "DELETE FROM b_sale_basket_props WHERE BASKET_ID IN (" . implode(',', $itemIds) . ")";
+                \Bitrix\Main\Application::getConnection()->query($propsSql);
+            }
+            
+            // Удаляем все элементы корзины
+            $deleteSql = "DELETE FROM b_sale_basket WHERE FUSER_ID = " . intval($this->fuserId) . " AND (ORDER_ID IS NULL OR ORDER_ID = 0)";
+            \Bitrix\Main\Application::getConnection()->query($deleteSql);
+            
+            return [
+                'success' => true,
+                'items_removed' => count($itemIds)
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Ошибка очистки корзины: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    protected function formatBasket(Sale\Basket $basket, string $format = 'full'): array
+    {
+        $items = [];
+        $totalPrice = 0;
+        $totalQuantity = 0;
+        $totalWeight = 0;
+        $count = 0;
+
+        // Всегда загружаем данные напрямую из базы, игнорируя ORM корзины
+        $sql = "SELECT * FROM b_sale_basket WHERE FUSER_ID = " . intval($this->fuserId) . " AND LID = '" . $this->siteId . "' AND (ORDER_ID IS NULL OR ORDER_ID = 0)";
+        $result = \Bitrix\Main\Application::getConnection()->query($sql);
+        
+        while ($row = $result->fetch()) {
+            $itemData = [
+                'id' => (int)$row['ID'],
+                'product_id' => (int)$row['PRODUCT_ID'],
+                'name' => $row['NAME'],
+                'price' => (float)$row['PRICE'],
+                'quantity' => (int)$row['QUANTITY'],
+                'sum' => (float)$row['PRICE'] * (int)$row['QUANTITY'],
+                'currency' => $row['CURRENCY'],
+                'weight' => (float)($row['WEIGHT'] ?? 0)
+            ];
+
+            if ($format === 'full') {
+                $itemData['properties'] = $this->getBasketItemPropertiesViaSql($row['ID']);
+                
+                // Получаем дополнительные данные товара включая бренд и правильную detail_page_url
+                $productDetails = $this->getProductDetails($row['PRODUCT_ID']);
+                if ($productDetails) {
+                    $itemData = array_merge($itemData, $productDetails);
+                }
+                
+                // Устанавливаем detail_page_url из БД корзины если нет в productDetails
+                if (empty($itemData['detail_page_url']) && !empty($row['DETAIL_PAGE_URL'])) {
+                    $itemData['detail_page_url'] = $row['DETAIL_PAGE_URL'];
+                }
+                
+                $itemData['product_xml_id'] = $row['PRODUCT_XML_ID'];
+            }
+
+            $items[] = $itemData;
+            $totalPrice += $itemData['sum'];
+            $totalQuantity += $itemData['quantity'];
+            $totalWeight += $itemData['weight'];
+            $count++;
+        }
+
+        return [
+            'items' => $items,
+            'summary' => [
+                'count' => $count,
+                'quantity' => $totalQuantity,
+                'total_price' => $totalPrice,
+                'base_price' => $totalPrice,
+                'weight' => $totalWeight,
+                'currency' => 'RUB',
+                'fuser_id' => $this->fuserId
+            ]
+        ];
+    }
+
+    /**
+     * Получает дополнительные данные товара включая бренд
+     * 
+     * @param int $productId ID товара
+     * @return array|null Массив с данными товара или null если товар не найден
+     */
+    protected function getProductDetails(int $productId): ?array
+    {
+        try {
+            // Получаем основные данные элемента и его свойства
+            $elementResult = \CIBlockElement::GetList(
+                [],
+                ['ID' => $productId],
+                false,
+                false,
+                ['ID', 'IBLOCK_ID', 'NAME', 'PREVIEW_PICTURE', 'DETAIL_PICTURE', 'DETAIL_PAGE_URL', 'CODE']
+            );
+            
+            if (!($element = $elementResult->Fetch())) {
+                return null;
+            }
+            
+            $productDetails = [];
+            
+            // Формируем правильную detail_page_url
+            if (!empty($element['DETAIL_PAGE_URL']) && !empty($element['CODE'])) {
+                // Получаем путь к детальной странице инфоблока
+                $iblockResult = \CIBlock::GetList(
+                    [],
+                    ['ID' => $element['IBLOCK_ID']],
+                    false,
+                    false,
+                    ['DETAIL_PAGE_URL']
+                );
+                
+                if ($iblock = $iblockResult->Fetch()) {
+                    $detailPageUrl = str_replace(
+                        ['#SITE_DIR#', '#ELEMENT_CODE#', '#ELEMENT_ID#'],
+                        ['', $element['CODE'], $element['ID']],
+                        $iblock['DETAIL_PAGE_URL']
+                    );
+                    $productDetails['detail_page_url'] = $detailPageUrl;
+                }
+            }
+            
+            // Добавляем изображение товара
+            $imageId = $element['PREVIEW_PICTURE'] ?: $element['DETAIL_PICTURE'];
+            if ($imageId) {
+                $imageFile = \CFile::GetFileArray($imageId);
+                if ($imageFile) {
+                    $productDetails['image'] = [
+                        'src' => $imageFile['SRC'],
+                        'alt' => $element['NAME']
+                    ];
+                }
+            }
+            
+            // Получаем свойства элемента, особенно бренд
+            $propertiesResult = \CIBlockElement::GetProperty(
+                $element['IBLOCK_ID'],
+                $productId,
+                ['SORT' => 'ASC'],
+                ['CODE' => 'BREND'] // Получаем только свойство BREND
+            );
+            
+            while ($property = $propertiesResult->Fetch()) {
+                if ($property['CODE'] === 'BREND' && !empty($property['VALUE'])) {
+                    $productDetails['brand'] = $property['VALUE'];
+                    break;
+                }
+            }
+            
+            return $productDetails;
+            
+        } catch (\Exception $e) {
+            // В случае ошибки возвращаем null
+            return null;
+        }
+    }
+
+    protected function getBasketItemProperties(int $basketItemId): array
+    {
+        return $this->getBasketItemPropertiesViaSql($basketItemId);
+    }
+
+    protected function getBasketItemPropertiesViaSql(int $basketItemId): array
+    {
+        $properties = [];
+        
+        try {
+            $sql = "SELECT NAME, VALUE, CODE FROM b_sale_basket_props WHERE BASKET_ID = " . intval($basketItemId);
+            $result = \Bitrix\Main\Application::getConnection()->query($sql);
+            
+            while ($row = $result->fetch()) {
+                $properties[] = [
+                    'name' => $row['NAME'],
+                    'value' => $row['VALUE'],
+                    'code' => $row['CODE']
+                ];
+            }
+        } catch (\Exception $e) {
+            // Игнорируем ошибку
+        }
+
+        return $properties;
+    }
+
+    protected function getBasketSummary(): array
+    {
+        $basketData = $this->formatBasket($this->getBasket());
+        return $basketData['summary'];
+    }
+
+    protected function addDebugLog(string $message, array $data = []): void
+    {
+        if ($this->debugMode) {
+            $this->debugLog[] = [
+                'time' => microtime(true),
+                'message' => $message,
+                'data' => $data
+            ];
+        }
+    }
+
+    protected function formatDebugLog(): array
+    {
+        return array_map(function($entry) {
+            return [
+                'time' => date('H:i:s.u', $entry['time']),
+                'message' => $entry['message'],
+                'data' => $entry['data']
+            ];
+        }, $this->debugLog);
+    }
+
+    public function getDebugLog(): array
+    {
+        return $this->formatDebugLog();
+    }
+
+    protected function errorResponse(int $code, string $message): void
+    {
+        http_response_code($code);
+        header('Content-Type: application/json');
+        echo Json::encode([
+            'error' => $message,
+            'debug_log' => $this->formatDebugLog()
+        ]);
+        exit;
+    }
+
+    protected function response(array $data): void
+    {
+        header('Content-Type: application/json');
+        if ($this->debugMode) {
+            $data['debug_log'] = $this->formatDebugLog();
+        }
+        echo Json::encode($data);
+        exit;
+    }
+}
+// End of Selection

@@ -14,8 +14,26 @@ import 'swiper/css/navigation';
 
 const SliderSection = styled.section`
   width: 100%;
-  padding: ${SPACING.lg} 0; /* Adjust padding for mobile */
+  padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   background-color: ${COLORS.white};
+
+  ${mediaQueries.sm} {
+    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
+  }
+
+  ${mediaQueries.md} {
+    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+  }
+
+  ${mediaQueries.lg} {
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+  }
+  
+  /* Show navigation buttons on section hover */
+  &:hover .swiper-button-prev,
+  &:hover .swiper-button-next {
+    opacity: ${props => props.showNavigation ? 1 : 0};
+  }
 `;
 
 const HeaderContainer = styled.div`
@@ -24,11 +42,7 @@ const HeaderContainer = styled.div`
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto ${SPACING.lg};
-  // padding: 0 ${SPACING.md}; /* Add horizontal padding */
-
-  ${mediaQueries.sm} {
-    padding: 0 ${SPACING.lg};
-  }
+  /* No horizontal padding since SliderSection now handles all padding */
 `;
 
 const TitleRow = styled.div`
@@ -37,12 +51,16 @@ const TitleRow = styled.div`
   align-items: center;
   width: 100%;
   border-top: 2px solid ${COLORS.gray400};
-  padding: ${SPACING.sm} ${SPACING.sm};
+  padding: ${SPACING.sm} 0; /* Only vertical padding, horizontal handled by SliderSection */
 
   max-height: 28px;
   ${mediaQueries.sm} {
     max-height: 45px;
-    padding: 0 ${SPACING.lg};
+    padding: ${SPACING.md} 0; /* Only vertical padding */
+  }
+  
+  ${mediaQueries.lg} {
+    border-top: 4px solid ${COLORS.gray400}; /* 4px border for desktop */
   }
 `;
 
@@ -83,13 +101,9 @@ const SwiperContainer = styled.div`
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
   .swiper {
-    // padding-left: ${SPACING.md};
-    // padding-right: ${SPACING.md};
-
-    ${mediaQueries.sm} {
-      padding-left: ${SPACING.lg};
-      padding-right: ${SPACING.lg};
-    }
+    /* No additional padding since SliderSection now handles all padding */
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .swiper-slide {
@@ -99,10 +113,56 @@ const SwiperContainer = styled.div`
     display: flex;
   }
 
-  /* Hide navigation arrows */
+  /* Navigation arrows styling - conditional */
   .swiper-button-prev,
   .swiper-button-next {
-    display: none;
+    display: ${props => props.showNavigation ? 'flex' : 'none'};
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: ${COLORS.white};
+    border: 2px solid ${COLORS.gray300};
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    color: ${COLORS.black};
+
+    &:after {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background: ${COLORS.gray100};
+      border-color: ${COLORS.gray400};
+    }
+  }
+
+  .swiper-button-prev {
+    left: 10px;
+  }
+
+  .swiper-button-next {
+    right: 10px;
+  }
+
+  /* For desktop - uniform width slides for consistency */
+  ${mediaQueries.lg} {
+    .swiper-slide {
+      width: 280px; /* Fixed width for uniformity */
+      min-width: 280px; /* Prevent shrinking */
+      max-width: 280px; /* Consistent maximum */
+      flex-shrink: 0; /* Prevent flex shrinking */
+    }
+  }
+  
+  /* For extra large screens - slightly larger but still uniform */
+  ${mediaQueries.xl} {
+    .swiper-slide {
+      width: 300px;
+      min-width: 300px;
+      max-width: 300px;
+    }
   }
 `;
 
@@ -119,13 +179,14 @@ const CategorySlider = ({
   title = "Categories",
   viewAllLink = "#",
   viewAllText = "Смотреть все",
-  cardStyle
+  cardStyle,
+  showNavigation = false
 }) => {
   const displayCategories = Array.isArray(categories) ? categories : [];
-  const spaceBetweenValue = parseInt(SPACING.sm.replace('px', ''), 10); // Use smaller spacing for mobile
+  const spaceBetweenValue = 12; // Фиксированные отступы между карточками в слайдере // Use smaller spacing for mobile
 
   return (
-    <SliderSection>
+    <SliderSection showNavigation={showNavigation}>
       <HeaderContainer>
         <TitleRow>
           <Title>{title}</Title>
@@ -135,12 +196,12 @@ const CategorySlider = ({
       </HeaderContainer>
 
       {displayCategories.length > 0 ? (
-        <SwiperContainer>
+        <SwiperContainer showNavigation={showNavigation}>
           <Swiper
             modules={[Navigation]}
             spaceBetween={spaceBetweenValue} // Use dynamic smaller gap
             slidesPerView={'auto'} // Let CSS width/max-width control sizing
-            navigation
+            navigation={showNavigation}
             grabCursor={true}
           >
             {displayCategories.map((category) => (
@@ -176,6 +237,7 @@ CategorySlider.propTypes = {
   viewAllLink: PropTypes.string,
   viewAllText: PropTypes.string,
   cardStyle: PropTypes.object,
+  showNavigation: PropTypes.bool,
 };
 
 export default CategorySlider; 

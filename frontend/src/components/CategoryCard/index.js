@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
+import Link from 'next/link';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
 const CardLink = styled.a`
@@ -23,7 +24,7 @@ const CardLink = styled.a`
     border-bottom-color: ${COLORS.gray500};
   }
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     /* Унификация размеров карточек на десктопе */
     width: 100%; /* Fill parent width */
     height: 300px;
@@ -116,22 +117,24 @@ const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation,
   }, [rotation, showTitle, disableRotation]);
 
   return (
-    <CardLink href={link} additionalStyles={additionalStyles}>
-      {showTitle && <CardTitle>{title}</CardTitle>}
-      <CardImageContainer showTitle={showTitle} isBrandLogo={isBrandLogo}>
-        {imageUrl ? (
-          <CardImage
-            src={imageUrl}
-            alt={title}
-            isBrandLogo={isBrandLogo}
-            $rotation={imageRotation}
-          />
-        ) : (
-          // <span>Image Placeholder</span>
-          <span></span>
-        )}
-      </CardImageContainer>
-    </CardLink>
+    <Link href={link} passHref legacyBehavior>
+      <CardLink additionalStyles={additionalStyles}>
+        {showTitle && <CardTitle>{title}</CardTitle>}
+        <CardImageContainer showTitle={showTitle} isBrandLogo={isBrandLogo}>
+          {imageUrl ? (
+            <CardImage
+              src={imageUrl}
+              alt={title}
+              isBrandLogo={isBrandLogo}
+              $rotation={imageRotation}
+            />
+          ) : (
+            // <span>Image Placeholder</span>
+            <span></span>
+          )}
+        </CardImageContainer>
+      </CardLink>
+    </Link>
   );
 };
 

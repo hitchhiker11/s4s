@@ -163,8 +163,8 @@ const Breadcrumbs = ({ items }) => {
               </svg>
             </ChevronSeparator>
             <BreadcrumbItem>
-              <Link href={item.href} passHref>
-                <BreadcrumbTextContainer>
+              <Link href={item.href}>
+                <BreadcrumbTextContainer style={{ cursor: 'pointer' }}>
                   <BreadcrumbText isActive={index === items.length - 1}>{item.label}</BreadcrumbText>
                 </BreadcrumbTextContainer>
               </Link>

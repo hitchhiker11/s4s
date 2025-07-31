@@ -49,11 +49,11 @@ const TitleRow = styled.div`
   ${mediaQueries.sm} {
     border-top-width: 2px;
     padding: ${SPACING.md} 0;
+    max-height: 45px;
   }
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     border-top-width: 4px;
-    max-height: 45px;
   }
 `;
 
@@ -64,7 +64,7 @@ const HeaderDivider = styled.hr`
   width: 100%;
   margin: 0;
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     height: 4px;
   }
 `;

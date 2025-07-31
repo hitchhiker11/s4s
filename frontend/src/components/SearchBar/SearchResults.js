@@ -200,7 +200,7 @@ const SearchResults = ({
               key={`product-${product.id}`} 
               onClick={() => onResultClick('product', product)}
             >
-              <Link href={`/product/${product.slug}`}>
+              <Link href={`/detail/${product.slug}`}>
                 <ProductImage src={product.imageUrl} />
                 <ProductInfo>
                   <ProductBrand>{product.brand}</ProductBrand>

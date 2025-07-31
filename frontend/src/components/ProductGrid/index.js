@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Link from 'next/link';
 import ProductCard from '../ProductCard';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 
@@ -53,11 +54,11 @@ const TitleRow = styled.div`
   ${mediaQueries.sm} {
     border-top-width: 2px;
     padding: ${SPACING.md} 0;
+    max-height: 45px;
   }
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     border-top-width: 4px;
-    max-height: 45px;
   }
 
   ${props => props.customStyles}
@@ -70,7 +71,7 @@ const HeaderDivider = styled.hr`
   width: 100%;
   margin: 0;
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     height: 4px;
   }
 
@@ -253,7 +254,11 @@ const ProductGrid = ({
         {showTitleRow && (
           <TitleRow customStyles={titleRowStyles}>
             <Title useGradient={useGradientTitle} customStyles={titleStyles}>{title}</Title>
-            {showViewAllLink && viewAllLink && <ViewAllLink href={viewAllLink} customStyles={viewAllLinkStyles}>{viewAllText}</ViewAllLink>}
+            {showViewAllLink && viewAllLink && (
+              <Link href={viewAllLink} passHref legacyBehavior>
+                <ViewAllLink customStyles={viewAllLinkStyles}>{viewAllText}</ViewAllLink>
+              </Link>
+            )}
           </TitleRow>
         )}
         {subtitle && (

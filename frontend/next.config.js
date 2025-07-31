@@ -11,8 +11,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_BITRIX_URL: "https://shop4shoot.com/api",
     NEXT_PUBLIC_CATALOG_IBLOCK_ID: "21",
-    NEXT_PUBLIC_BRANDS_IBLOCK_ID: "22",
-    NEXT_PUBLIC_SLIDER_IBLOCK_ID: "27"
+    NEXT_PUBLIC_BRANDS_IBLOCK_ID: "22", 
+    NEXT_PUBLIC_SLIDER_IBLOCK_ID: "27",
+    NEXT_PUBLIC_YANDEX_MAPS_API_KEY: process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY
   },
   experimental: {
     // skipNodeCompatibilityCheck: true,

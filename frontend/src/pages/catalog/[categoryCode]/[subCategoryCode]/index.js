@@ -16,8 +16,11 @@ import Breadcrumbs from '../../../../components/Breadcrumbs';
 import ProductGrid from '../../../../components/ProductGrid';
 import Pagination from '../../../../components/Pagination';
 import SubscriptionForm from '../../../../components/SubscriptionForm';
+import ResponsiveProductSection from '../../../../components/ResponsiveProductSection';
 import { useBasket } from '../../../../hooks/useBasket';
+import { useRecentlyViewed } from '../../../../hooks/useRecentlyViewed';
 import CategoryCard from '../../../../components/CategoryCard';
+import CategoryGridWrapper from '../../../../components/CategoryGridWrapper';
 
 // Стили
 import { SIZES, COLORS, mediaQueries } from '../../../../styles/tokens';
@@ -72,58 +75,7 @@ const EmptyState = styled.div`
   font-size: 18px;
 `;
 
-// Grid для плиток под-подкатегорий (третий уровень)
-const CategoriesGrid = styled.div`
-  max-width: ${SIZES.containerMaxWidth};
-  display: grid;
-  width: 100%;
-  margin-bottom: 24px;
 
-  /* 3 колонки по умолчанию как на уровне подкатегорий */
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-
-  ${mediaQueries.sm} { 
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  ${mediaQueries.md} { 
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-  }
-
-  ${mediaQueries.lg} {
-    column-gap: 23px;
-    row-gap: 23px;
-  }
-`;
-
-// Обёртки для мобильного отображения последней строки (повтор логики из уровня категорий)
-const SingleCardWrapper = styled.div`
-  grid-column: 1 / -1; /* На мобильных одна карточка на всю ширину */
-
-  ${mediaQueries.md} {
-    grid-column: auto;
-  }
-`;
-
-const DoubleCardWrapperFirst = styled.div`
-  grid-column: 1 / 3; /* Первая карточка занимает две колонки */
-
-  ${mediaQueries.md} {
-    grid-column: auto;
-  }
-`;
-
-const DoubleCardWrapperSecond = styled.div`
-  grid-column: 3 / 4; /* Вторая карточка – одну колонку */
-
-  ${mediaQueries.md} {
-    grid-column: auto;
-  }
-`;
 
 // Трансформация данных из API
 const transformCategory = (apiCategory) => {
@@ -150,73 +102,7 @@ const transformSubcategories = (apiSubcategories, parentCategoryCode, parentSubC
   }));
 };
 
-// Компонент-обёртка карточек с поддержкой последней строки
-const CategoryCardWrapper = ({ categories, allProductsCard }) => {
-  const allCategories = allProductsCard ? [allProductsCard, ...categories] : categories;
 
-  const totalCards = allCategories.length;
-  const remainder = totalCards % 3;
-
-  const standardCardsCount = remainder === 0 ? totalCards : totalCards - remainder;
-  const standardCategories = allCategories.slice(0, standardCardsCount);
-  const lastRowCategories = allCategories.slice(standardCardsCount);
-
-  return (
-    <CategoriesGrid>
-      {/* Стандартные карточки */}
-      {standardCategories.map((category, index) => (
-        <CategoryCard
-          key={category.id}
-          title={category.title || category.name}
-          imageUrl={category.imageUrl || category.image}
-          link={category.link}
-          additionalStyles={{
-            maxWidth: '260px',
-            ...(index === 0 && allProductsCard ? {
-              backgroundColor: COLORS.primary,
-              color: COLORS.white,
-              fontWeight: 700,
-            } : {}),
-          }}
-        />
-      ))}
-
-      {/* Обработка последней строки для 1 или 2 карточек на мобильных */}
-      {lastRowCategories.length === 1 && (
-        <SingleCardWrapper>
-          <CategoryCard
-            key={lastRowCategories[0].id}
-            title={lastRowCategories[0].title || lastRowCategories[0].name}
-            imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
-            link={lastRowCategories[0].link}
-            additionalStyles={{ maxWidth: '260px' }}
-          />
-        </SingleCardWrapper>
-      )}
-
-      {lastRowCategories.length === 2 && (
-        <>
-          <DoubleCardWrapperFirst>
-            <CategoryCard
-              key={lastRowCategories[0].id}
-              title={lastRowCategories[0].title || lastRowCategories[0].name}
-              imageUrl={lastRowCategories[0].imageUrl || lastRowCategories[0].image}
-              link={lastRowCategories[0].link}
-            />
-          </DoubleCardWrapperFirst>
-          <DoubleCardWrapperSecond>
-            <CategoryCard
-              key={lastRowCategories[1].id}
-              title={lastRowCategories[1].title || lastRowCategories[1].name}
-              imageUrl={lastRowCategories[1].imageUrl || lastRowCategories[1].image}
-              link={lastRowCategories[1].link}
-            />
-          </DoubleCardWrapperSecond>
-        </>
-      )}
-    </CategoriesGrid>
-  );
-};
 
 const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialProducts, seo }) => {
   const router = useRouter();
@@ -228,6 +114,9 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     initialFetch: false,
     staleTime: 60000 // 1 minute
   });
+
+  // Recently viewed products hook
+  const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
 
   // Запрос категории по коду
   const { data: categoryData, isError: categoryIsError } = useQuery(
@@ -415,7 +304,7 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
         {subSubCategoriesIsLoading ? (
           <LoadingState>Загрузка подкатегорий...</LoadingState>
         ) : subSubCategories && subSubCategories.length > 0 ? (
-          <CategoryCardWrapper categories={subSubCategories} allProductsCard={allProductsCard} />
+          <CategoryGridWrapper categories={subSubCategories} allProductsCard={allProductsCard} />
         ) : productsIsLoading ? (
           <LoadingState>Загрузка товаров...</LoadingState>
         ) : products && products.length > 0 ? (
@@ -443,6 +332,20 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
           </>
         ) : (
           <EmptyState>В этой категории пока нет товаров.</EmptyState>
+        )}
+
+        {/* Recently Viewed Products Section */}
+        {hasRecentlyViewed && (
+          <ResponsiveProductSection 
+            title="Недавно просмотренные"
+            subtitle=""
+            showViewAllLink={false}
+            items={recentlyViewed}
+            useSliderOnDesktop={true} // Use slider instead of grid on desktop
+            showNavigationOnDesktop={true} // Show navigation arrows on hover
+            alwaysSlider={true} // Always use slider regardless of screen width
+            gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
+          />
         )}
 
         <SubscriptionForm />

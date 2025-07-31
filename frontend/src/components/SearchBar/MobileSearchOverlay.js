@@ -164,7 +164,7 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
     } else if (type === 'category') {
       router.push(`/catalog/${data.slug}`);
     } else if (type === 'product') {
-      router.push(`/product/${data.slug}`);
+      router.push(`/detail/${data.slug}`);
     } else if (type === 'search') {
       router.push(`/search?q=${encodeURIComponent(data.query)}`);
     }
