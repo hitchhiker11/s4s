@@ -37,4 +37,4 @@ if (process.env.NODE_ENV !== 'development') {
   globalThis.console.log = () => {};
 }
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

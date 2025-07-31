@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ResponsiveContainer, { useViewport } from './ResponsiveContainer';
 import ProductGrid from './ProductGrid';
@@ -17,11 +17,16 @@ const ResponsiveProductSection = ({
   alwaysSlider = false, // Force slider regardless of screen width
   ...props 
 }) => {
-  const { width } = useViewport();
+  const { width, isMobile } = useViewport();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
   
   // Log the items for debugging
   if (process.env.NODE_ENV === 'development') {
-    console.log(`${props.title || 'Product Section'} - Mobile?: ${typeof window !== 'undefined' && window.innerWidth < 768} - Items:`, items?.length ?? 0, items);
+    console.log(`${props.title || 'Product Section'} - Mobile?: ${isMobile} - Items:`, items?.length ?? 0, items);
   }
 
   // Props for ProductSlider (expects 'products')
@@ -44,7 +49,8 @@ const ResponsiveProductSection = ({
   // If forced to use slider on desktop, use ProductSlider for both desktop and mobile
   // but only up to 1550px width. Above 1550px, always use grid
   // Exception: if alwaysSlider is true, use slider regardless of width
-  if (useSliderOnDesktop && (alwaysSlider || width <= 1550)) {
+  // During hydration, always render desktop version to prevent mismatch
+  if (useSliderOnDesktop && (alwaysSlider || (hasMounted && width <= 1550))) {
     return (
       <ProductSlider {...productSliderProps} />
     );
@@ -58,6 +64,7 @@ const ResponsiveProductSection = ({
       desktopProps={productGridProps} // Pass correctly named props for ProductGrid
       mobileProps={productSliderProps} // Pass correctly named props for ProductSlider
       debug={props.debug} 
+      suppressHydrationWarning={true}
     />
   );
 };

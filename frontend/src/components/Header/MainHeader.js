@@ -491,7 +491,8 @@ const DesktopResultsContainer = styled.div`
 const MainHeader = ({
   basketCount = 0,
   isBasketLoading = false,
-  toggleMobileMenu
+  toggleMobileMenu,
+  onOpenContactsModal
 }) => {
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -612,6 +613,14 @@ const MainHeader = ({
     setIsSearchOpen(false);
   };
 
+  const handleNavItemClick = (item, e) => {
+    if (item.id === 'contacts') {
+      e.preventDefault();
+      onOpenContactsModal();
+    }
+    // For other links, let the default Link behavior work
+  };
+
   const isActive = (path) => {
     return router.pathname === path || (path !== '/' && router.pathname.startsWith(path + '/'));
   };
@@ -691,6 +700,7 @@ const MainHeader = ({
                 key={item.id}
                 as={Link}
                 href={item.path}
+                onClick={(e) => handleNavItemClick(item, e)}
               >
                 {item.name}
               </HeaderNavItem>
@@ -713,6 +723,7 @@ const MainHeader = ({
                 key={item.id}
                 as={Link}
                 href={item.path}
+                onClick={(e) => handleNavItemClick(item, e)}
               >
                 {item.name}
               </HeaderNavItem>
@@ -785,6 +796,7 @@ MainHeader.propTypes = {
   basketCount: PropTypes.number,
   isBasketLoading: PropTypes.bool,
   toggleMobileMenu: PropTypes.func.isRequired,
+  onOpenContactsModal: PropTypes.func.isRequired,
 };
 
 export default MainHeader;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import MainHeader from './MainHeader';
 import MobileMenu from './MobileMenu';
+import ContactsModal from '../modals/ContactsModal';
 import { loadBitrixCore, isUserAuthenticated, getCurrentUserId, getUserInfo } from '../../lib/auth';
 import { ANIMATION, HEADER_SIZES } from './styles';
 import { useBasketCount } from '../../hooks/useBasket';
@@ -27,6 +28,7 @@ const HeaderContainer = styled.header`
 const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
   // Состояния компонента
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -102,6 +104,15 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
     setIsMobileMenuOpen(false);
   }, []);
 
+  const openContactsModal = useCallback(() => {
+    setIsContactsModalOpen(true);
+    setIsMobileMenuOpen(false); // Close mobile menu when opening modal
+  }, []);
+
+  const closeContactsModal = useCallback(() => {
+    setIsContactsModalOpen(false);
+  }, []);
+
   // Если произошла ошибка при загрузке корзины, выводим в консоль
   useEffect(() => {
     if (basketError) {
@@ -116,12 +127,18 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
         isBasketLoading={isBasketLoading}
         toggleMobileMenu={toggleMobileMenu}
         isScrolled={isScrolled}
+        onOpenContactsModal={openContactsModal}
       />
       <MobileMenu 
         isOpen={isMobileMenuOpen} 
         onClose={closeMobileMenu}
         isAuthenticated={isAuthenticated}
         basketCount={displayBasketCount}
+        onOpenContactsModal={openContactsModal}
+      />
+      <ContactsModal
+        isOpen={isContactsModalOpen}
+        onClose={closeContactsModal}
       />
     </HeaderContainer>
   );

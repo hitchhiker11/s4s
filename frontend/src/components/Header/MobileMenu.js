@@ -142,13 +142,23 @@ const MobileMenu = ({
   isOpen = false, 
   onClose, 
   isAuthenticated = false, 
-  basketCount = 0 
+  basketCount = 0,
+  onOpenContactsModal
 }) => {
   const router = useRouter();
   const menuRef = useRef(null);
   const previousFocusRef = useRef(null);
 
-  const handleLinkClick = () => {
+  // Handle link clicks to close menu and navigate
+  const handleLinkClick = (event) => {
+    // Check if this is the contacts link
+    if (event.target.getAttribute('href') === '/contacts') {
+      event.preventDefault();
+      onOpenContactsModal();
+      return;
+    }
+    
+    // For other links, close menu and allow normal navigation
     onClose();
   };
 
@@ -267,6 +277,7 @@ MobileMenu.propTypes = {
   onClose: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
   basketCount: PropTypes.number,
+  onOpenContactsModal: PropTypes.func.isRequired,
 };
 
 export default MobileMenu;

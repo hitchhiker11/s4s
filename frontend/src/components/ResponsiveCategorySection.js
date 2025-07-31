@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ResponsiveContainer, { useViewport } from './ResponsiveContainer';
 import ItemGrid from './ItemGrid';
@@ -20,6 +20,12 @@ const ResponsiveCategorySection = ({
   ...props 
 }) => {
   const { width } = useViewport();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const categorySliderProps = {
     ...props,
     categories: items,
@@ -40,7 +46,8 @@ const ResponsiveCategorySection = ({
   // If forced to use slider on desktop, use CategorySlider for both desktop and mobile
   // but only up to 1550px width. Above 1550px, always use grid
   // Exception: if alwaysSlider is true, use slider regardless of width
-  if (useSliderOnDesktop && (alwaysSlider || width <= 1550)) {
+  // During hydration, always render desktop version to prevent mismatch
+  if (useSliderOnDesktop && (alwaysSlider || (hasMounted && width <= 1550))) {
     return (
       <CategorySlider {...categorySliderProps} />
     );
@@ -53,6 +60,7 @@ const ResponsiveCategorySection = ({
       MobileComponent={CategorySlider}
       desktopProps={itemGridProps}
       mobileProps={categorySliderProps}
+      suppressHydrationWarning={true}
     />
   );
 };

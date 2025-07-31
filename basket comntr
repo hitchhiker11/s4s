@@ -1,0 +1,208 @@
+<?php
+namespace Artamonov\Rest\Controllers\Native;
+
+use Artamonov\Rest\Controllers\Native\Base\BasketBase;
+
+/**
+ * Контроллер для работы с корзиной неавторизованных пользователей
+ */
+class Basket extends BasketBase
+{
+    /**
+     * GET - получение содержимого корзины
+     */
+    public function _get(): void
+    {
+        try {
+            $request = request();
+            $format = $request->get('format', 'full');
+
+            $basket = $this->loadBasket();
+            $items = $this->getAllBasketItems();
+            $summary = $this->getBasketSummary();
+
+            $response = [
+                'meta' => [
+                    'fuser_id' => $this->fuserId,
+                    'is_fuser_from_request' => $this->isFuserFromRequest,
+                    'site_id' => $this->siteId,
+                    'format' => $format,
+                    'request_time' => date('Y-m-d H:i:s')
+                ],
+                'basket' => [
+                    'items' => $items,
+                    'summary' => $summary
+                ],
+                'debug_log' => $this->getDebugLog() // Добавляем отладочный лог
+            ];
+
+            // Добавляем временные данные пользователя если есть
+            if (!empty($this->tempUserData)) {
+                $response['temp_user_data'] = $this->tempUserData;
+            }
+
+            response()->json($response);
+
+        } catch (\Exception $e) {
+            $this->logError($e);
+            $this->errorResponse(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * POST - добавление товара в корзину
+     */
+    public function _post(): void
+    {
+        try {
+            $request = request();
+            
+            // Валидация входных данных
+            $productId = (int)$request->get('product_id');
+            $quantity = (float)$request->get('quantity', 1);
+            $properties = $request->get('properties', []);
+
+            if ($productId <= 0) {
+                $this->errorResponse(400, 'Invalid product_id');
+            }
+
+            if ($quantity <= 0) {
+                $this->errorResponse(400, 'Invalid quantity');
+            }
+
+            // Добавляем товар в корзину
+            $result = $this->addProductToBasket($productId, $quantity, $properties);
+
+            if (!$result['success']) {
+                response()->json($result, 400);
+                return;
+            }
+
+            response()->json([
+                'success' => true,
+                'message' => $result['action'] === 'added' ? 'Товар добавлен в корзину' : 'Количество товара увеличено',
+                'data' => $result,
+                'fuser_id' => $this->fuserId,
+                'debug_log' => $this->getDebugLog()
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logError($e);
+            $this->errorResponse(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * PATCH - обновление товара в корзине
+     */
+    public function _patch(): void
+    {
+        try {
+            $request = request();
+            
+            $basketItemId = (int)$request->get('basket_item_id');
+            $quantity = (float)$request->get('quantity');
+
+            if ($basketItemId <= 0) {
+                $this->errorResponse(400, 'Invalid basket_item_id');
+            }
+
+            if ($quantity < 0) {
+                $this->errorResponse(400, 'Invalid quantity');
+            }
+
+            // Проверяем что FUSER_ID передан для операций обновления
+            if (!$this->isFuserFromRequest && $this->providedFuserId === null) {
+                $this->errorResponse(400, 'fuser_id is required for basket updates');
+            }
+
+            $result = $this->updateBasketItemQuantity($basketItemId, $quantity);
+
+            if (!$result['success']) {
+                response()->json($result, 400);
+                return;
+            }
+
+            response()->json([
+                'success' => true,
+                'message' => $quantity > 0 ? 'Количество товара обновлено' : 'Товар удален из корзины',
+                'data' => $result,
+                'fuser_id' => $this->fuserId,
+                'debug_log' => $this->getDebugLog()
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logError($e);
+            $this->errorResponse(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * DELETE - удаление товара из корзины или очистка корзины
+     */
+    public function _delete(): void
+    {
+        try {
+            $request = request();
+            $basketItemId = (int)$request->get('basket_item_id');
+            $clearAll = $request->get('clear_all') === 'Y';
+
+            // Проверяем что FUSER_ID передан для операций удаления
+            if (!$this->isFuserFromRequest && $this->providedFuserId === null) {
+                $this->errorResponse(400, 'fuser_id is required for basket operations');
+            }
+
+            if ($clearAll) {
+                $result = $this->clearBasket();
+                
+                if (!$result['success']) {
+                    response()->json($result, 400);
+                    return;
+                }
+
+                response()->json([
+                    'success' => true,
+                    'message' => 'Корзина очищена',
+                    'fuser_id' => $this->fuserId,
+                    'debug_log' => $this->getDebugLog()
+                ]);
+                return;
+            }
+
+            if ($basketItemId <= 0) {
+                $this->errorResponse(400, 'Invalid basket_item_id');
+            }
+
+            $result = $this->removeProductFromBasket($basketItemId);
+
+            if (!$result['success']) {
+                response()->json($result, 400);
+                return;
+            }
+
+            response()->json([
+                'success' => true,
+                'message' => 'Товар удален из корзины',
+                'data' => $result,
+                'fuser_id' => $this->fuserId,
+                'debug_log' => $this->getDebugLog()
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logError($e);
+            $this->errorResponse(500, $e->getMessage());
+        }
+    }
+
+    private function logError(\Exception $e): void
+    {
+        $this->addDebugLog('Exception occurred', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'request_params' => request()->getInput(),
+            'fuser_id' => $this->fuserId,
+            'provided_fuser_id' => $this->providedFuserId,
+            'is_from_request' => $this->isFuserFromRequest
+        ]);
+    }
+}
