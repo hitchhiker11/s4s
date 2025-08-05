@@ -509,7 +509,8 @@ const CartPage = () => {
         basket_id: item.basket_id,
         basket_item_id: item.basket_item_id,
         product_id: item.product_id
-      }
+      },
+      available_quantity: item.available_quantity
     });
     
     // Use the correct ID for basket operations (should be basket item ID, not product ID)
@@ -521,7 +522,13 @@ const CartPage = () => {
     // Extract brand name with multiple fallbacks
     const brandName = item.brand_name || item.BRAND_NAME || item.brand || item.BRAND || 
                      item.properties?.BREND?.value || item.properties?.BRAND_NAME?.value ||
-                     'Бренд';
+                     'OTHER';
+
+    // If available_quantity is not provided by the API, we can show it as available
+    // since the item is in the basket (the stock check was done when adding)
+    const stockToShow = item.available_quantity !== undefined && item.available_quantity !== null 
+      ? item.available_quantity 
+      : (item.quantity || 1); // Show at least the quantity in basket
 
     return {
       id: basketItemId, // Use the correct basket item ID
@@ -531,7 +538,7 @@ const CartPage = () => {
       price: item.price,
       description: item.description || '',
       quantity: item.quantity,
-      stock: item.available_quantity || 10, // Default to 10 if not provided
+      stock: stockToShow, // Always show stock information
       productLink: item.detail_page_url || `/product/${item.id}`,
       isLoading: loadingItems.has(basketItemId) // Add loading state for this item
     };

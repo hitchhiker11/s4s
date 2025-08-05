@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
+import ContactsModal from '../modals/ContactsModal';
 import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
 
 const FooterContainer = styled.footer`
@@ -272,6 +273,23 @@ const Copyright = styled.div`
 `;
 
 const Footer = ({ showMainSection = true }) => {
+  const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Ensure hydration compatibility
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleContactsClick = (e) => {
+    e.preventDefault();
+    setIsContactsModalOpen(true);
+  };
+
+  const handleCloseContactsModal = () => {
+    setIsContactsModalOpen(false);
+  };
+
   return (
     <FooterContainer>
       {showMainSection && (
@@ -299,7 +317,7 @@ const Footer = ({ showMainSection = true }) => {
               <NavLinks>
                 <NavLink href="/delivery">Доставка</NavLink>
                 <NavLink href="/offer">Договор-оферта</NavLink>
-                <NavLink href="/contacts">Контакты</NavLink>
+                <NavLink href="#" onClick={handleContactsClick}>Контакты</NavLink>
               </NavLinks>
             </InfoSection>
             
@@ -307,7 +325,7 @@ const Footer = ({ showMainSection = true }) => {
               <SectionTitle>Медиа</SectionTitle>
               <NavLinks>
                 <NavLink href="https://t.me/shop4shoot" target="_blank" rel="noopener noreferrer">Наш телеграм канал</NavLink>
-                <NavLink href="/blog">Блог</NavLink>
+                {/* <NavLink href="/blog">Блог</NavLink> */}
                 <NavLink href="/partnership">Сотрудничество</NavLink>
               </NavLinks>
             </MediaSection>
@@ -336,6 +354,13 @@ const Footer = ({ showMainSection = true }) => {
           Все права защищены
         </Copyright>
       </BottomFooter>
+
+      {isMounted && (
+        <ContactsModal 
+          isOpen={isContactsModalOpen}
+          onClose={handleCloseContactsModal}
+        />
+      )}
     </FooterContainer>
   );
 };

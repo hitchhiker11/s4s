@@ -402,7 +402,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     }
   };
 
-  const brandName = product.BRAND_NAME || product.brand || "Brand";
+  const brandName = product.BRAND_NAME || product.brand || product.BREND || "OTHER";
   const productName = product.NAME || product.name || "Product Name";
   const priceValue = product.PRICE || product.price || 0;
   

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import PropTypes from 'prop-types';
 import styles from './ProductDetailCard.module.css';
 import QuantityControl from '../QuantityControl';
+import ImageModal from '../modals/ImageModal';
 // Removed heroicons import which was causing the build error
 
 const ProductDetailCard = ({
@@ -23,6 +24,8 @@ const ProductDetailCard = ({
   const [quantity, setQuantity] = useState(1);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const mainImageRef = useRef(null);
 
   // Minimum swipe distance (in pixels)
@@ -32,6 +35,8 @@ const ProductDetailCard = ({
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+    
     const updateIsMobile = () => {
       if (typeof window !== 'undefined') {
         setIsMobile(window.innerWidth <= 768);
@@ -61,6 +66,14 @@ const ProductDetailCard = ({
 
   const handleThumbnailClick = (image) => {
     setSelectedImage(image);
+  };
+
+  const handleImageClick = () => {
+    setIsImageModalOpen(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setIsImageModalOpen(false);
   };
 
   const handleQuantityChange = (amount) => {
@@ -127,6 +140,8 @@ const ProductDetailCard = ({
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          onClick={handleImageClick}
+          style={{ cursor: 'pointer' }}
         >
           <Image 
             src={selectedImage.url} 
@@ -231,6 +246,15 @@ const ProductDetailCard = ({
           Добавить в избранное
         </button> */}
       </div>
+
+      {/* Image Modal for fullscreen viewing */}
+      {isMounted && (
+        <ImageModal 
+          isOpen={isImageModalOpen}
+          onClose={handleCloseImageModal}
+          image={selectedImage}
+        />
+      )}
     </div>
   );
 };

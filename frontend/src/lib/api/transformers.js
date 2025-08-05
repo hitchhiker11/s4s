@@ -90,7 +90,7 @@ export const transformCatalogItem = (apiItem) => {
   } = apiItem;
   
   const articleProp = properties.ARTICLE || properties.CML2_ARTICLE || {};
-  const brandProp = properties.BRAND || {};
+  const brandProp = properties.BREND || properties.BRAND || {};
   
   // Process images from the new API structure
   let mainImage = '/images/placeholder.png';
@@ -187,8 +187,8 @@ export const transformCatalogItem = (apiItem) => {
   return {
     id: String(id), // Ensure ID is a string
     name: name || 'Unnamed Product',
-    article: articleProp.VALUE || '',
-    brand: brandProp.VALUE || '',
+    article: articleProp.VALUE || articleProp.VALUE_TEXT || properties.CML2_CODE?.VALUE || '',
+    brand: brandProp.VALUE || brandProp.VALUE_TEXT || 'OTHER',
     price: parseFloat(basePrice.price) || 0,
     currency: basePrice.currency || 'RUB',
     image: mainImage,
