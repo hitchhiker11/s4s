@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Autoplay, Pagination, Navigation } from 'swiper';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { useAboutSliderData } from '../../lib/hooks/useAbboutSliderData';
 import styles from './slider.module.css'; // Импортируем стили как CSS Modules
-
-// Инициализируем Swiper-модули
-SwiperCore.use([Autoplay, Pagination, Navigation]);
 
 // Стилизованные компоненты
 const SliderContainer = styled.div`
@@ -130,6 +127,7 @@ const AboutSlider = () => {
   return (
     <SliderContainer>
       <Swiper
+        modules={[Autoplay, Pagination, Navigation]}
         ref={swiperRef}
         spaceBetween={0}
         slidesPerView={1}
@@ -139,6 +137,14 @@ const AboutSlider = () => {
         }}
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         className={styles.aboutSlider}
+        speed={600}
+        touchStartPreventDefault={false}
+        touchStartForcePreventDefault={false}
+        simulateTouch={true}
+        allowTouchMove={true}
+        watchSlidesProgress={true}
+        preloadImages={false}
+        lazy={true}
       >
         {sliderData.map((slide) => (
           <SwiperSlide key={slide.id} className={styles.swiperSlide}>

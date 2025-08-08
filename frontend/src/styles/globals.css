@@ -54,4 +54,62 @@ img {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Safari WebKit optimizations for Swiper sliders */
+.swiper {
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+.swiper-slide {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.swiper-wrapper {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+/* Safari specific fixes */
+@supports (-webkit-appearance: none) {
+  .swiper {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .swiper-slide {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Fix for Safari smooth scrolling issues */
+  .swiper-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Fix for touch event handling in Safari */
+.swiper-slide img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Ensure proper GPU acceleration for animations */
+.swiper-slide-active,
+.swiper-slide-next,
+.swiper-slide-prev {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 } 

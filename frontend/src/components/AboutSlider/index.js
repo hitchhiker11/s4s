@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Autoplay, Pagination, Navigation } from 'swiper';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { useAboutSliderData } from '../../lib/hooks/useAboutSliderData';
 import { COLORS, TYPOGRAPHY, mediaQueries } from '../../styles/tokens';
-
-// Инициализируем Swiper-модули
-SwiperCore.use([Autoplay, Pagination, Navigation]);
 
 // Стилизованные компоненты
 const SliderContainer = styled.div`
@@ -32,6 +29,12 @@ const SlideImageContainer = styled.div`
   overflow: hidden;
   background-color: ${COLORS.black};
   
+  /* Safari WebKit optimizations */
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  
   ${mediaQueries.md} {
     aspect-ratio: 2 / 1; // Более широкое соотношение для планшетов
   }
@@ -50,6 +53,12 @@ const SlideImage = styled.img`
   min-height: 300px;
   object-fit: cover;
   object-position: center;
+  
+  /* Safari WebKit optimizations */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 `;
 
 const SlideTitle = styled.h2`
@@ -197,6 +206,7 @@ const AboutSlider = () => {
   return (
     <SliderContainer>
       <Swiper
+        modules={[Autoplay, Pagination, Navigation]}
         onSwiper={setSwiperInstance}
         spaceBetween={0}
         slidesPerView={1}
@@ -206,6 +216,14 @@ const AboutSlider = () => {
         }}
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         className="about-slider"
+        speed={600}
+        touchStartPreventDefault={false}
+        touchStartForcePreventDefault={false}
+        simulateTouch={true}
+        allowTouchMove={true}
+        watchSlidesProgress={true}
+        preloadImages={false}
+        lazy={true}
       >
         {sliderData.map((slide) => (
           <SwiperSlide key={slide.id}>

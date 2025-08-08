@@ -111,6 +111,12 @@ const SwiperContainer = styled.div`
     max-width: 140px; /* Based on Figma design */
     height: auto;
     display: flex;
+    
+    /* Safari WebKit optimizations */
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
   }
 
   /* Navigation arrows styling - conditional */
@@ -203,6 +209,16 @@ const CategorySlider = ({
             slidesPerView={'auto'} // Let CSS width/max-width control sizing
             navigation={showNavigation}
             grabCursor={true}
+            speed={400}
+            touchStartPreventDefault={false}
+            touchStartForcePreventDefault={false}
+            simulateTouch={true}
+            allowTouchMove={true}
+            watchSlidesProgress={true}
+            preloadImages={false}
+            lazy={true}
+            observer={true}
+            observeParents={true}
           >
             {displayCategories.map((category) => (
               <SwiperSlide key={category.id}>

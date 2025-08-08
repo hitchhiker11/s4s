@@ -1,0 +1,130 @@
+/* Safari WebKit specific fixes for Swiper sliders */
+
+/* Override default Swiper styles for better Safari compatibility */
+.swiper {
+  /* Force hardware acceleration */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  
+  /* Improve touch handling */
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.swiper-wrapper {
+  /* Ensure smooth transitions */
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.swiper-slide {
+  /* Prevent flickering and improve performance */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  
+  /* Fix sub-pixel rendering issues */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Safari-specific image handling */
+.swiper-slide img {
+  /* Prevent image dragging */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  
+  /* Prevent selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  /* Disable callouts */
+  -webkit-touch-callout: none;
+  
+  /* Force hardware acceleration for images */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Fix for Safari navigation arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  /* Improve button rendering */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  
+  /* Fix touch targets */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix pagination bullets */
+.swiper-pagination-bullet {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Safari-specific autoplay fixes */
+.swiper[data-swiper-autoplay] {
+  /* Ensure autoplay works properly */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Fix for aspect-ratio support in older Safari versions */
+@supports not (aspect-ratio: 1) {
+  .slide-image-container {
+    /* Fallback for browsers without aspect-ratio support */
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  }
+  
+  .slide-image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Prevent zoom on double tap in Safari */
+.swiper-slide * {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix for iOS Safari elastic scrolling */
+@supports (-webkit-overflow-scrolling: touch) {
+  .swiper-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Fix for Safari lazy loading */
+.swiper-lazy {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.swiper-lazy-loaded {
+  opacity: 1;
+}

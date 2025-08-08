@@ -9,6 +9,7 @@ import GlobalStyles from '../styles/globalStyles';
 import { createQueryClient } from '../lib/react-query-client';
 import Logger from '../components/debug/Logger';
 import '../components/AboutSlider/slider.css'; // Импортируем стили слайдера глобально
+import '../styles/safari-swiper-fixes.css'; // Импортируем исправления для Safari WebKit
 import { USE_MOCKS } from '../lib/api/bitrix';
 
 // Определяем тему для ThemeProvider

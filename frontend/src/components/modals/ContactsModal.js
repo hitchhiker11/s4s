@@ -130,13 +130,29 @@ const ContactsModal = ({ isOpen, onClose }) => {
         <div className={styles.content}>
           <div className={styles.contactsSection}>
             <h2 className={styles.title}>Наши контакты</h2>
-            <p>+7 (945) 000-00-00</p>
-            <p>+7 (945) 111-11-11</p>
-            <p>info@shop4shoot.ru</p>
-            <p>Москва, улица Пушкина, дом Колотушкина, с1, помещение 2</p>
+            <p>+7 (800) 250-11-01</p>
+            <p>+7 (915) 260-20-18</p>
+            <p>shop@weapon-culture.ru</p>
+            <p>г. Москва, ул. Кусковская д. 20А, корп. В, 6 этаж</p>
             <div className={styles.socialIcons}>
-              {/* Add social icons here if needed, e.g., VK, Telegram */}
-              <span>VK</span> <span>TG</span> {/* Placeholder icons */}
+              <a
+                href="https://vk.com/shoop4shoot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="VK"
+              >
+                VK
+              </a>
+              <a
+                href="https://t.me/shop4shoot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="Telegram"
+              >
+                TG
+              </a>
             </div>
           </div>
           <div className={styles.formSection}>

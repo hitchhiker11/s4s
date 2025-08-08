@@ -112,6 +112,12 @@ const SwiperContainer = styled.div`
     min-width: 173px;
     height: auto;
     display: flex;
+    
+    /* Safari WebKit optimizations */
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
   }
   
   /* For tablet - intermediate size */
@@ -238,7 +244,16 @@ const ProductSlider = ({
             slidesPerView={'auto'}
             navigation={showNavigation}
             grabCursor={true}
-            // Remove inline overflow style
+            speed={400}
+            touchStartPreventDefault={false}
+            touchStartForcePreventDefault={false}
+            simulateTouch={true}
+            allowTouchMove={true}
+            watchSlidesProgress={true}
+            preloadImages={false}
+            lazy={true}
+            observer={true}
+            observeParents={true}
           >
             {displayProducts.map((product) => (
               <SwiperSlide key={product.id}>
