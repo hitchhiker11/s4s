@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS, SIZES, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens'; // Adjusted path for styles
-import RequestModal from '../modals/RequestModal';
+// import RequestModal from '../modals/RequestModal';
+import { useToast } from '../../hooks/useToast';
+import ToastContainer from '../Toast/ToastContainer';
+import { normalizePhoneNumber, isValidRussianPhone } from '../../lib/phone';
+import { subscribeToNews } from '../../lib/api/bitrix';
 
 // Main wrapper for the subscription section, can be exported if pages need to use it directly
 export const SubscriptionSectionWrapper = styled.div`
   width: 100%;
   margin-top: ${SPACING.xl};
-  margin-bottom: ${SPACING.xl};
+  margin-bottom: ${props => props.$noOuterMargin ? '0' : SPACING.xl};
   // background-color: ${COLORS.grayBack}; // Or any other background you prefer
   // padding: ${SPACING.xl} 0;
 `;
@@ -178,44 +182,64 @@ const SubmitButton = styled.button`
   }
 `;
 
-const SubscriptionForm = () => {
+const SubscriptionForm = ({ noOuterMargin = false }) => {
   const [formInputs, setFormInputs] = useState({
     phone: '',
     name: '',
     email: ''
   });
 
-  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const { toasts, showSuccessToast, showErrorToast, removeToast } = useToast();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Open RequestModal with current form data
-    setIsRequestModalOpen(true);
+  const handlePhoneBlur = () => {
+    setFormInputs(prev => ({ ...prev, phone: normalizePhoneNumber(prev.phone) }));
   };
 
-  const handleCloseRequestModal = () => {
-    setIsRequestModalOpen(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const normalized = normalizePhoneNumber(formInputs.phone);
+    const emailValid = !formInputs.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formInputs.email);
+
+    if (!isValidRussianPhone(normalized)) {
+      showErrorToast('Введите корректный номер телефона в формате +7XXXXXXXXXX');
+      return;
+    }
+
+    if (!emailValid) {
+      showErrorToast('Введите корректный email');
+      return;
+    }
+
+    try {
+      const payload = {
+        phone: normalized,
+        name: formInputs.name.trim(),
+        email: formInputs.email.trim(),
+      };
+
+      const result = await subscribeToNews(payload);
+
+      if (result.success) {
+        showSuccessToast('Спасибо! Вы подписаны на новости.');
+        setFormInputs({ phone: '', name: '', email: '' });
+      } else {
+        const apiMessage = result?.error?.message || result?.message || 'Не удалось оформить подписку';
+        showErrorToast(apiMessage);
+      }
+    } catch (err) {
+      showErrorToast(err.message || 'Ошибка при оформлении подписки');
+    }
   };
 
   return (
-    <SubscriptionSectionWrapper>
-      {/* RequestModal */}
-      <RequestModal
-        isOpen={isRequestModalOpen}
-        onClose={handleCloseRequestModal}
-        initialValues={{
-          name: formInputs.name,
-          phone: formInputs.phone,
-          email: formInputs.email
-        }}
-      />
-      
+    <SubscriptionSectionWrapper $noOuterMargin={noOuterMargin}>
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       <SubscriptionContainer>
         <ContentWrapper>
           <SubscriptionImageContainer>
@@ -239,7 +263,9 @@ const SubscriptionForm = () => {
                 name="phone"
                 value={formInputs.phone}
                 onChange={handleInputChange}
+                onBlur={handlePhoneBlur}
                 autoComplete="tel"
+                required
               />
             </InputGroup>
             

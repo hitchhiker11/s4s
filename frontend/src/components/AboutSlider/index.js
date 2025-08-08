@@ -18,6 +18,14 @@ const SliderContainer = styled.div`
   ${mediaQueries.md} {
     margin-bottom: 60px;
   }
+  
+  .swiper {
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
 `;
 
 // Используем aspect-ratio для поддержания пропорций слайдера на всех устройствах
@@ -216,7 +224,8 @@ const AboutSlider = () => {
         }}
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         className="about-slider"
-        speed={600}
+        speed={500}
+        cssMode={true}
         touchStartPreventDefault={false}
         touchStartForcePreventDefault={false}
         simulateTouch={true}

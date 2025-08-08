@@ -306,8 +306,12 @@ const Footer = ({ showMainSection = true }) => {
             <CatalogSection>
               <SectionTitle>Каталог</SectionTitle>
               <NavLinks>
-                <NavLink href="/catalog">Все товары</NavLink>
-                <NavLink href="/catalog?filter=new">Новые поступления</NavLink>
+                <Link href="/catalog" passHref legacyBehavior>
+                  <NavLink>Все товары</NavLink>
+                </Link>
+                <Link href="/catalog?filter=new" passHref legacyBehavior>
+                  <NavLink>Новые поступления</NavLink>
+                </Link>
                 {/* <NavLink href="/catalog?filter=sale">Большие скидки</NavLink> */}
               </NavLinks>
             </CatalogSection>
@@ -315,8 +319,12 @@ const Footer = ({ showMainSection = true }) => {
             <InfoSection>
               <SectionTitle>Информация</SectionTitle>
               <NavLinks>
-                <NavLink href="/delivery">Доставка</NavLink>
-                <NavLink href="/offer">Договор-оферта</NavLink>
+                <Link href="/delivery" passHref legacyBehavior>
+                  <NavLink>Доставка</NavLink>
+                </Link>
+                <Link href="/offer" passHref legacyBehavior>
+                  <NavLink>Договор-оферта</NavLink>
+                </Link>
                 <NavLink href="#" onClick={handleContactsClick}>Контакты</NavLink>
               </NavLinks>
             </InfoSection>
@@ -326,7 +334,9 @@ const Footer = ({ showMainSection = true }) => {
               <NavLinks>
                 <NavLink href="https://t.me/shop4shoot" target="_blank" rel="noopener noreferrer">Наш телеграм канал</NavLink>
                 {/* <NavLink href="/blog">Блог</NavLink> */}
-                <NavLink href="/partnership">Сотрудничество</NavLink>
+                <Link href="/partnership" passHref legacyBehavior>
+                  <NavLink>Сотрудничество</NavLink>
+                </Link>
               </NavLinks>
             </MediaSection>
             
@@ -344,9 +354,15 @@ const Footer = ({ showMainSection = true }) => {
       
       <BottomFooter>
         <LegalLinks>
-          <LegalLink href="/terms">Пользовательское соглашение</LegalLink>
-          <LegalLink href="/copyright">Информация о правообладателе</LegalLink>
-          <LegalLink href="/privacy">Политика конфиденциальности</LegalLink>
+          <Link href="/terms" passHref legacyBehavior>
+            <LegalLink>Пользовательское соглашение</LegalLink>
+          </Link>
+          <Link href="/copyright" passHref legacyBehavior>
+            <LegalLink>Информация о правообладателе</LegalLink>
+          </Link>
+          <Link href="/privacy" passHref legacyBehavior>
+            <LegalLink>Политика конфиденциальности</LegalLink>
+          </Link>
         </LegalLinks>
         
         <Copyright>

@@ -70,6 +70,12 @@
   box-sizing: border-box;
 }
 
+/* Ensure textarea matches the visual height of other inputs */
+.inputGroup textarea.inputField {
+  min-height: 56px; /* matches approx input height incl. padding and bottom border */
+  resize: vertical;
+}
+
 .inputField:focus {
   outline: none;
   /* border-color: #E7194A; */
@@ -126,6 +132,10 @@
     border-bottom: 3px solid #B6B6B6;
     width: 100%;
     box-sizing: border-box;
+  }
+
+  .inputGroup textarea.inputField {
+    min-height: 50px; /* align with mobile input height */
   }
   
   .inputGroup {

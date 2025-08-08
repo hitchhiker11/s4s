@@ -80,6 +80,12 @@ const CardImageContainer = styled.div`
     padding: ${SPACING.lg};
     max-height: 250px;
   }
+
+  /* Edge positioning for category images (not logos) */
+  ${props => props.showTitle && !props.isBrandLogo && css`
+    justify-content: flex-end; /* align to right */
+    align-items: flex-end; /* align to bottom */
+  `}
 `;
 
 // Helper to get random rotation value between -8 and 8 degrees
@@ -94,7 +100,6 @@ const CardImage = styled.img`
   transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
   scale: 0.95;
 
-  
   /* Specific styles for brand logos */
   ${props => props.isBrandLogo && `
     padding: ${SPACING.xs};
@@ -104,9 +109,40 @@ const CardImage = styled.img`
       padding: ${SPACING.lg};
     }
   `};
+
+  /* Edge positioning and shifting for category images (not logos) */
+  ${props => props.enableEdgePositioning && !props.isBrandLogo && css`
+    /* Default/desktop behavior */
+    max-width: 130% !important;
+    max-height: 130% !important;
+    object-fit: contain !important;
+    ${props.isSvg
+      ? css`
+          /* SVGs: move to top-left */
+          transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(-45%) translateY(-20%) !important;
+          object-position: top left !important;
+        `
+      : css`
+          /* Raster images: move to bottom-right */
+          transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(17%) translateY(20%) !important;
+          object-position: bottom right !important;
+        `}
+
+    /* Tablet and below adjustments */
+    @media (max-width: ${BREAKPOINTS.lg - 1}px) {
+      max-width: 120% !important;
+      ${props.isSvg
+        ? css`
+            transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(-25%) translateY(-20%) !important;
+          `
+        : css`
+            transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(-10%) translateY(10%) !important;
+          `}
+    }
+  `}
 `;
 
-const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation, additionalStyles, disableRotation = false }) => {
+const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation, additionalStyles, disableRotation = false, enableEdgeImagePositioning = true }) => {
   const isBrandLogo = !showTitle;
 
   const imageRotation = useMemo(() => {
@@ -115,6 +151,12 @@ const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation,
     if (showTitle) return getRandomRotation();
     return 0;
   }, [rotation, showTitle, disableRotation]);
+
+  const isSvg = useMemo(() => {
+    if (typeof imageUrl !== 'string') return false;
+    const src = imageUrl.split('?')[0].toLowerCase();
+    return src.endsWith('.svg');
+  }, [imageUrl]);
 
   return (
     <Link href={link} passHref legacyBehavior>
@@ -127,6 +169,8 @@ const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation,
               alt={title}
               isBrandLogo={isBrandLogo}
               $rotation={imageRotation}
+              isSvg={isSvg}
+              enableEdgePositioning={enableEdgeImagePositioning && showTitle}
             />
           ) : (
             // <span>Image Placeholder</span>
@@ -146,6 +190,7 @@ CategoryCard.propTypes = {
   rotation: PropTypes.number,
   additionalStyles: PropTypes.object,
   disableRotation: PropTypes.bool,
+  enableEdgeImagePositioning: PropTypes.bool,
 };
 
 export default CategoryCard;

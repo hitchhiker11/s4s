@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS, TYPOGRAPHY, SPACING, mediaQueries, SHADOWS } from '../../styles/tokens';
-import RequestModal from '../modals/RequestModal';
+import { useToast } from '../../hooks/useToast';
+import ToastContainer from '../Toast/ToastContainer';
+import { normalizePhoneNumber, isValidRussianPhone } from '../../lib/phone';
+import { subscribeToNews } from '../../lib/api/bitrix';
 
 const SubscriptionContainer = styled.section`
   width: 100%;
@@ -173,7 +176,7 @@ const ClubSubscription = () => {
     phone: ''
   });
 
-  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const { toasts, showSuccessToast, showErrorToast, removeToast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -183,30 +186,41 @@ const ClubSubscription = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Open RequestModal with current form data
-    setIsRequestModalOpen(true);
-  };
+    const normalizedPhone = normalizePhoneNumber(formData.phone);
+    const emailValid = !formData.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
 
-  const handleCloseRequestModal = () => {
-    setIsRequestModalOpen(false);
+    if (!isValidRussianPhone(normalizedPhone)) {
+      showErrorToast('Введите корректный номер телефона в формате +7XXXXXXXXXX');
+      return;
+    }
+    if (!emailValid) {
+      showErrorToast('Введите корректный email');
+      return;
+    }
+
+    try {
+      const result = await subscribeToNews({
+        phone: normalizedPhone,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+      });
+      if (result && result.success !== false) {
+        showSuccessToast('Спасибо! Вы подписаны на новости.');
+        setFormData({ name: '', email: '', phone: '' });
+      } else {
+        const msg = result?.error?.message || result?.message || 'Не удалось оформить подписку';
+        showErrorToast(msg);
+      }
+    } catch (err) {
+      showErrorToast(err.message || 'Ошибка при оформлении подписки');
+    }
   };
 
   return (
     <SubscriptionContainer>
-      {/* RequestModal */}
-      <RequestModal
-        isOpen={isRequestModalOpen}
-        onClose={handleCloseRequestModal}
-        initialValues={{
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email
-        }}
-      />
-      
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       <ContentWrapper>
         <FormContainer>
           <FormHeading>

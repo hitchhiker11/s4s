@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CdekWidget from '../CdekWidget/CdekWidget';
 import styles from './DeliveryInfoForm.module.css';
+import { normalizePhoneNumber } from '../../lib/phone';
 
 const DeliveryInfoForm = ({ 
   isActiveTab = false, 
@@ -26,6 +27,10 @@ const DeliveryInfoForm = ({
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handlePhoneBlur = () => {
+    setFormData(prev => ({ ...prev, phoneNumber: normalizePhoneNumber(prev.phoneNumber) }));
   };
 
   useEffect(() => {
@@ -68,7 +73,7 @@ const DeliveryInfoForm = ({
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             {/* <label htmlFor="lastName" className={styles.label}>Фамилия</label> */}
-            <input type="text" id="lastName" name="lastName" placeholder="Фамилия" className={styles.inputField} value={formData.lastName} onChange={handleChange} />
+            <input type="text" id="lastName" name="lastName" placeholder="* Фамилия" className={styles.inputField} value={formData.lastName} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
             {/* <label htmlFor="firstName" className={styles.label}>* Имя</label> */}
@@ -76,14 +81,14 @@ const DeliveryInfoForm = ({
           </div>
           <div className={styles.inputGroup}>
             {/* <label htmlFor="patronymic" className={styles.label}>Отчество</label> */}
-            <input type="text" id="patronymic" name="patronymic" placeholder="Отчество" className={styles.inputField} value={formData.patronymic} onChange={handleChange} />
+            <input type="text" id="patronymic" name="patronymic" placeholder="* Отчество" className={styles.inputField} value={formData.patronymic} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
             {/* <label htmlFor="phoneNumber" className={styles.label}>Номер телефона</label> */}
-            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Номер телефона" className={styles.inputField} value={formData.phoneNumber} onChange={handleChange} />
+            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="* Номер телефона" className={styles.inputField} value={formData.phoneNumber} onChange={handleChange} onBlur={handlePhoneBlur} required />
           </div>
           <div className={styles.inputGroup}>
-            <input type="email" id="email" name="email" placeholder="Email" className={styles.inputField} value={formData.email} onChange={handleChange} />
+            <input type="email" id="email" name="email" placeholder="* Email" className={styles.inputField} value={formData.email} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
             <textarea id="comment" name="comment" placeholder="Комментарий" className={styles.inputField} value={formData.comment} onChange={handleChange} />

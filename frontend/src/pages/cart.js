@@ -16,6 +16,7 @@ import { useToast } from '../hooks/useToast';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { getBasketItemImageUrl } from '../lib/imageUtils';
 import { checkStock, createOrder, getPaymentForm, getOrderStatus } from '../lib/api/bitrix';
+import { normalizePhoneNumber, isValidRussianPhone } from '../lib/phone';
 import styles from '../styles/pages/CartPage.module.css';
 
 // Mock data removed - now using real recently viewed data from useRecentlyViewed hook
@@ -403,11 +404,27 @@ const CartPage = () => {
     if (activeTab === 'cart') {
       setActiveTab('delivery');
     } else if (activeTab === 'delivery') {
+      // Normalize and validate phone
+      const normalizedPhone = normalizePhoneNumber(userFormData.phoneNumber || '');
+
       // Валидация обязательных полей
-      if (!userFormData.firstName || !userFormData.phoneNumber || !userFormData.email) {
-        showErrorToast('Пожалуйста, заполните обязательные поля: Имя, Телефон, Email');
+      if (!userFormData.lastName || !userFormData.firstName || !userFormData.patronymic || !normalizedPhone || !userFormData.email) {
+        showErrorToast('Пожалуйста, заполните обязательные поля: Фамилия, Имя, Отчество, Телефон, Email');
         return;
       }
+
+      if (!isValidRussianPhone(normalizedPhone)) {
+        showErrorToast('Некорректный формат номера телефона. Используйте формат +7XXXXXXXXXX');
+        return;
+      }
+
+      // Простая валидация email
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userFormData.email);
+      if (!emailValid) {
+        showErrorToast('Введите корректный email');
+        return;
+      }
+
       if (!selectedDelivery || (!selectedDelivery.delivery && !selectedDelivery.code)) {
         showErrorToast('Пожалуйста, выберите пункт выдачи');
         return;
@@ -427,7 +444,7 @@ const CartPage = () => {
           customer_name: userFormData.firstName,
           customer_lastname: userFormData.lastName || '',
           customer_middlename: userFormData.patronymic || '',
-          customer_phone: userFormData.phoneNumber,
+          customer_phone: normalizedPhone,
           customer_email: userFormData.email,
           cdek_code: selectedDelivery.delivery || selectedDelivery.code || '',
           delivery_address: deliveryAddress,
@@ -454,7 +471,8 @@ const CartPage = () => {
           
           setActiveTab('payment');
         } else {
-          throw new Error(response.error?.message || 'Ошибка создания заказа');
+          const apiMessage = response?.error?.message || response?.message || 'Ошибка создания заказа';
+          throw new Error(apiMessage);
         }
       } catch (error) {
         console.error('❌ [Cart] Ошибка создания заказа:', error);

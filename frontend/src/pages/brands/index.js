@@ -16,7 +16,8 @@ import CategoryCard from '../../components/CategoryCard';
 import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 import SubscriptionForm from '../../components/SubscriptionForm';
-import ResponsiveProductSection from '../../components/ResponsiveProductSection';
+import dynamic from 'next/dynamic';
+const ResponsiveProductSection = dynamic(() => import('../../components/ResponsiveProductSection'), { ssr: false });
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { SIZES, COLORS, mediaQueries } from '../../styles/tokens';
 import productGridStyles from '../../styles/ProductGridResponsive.module.css';
@@ -566,6 +567,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
         
         {hasRecentlyViewed && (
           <ResponsiveProductSection 
+            suppressHydrationWarning={true}
             title="Недавно просмотренные"
             subtitle=""
             viewAllLink="/catalog?filter=new"

@@ -15,6 +15,7 @@ const ResponsiveProductSection = ({
   useSliderOnDesktop = false,
   showNavigationOnDesktop = true,
   alwaysSlider = false, // Force slider regardless of screen width
+  suppressHydrationWarning = false,
   ...props 
 }) => {
   const { width, isMobile } = useViewport();
@@ -64,7 +65,7 @@ const ResponsiveProductSection = ({
       desktopProps={productGridProps} // Pass correctly named props for ProductGrid
       mobileProps={productSliderProps} // Pass correctly named props for ProductSlider
       debug={props.debug} 
-      suppressHydrationWarning={true}
+      suppressHydrationWarning={suppressHydrationWarning}
     />
   );
 };
@@ -96,7 +97,8 @@ ResponsiveProductSection.propTypes = {
   alwaysSlider: PropTypes.bool,
   gridSectionStyles: PropTypes.string, // For ProductGrid styling (also used as fallback for ProductSlider)
   sliderSectionStyles: PropTypes.string, // For ProductSlider styling (takes priority over gridSectionStyles)
-  debug: PropTypes.bool
+  debug: PropTypes.bool,
+  suppressHydrationWarning: PropTypes.bool,
 };
 
 ResponsiveProductSection.defaultProps = {

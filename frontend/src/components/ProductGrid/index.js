@@ -69,9 +69,9 @@ const HeaderDivider = styled.hr`
   height: 2px;
   background-color: ${COLORS.gray400};
   width: 100%;
-  margin: 0;
+  // margin: 0 0 22px 0;
 
-  ${mediaQueries.lg} {
+  @media (min-width: 992px) {
     height: 4px;
   }
 
@@ -100,21 +100,15 @@ const Title = styled.h2`
 `;
 
 const SubtitleContainer = styled.div`
-  display: flex;
+  display: none; /* hide on mobile by default */
   width: 100%;
-  border-bottom: 2px solid ${COLORS.gray400};
+  border-bottom: 4px solid ${COLORS.gray400};
   padding: ${SPACING.sm} 0;
   max-height: 28px;
 
-  ${mediaQueries.sm} {
-    max-height: 45px;
-    border-bottom-width: 2px;
-    padding: ${SPACING.md} 0;
-  }
-
   ${mediaQueries.md} {
+    display: flex; /* show from tablet/desktop */
     max-height: 45px;
-    border-bottom-width: 4px;
     align-items: center; 
   }
 
@@ -186,6 +180,17 @@ const PreOrderWrapper = styled.div`
   min-width: 0; /* Allow shrinking below content size */
   /* overflow: hidden; */ /* Remove this to allow toasts to be visible */
   ${props => props.customStyles}
+`;
+
+// Mirror ProductSlider's ProductCardWrapper for consistent image positioning and layout
+const ProductCardWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking below content size */
+  /* overflow: hidden; */ /* Keep toasts visible */
+  display: block;
+  height: auto;
 `;
 
 const PreOrderBadge = styled.div`
@@ -261,13 +266,12 @@ const ProductGrid = ({
             )}
           </TitleRow>
         )}
+        {/* Always render bottom divider below the title */}
+        <HeaderDivider customStyles={headerDividerStyles} />
         {subtitle && (
-          <>
-            <HeaderDivider customStyles={headerDividerStyles} />
-            <SubtitleContainer customStyles={subtitleContainerStyles}>
-              <Subtitle customStyles={subtitleStyles}>{subtitle}</Subtitle>
-            </SubtitleContainer>
-          </>
+          <SubtitleContainer customStyles={subtitleContainerStyles}>
+            <Subtitle customStyles={subtitleStyles}>{subtitle}</Subtitle>
+          </SubtitleContainer>
         )}
       </HeaderContainer>
       
@@ -286,10 +290,12 @@ const ProductGrid = ({
               {product.preOrder && (
                 <PreOrderBadge customStyles={preOrderBadgeStyles}>ПРЕДЗАКАЗ</PreOrderBadge>
               )}
-              <ProductCard
-                product={product}
-                {...productCardProps}
-              />
+              <ProductCardWrapper>
+                <ProductCard
+                  product={product}
+                  {...productCardProps}
+                />
+              </ProductCardWrapper>
             </PreOrderWrapper>
           ))}
         </GridContainer>

@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import CategoryCard from '../CategoryCard';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
+import Link from 'next/link';
 
 // Import Swiper styles (make sure these paths are correct)
 import 'swiper/css';
@@ -43,6 +44,17 @@ const HeaderContainer = styled.div`
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto ${SPACING.lg};
   /* No horizontal padding since SliderSection now handles all padding */
+`;
+
+const HeaderDivider = styled.hr`
+  border: none;
+  height: 2px;
+  background-color: ${COLORS.gray400};
+  width: 100%;
+  // margin: 0 0 22px 0;
+  @media (min-width: 992px) {
+    height: 4px;
+  }
 `;
 
 const TitleRow = styled.div`
@@ -94,6 +106,30 @@ const ViewAllLink = styled.a`
   }
 `;
 
+const SubtitleContainer = styled.div`
+  display: none;
+  width: 100%;
+  border-bottom: 2px solid ${COLORS.gray400};
+  padding: ${SPACING.sm} 0;
+  max-height: 28px;
+
+  @media (min-width: 992px) {
+    display: flex;
+    border-bottom-width: 4px;
+    max-height: 45px;
+    align-items: center;
+  }
+`;
+
+const Subtitle = styled.p`
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  font-size: clamp(1rem, 5vw, ${TYPOGRAPHY.size["2xl"]});
+  color: ${COLORS.gray500};
+  margin: 0;
+  line-height: 1.16;
+`;
+
 const SwiperContainer = styled.div`
   position: relative; 
   width: 100%;
@@ -104,6 +140,11 @@ const SwiperContainer = styled.div`
     /* No additional padding since SliderSection now handles all padding */
     padding-left: 0;
     padding-right: 0;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
   .swiper-slide {
@@ -117,6 +158,16 @@ const SwiperContainer = styled.div`
     -webkit-transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     transform: translate3d(0, 0, 0);
+  }
+
+  /* Tablet sizing: prevent excessive shrinking */
+  ${mediaQueries.md} {
+    .swiper-slide {
+      width: 240px;
+      min-width: 240px;
+      max-width: 240px;
+      flex-shrink: 0;
+    }
   }
 
   /* Navigation arrows styling - conditional */
@@ -186,7 +237,8 @@ const CategorySlider = ({
   viewAllLink = "#",
   viewAllText = "Смотреть все",
   cardStyle,
-  showNavigation = false
+  showNavigation = false,
+  subtitle = ""
 }) => {
   const displayCategories = Array.isArray(categories) ? categories : [];
   const spaceBetweenValue = 12; // Фиксированные отступы между карточками в слайдере // Use smaller spacing for mobile
@@ -196,9 +248,18 @@ const CategorySlider = ({
       <HeaderContainer>
         <TitleRow>
           <Title>{title}</Title>
-          {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+          {viewAllLink && (
+            <Link href={viewAllLink} passHref legacyBehavior>
+              <ViewAllLink>{viewAllText}</ViewAllLink>
+            </Link>
+          )}
         </TitleRow>
-        {/* No subtitle in slider view for simplicity, can be added if needed */}
+        <HeaderDivider />
+        {subtitle ? (
+          <SubtitleContainer>
+            <Subtitle>{subtitle}</Subtitle>
+          </SubtitleContainer>
+        ) : null}
       </HeaderContainer>
 
       {displayCategories.length > 0 ? (
@@ -209,7 +270,8 @@ const CategorySlider = ({
             slidesPerView={'auto'} // Let CSS width/max-width control sizing
             navigation={showNavigation}
             grabCursor={true}
-            speed={400}
+            speed={350}
+            cssMode={true}
             touchStartPreventDefault={false}
             touchStartForcePreventDefault={false}
             simulateTouch={true}
@@ -254,6 +316,7 @@ CategorySlider.propTypes = {
   viewAllText: PropTypes.string,
   cardStyle: PropTypes.object,
   showNavigation: PropTypes.bool,
+  subtitle: PropTypes.string,
 };
 
 export default CategorySlider; 

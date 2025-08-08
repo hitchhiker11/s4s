@@ -4,6 +4,7 @@ import { submitPreOrderForm } from '../../lib/api/bitrix';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../Toast/ToastContainer';
 import styles from './PreOrderModal.module.css';
+import { normalizePhoneNumber, isValidRussianPhone } from '../../lib/phone';
 
 const PreOrderModal = ({ 
   isOpen, 
@@ -65,6 +66,10 @@ const PreOrderModal = ({
     }
   };
 
+  const handlePhoneBlur = () => {
+    setFormData(prev => ({ ...prev, phone: normalizePhoneNumber(prev.phone) }));
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
@@ -80,10 +85,11 @@ const PreOrderModal = ({
       newErrors.surname = 'Отчество обязательно для заполнения';
     }
     
-    if (!formData.phone.trim()) {
+    const normalized = normalizePhoneNumber(formData.phone);
+    if (!normalized) {
       newErrors.phone = 'Номер телефона обязателен для заполнения';
-    } else if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
+    } else if (!isValidRussianPhone(normalized)) {
+      newErrors.phone = 'Введите корректный номер телефона в формате +7XXXXXXXXXX';
     }
     
     if (!formData.email.trim()) {
@@ -99,6 +105,12 @@ const PreOrderModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Normalize once more before validation and submit
+    const normalized = normalizePhoneNumber(formData.phone);
+    if (normalized !== formData.phone) {
+      setFormData(prev => ({ ...prev, phone: normalized }));
+    }
+    
     if (!validateForm()) {
       showErrorToast('Пожалуйста, исправьте ошибки в форме');
       return;
@@ -111,7 +123,7 @@ const PreOrderModal = ({
         first_name: formData.firstName.trim(),
         last_name: formData.lastName.trim(),
         surname: formData.surname.trim(),
-        phone_number: formData.phone.trim(),
+        phone_number: normalized,
         email: formData.email.trim(),
         comment: formData.comment.trim(),
         product_name: productName || '',
@@ -128,7 +140,8 @@ const PreOrderModal = ({
           onClose();
         }, 2000);
       } else {
-        throw new Error(result.message || 'Произошла ошибка при оформлении предзаказа');
+        const apiMessage = result?.error?.message || result?.message || 'Произошла ошибка при оформлении предзаказа';
+        throw new Error(apiMessage);
       }
     } catch (error) {
       console.error('Error submitting pre-order form:', error);
@@ -215,6 +228,7 @@ const PreOrderModal = ({
                 className={`${styles.input} ${errors.phone ? styles.inputError : ''}`}
                 value={formData.phone}
                 onChange={handleInputChange}
+                onBlur={handlePhoneBlur}
                 disabled={isSubmitting}
                 required
               />

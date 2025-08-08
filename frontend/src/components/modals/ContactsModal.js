@@ -4,6 +4,7 @@ import { submitCallbackForm } from '../../lib/api/bitrix';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../Toast/ToastContainer';
 import styles from './ContactsModal.module.css';
+import { normalizePhoneNumber, isValidRussianPhone } from '../../lib/phone';
 
 const ContactsModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -52,6 +53,10 @@ const ContactsModal = ({ isOpen, onClose }) => {
     }
   };
 
+  const handlePhoneBlur = () => {
+    setFormData(prev => ({ ...prev, phone: normalizePhoneNumber(prev.phone) }));
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
@@ -59,10 +64,11 @@ const ContactsModal = ({ isOpen, onClose }) => {
       newErrors.name = 'Имя обязательно для заполнения';
     }
     
-    if (!formData.phone.trim()) {
+    const normalized = normalizePhoneNumber(formData.phone);
+    if (!normalized) {
       newErrors.phone = 'Номер телефона обязателен для заполнения';
-    } else if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
+    } else if (!isValidRussianPhone(normalized)) {
+      newErrors.phone = 'Введите корректный номер телефона в формате +7XXXXXXXXXX';
     }
     
     setErrors(newErrors);
@@ -71,6 +77,12 @@ const ContactsModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Normalize once more before validation and submit
+    const normalized = normalizePhoneNumber(formData.phone);
+    if (normalized !== formData.phone) {
+      setFormData(prev => ({ ...prev, phone: normalized }));
+    }
     
     if (!validateForm()) {
       showErrorToast('Пожалуйста, исправьте ошибки в форме');
@@ -82,7 +94,7 @@ const ContactsModal = ({ isOpen, onClose }) => {
     try {
       const callbackData = {
         first_name: formData.name.trim(),
-        phone_number: formData.phone.trim()
+        phone_number: normalized
       };
       
       const result = await submitCallbackForm(callbackData);
@@ -94,7 +106,8 @@ const ContactsModal = ({ isOpen, onClose }) => {
           onClose();
         }, 2000);
       } else {
-        throw new Error(result.message || 'Произошла ошибка при заказе звонка');
+        const apiMessage = result?.error?.message || result?.message || 'Произошла ошибка при заказе звонка';
+        throw new Error(apiMessage);
       }
     } catch (error) {
       console.error('Error submitting callback form:', error);
@@ -187,6 +200,7 @@ const ContactsModal = ({ isOpen, onClose }) => {
                 className={`${styles.input} ${errors.phone ? styles.inputError : ''}`}
                 value={formData.phone}
                 onChange={handleInputChange}
+                onBlur={handlePhoneBlur}
                 disabled={isSubmitting}
                 required
               />

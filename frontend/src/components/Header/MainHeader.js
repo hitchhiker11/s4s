@@ -82,6 +82,25 @@ const MainHeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &.sticky {
+    position: sticky;
+    top: 0;
+    background-color: ${COLORS.white};
+    transition: background-color 0.2s ease, min-height 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  &.scrolled {
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: ${SHADOWS.sm};
+    min-height: calc(${HEADER_SIZES.headerHeight} - 10px);
+  }
+
+  &.hidden {
+    transform: translateY(-100%);
+  }
 `;
 
 const MainHeaderContent = styled(Container)`
@@ -494,6 +513,10 @@ const MainHeader = ({
   toggleMobileMenu,
   onOpenContactsModal
 }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const lastTimeRef = useRef(Date.now());
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDesktopSearchOpen, setIsDesktopSearchOpen] = useState(false);
@@ -507,6 +530,32 @@ const MainHeader = ({
   const [showResults, setShowResults] = useState(false);
   const searchInputRef = useRef(null);
   const searchWrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      const now = Date.now();
+      const deltaY = currentY - lastScrollYRef.current;
+      const deltaTime = Math.max(1, now - lastTimeRef.current);
+      const velocity = deltaY / deltaTime; // px per ms
+
+      setIsScrolled(currentY > 5);
+
+      // Hide on scroll down, show on quick scroll up
+      if (deltaY > 10) {
+        setIsHidden(true);
+      } else if (deltaY < -20 || velocity < -0.2) {
+        setIsHidden(false);
+      }
+
+      lastScrollYRef.current = currentY;
+      lastTimeRef.current = now;
+    };
+    lastScrollYRef.current = window.scrollY;
+    lastTimeRef.current = Date.now();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSearchClick = () => {
     if (window.innerWidth <= 768) {
@@ -644,7 +693,7 @@ const MainHeader = ({
 
   return (
     <>
-      <MainHeaderWrapper>
+      <MainHeaderWrapper className={`${isScrolled ? 'scrolled' : 'sticky'} ${isHidden ? 'hidden' : ''}`}>
         <MainHeaderContent>
           {/* Mobile Menu Button (only visible on mobile) */}
           <MobileMenuButton 

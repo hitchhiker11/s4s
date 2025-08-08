@@ -19,10 +19,13 @@ const bitrixApi = axios.create({
 const handleApiError = (error, endpoint) => {
   console.error(`API Error (${endpoint}):`, error.response?.status, error.response?.data, error.message);
   
+  // Prefer nested error message when present
+  const serverMessage = error.response?.data?.error?.message || error.response?.data?.message;
+  
   // Return structured error object
   return {
     error: true,
-    message: error.response?.data?.error || error.message || 'Unknown API error',
+    message: serverMessage || error.message || 'Unknown API error',
     status: error.response?.status ?? null,
     data: error.response?.data ?? null,
   };
@@ -931,24 +934,13 @@ export const submitForm = async (formData) => {
     
     // Check if the API returned an error in the response data
     if (response.data && response.data.success === false) {
-      throw new Error(response.data.message || 'Form submission failed');
+      const message = response.data?.error?.message || response.data?.message || 'Form submission failed';
+      throw new Error(message);
     }
     
     return response.data;
   } catch (error) {
     console.error('❌ [API] Failed to submit form:', error);
-    
-    // If it's an API error with message field, throw it
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    
-    // If it's already our custom error, re-throw it
-    if (error.message !== 'Network Error' && error.message !== 'Request failed with status code 400') {
-      throw error;
-    }
-    
-    // For other errors, use handleApiError but throw the result
     const errorResult = handleApiError(error, 'submitForm');
     throw new Error(errorResult.message);
   }
@@ -1043,6 +1035,26 @@ export const submitPreOrderForm = async (preOrderData) => {
   }
 };
 
+/**
+ * Subscription API
+ */
+export const subscribeToNews = async ({ phone, name, email }) => {
+  try {
+    const formData = {
+      iblock_id: 28,
+      fields: {
+        first_name: name || '',
+        phone_number: phone,
+        email: email || ''
+      }
+    };
+    return await submitForm(formData);
+  } catch (error) {
+    const err = handleApiError(error, 'subscribeToNews');
+    return { success: false, error: { message: err.message }, data: err.data };
+  }
+};
+
 export default {
   getCatalogItems,
   getCatalogItemById,
@@ -1076,5 +1088,6 @@ export default {
   submitForm,
   submitRequestForm,
   submitCallbackForm,
-  submitPreOrderForm
+  submitPreOrderForm,
+  subscribeToNews
 }; 

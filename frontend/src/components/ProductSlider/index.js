@@ -47,6 +47,42 @@ const HeaderContainer = styled.div`
   /* No horizontal padding since SliderSection now handles all padding */
 `;
 
+const HeaderDivider = styled.hr`
+  border: none;
+  height: 2px;
+  background-color: ${COLORS.gray400};
+  width: 100%;
+  // margin: 0 0 22px 0;  
+
+  @media (min-width: 992px) {
+    height: 4px;
+  }
+`;
+
+const SubtitleContainer = styled.div`
+  display: none;
+  width: 100%;
+  border-bottom: 2px solid ${COLORS.gray400};
+  padding: ${SPACING.sm} 0;
+  max-height: 28px;
+
+  @media (min-width: 992px) {
+    display: flex;
+    border-bottom-width: 4px;
+    max-height: 45px;
+    align-items: center;
+  }
+`;
+
+const Subtitle = styled.p`
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  font-size: clamp(1rem, 5vw, ${TYPOGRAPHY.size["2xl"]});
+  color: ${COLORS.gray500};
+  margin: 0;
+  line-height: 1.16;
+`;
+
 const TitleRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -104,6 +140,11 @@ const SwiperContainer = styled.div`
     /* No additional padding since SliderSection now handles all padding */
     padding-left: 0;
     padding-right: 0;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
   .swiper-slide {
@@ -123,9 +164,9 @@ const SwiperContainer = styled.div`
   /* For tablet - intermediate size */
   ${mediaQueries.md} {
     .swiper-slide {
-      width: 220px; /* Intermediate size for tablet */
-      min-width: 220px;
-      max-width: 220px;
+      width: 240px; /* Slightly wider to avoid over-shrinking */
+      min-width: 240px;
+      max-width: 240px;
       flex-shrink: 0;
     }
   }
@@ -211,7 +252,8 @@ const ProductSlider = ({
   viewAllText = "Смотреть все",
   showNavigation = false,
   sliderSectionStyles = "", // New prop for custom section styles
-  gridSectionStyles = "" // Accept this prop but use sliderSectionStyles instead
+  gridSectionStyles = "",
+  subtitle = ""
 }) => {
   const displayProducts = Array.isArray(products) ? products : [];
   const spaceBetweenValue = 12; // Фиксированные отступы между карточками в слайдере
@@ -234,7 +276,13 @@ const ProductSlider = ({
             </Link>
           )}
         </TitleRow>
+        <HeaderDivider />
       </HeaderContainer>
+      {subtitle ? (
+        <SubtitleContainer>
+          <Subtitle>{subtitle}</Subtitle>
+        </SubtitleContainer>
+      ) : null}
 
       {displayProducts.length > 0 ? (
         <SwiperContainer showNavigation={showNavigation}>
@@ -244,7 +292,8 @@ const ProductSlider = ({
             slidesPerView={'auto'}
             navigation={showNavigation}
             grabCursor={true}
-            speed={400}
+            speed={350}
+            cssMode={true}
             touchStartPreventDefault={false}
             touchStartForcePreventDefault={false}
             simulateTouch={true}
@@ -293,6 +342,7 @@ ProductSlider.propTypes = {
   showNavigation: PropTypes.bool,
   sliderSectionStyles: PropTypes.string, // Add propType for custom styles
   gridSectionStyles: PropTypes.string, // Add propType for compatibility
+  subtitle: PropTypes.string,
 };
 
 export default ProductSlider;

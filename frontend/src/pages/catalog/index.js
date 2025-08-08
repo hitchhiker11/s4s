@@ -183,7 +183,7 @@ const CatalogPage = ({ seo, initialCategories }) => {
           />
         )}
 
-        <SubscriptionForm />
+        <SubscriptionForm noOuterMargin={true} />
 
       </Container>
       

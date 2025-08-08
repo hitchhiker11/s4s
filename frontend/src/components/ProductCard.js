@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 import { useQueryClient } from 'react-query';
 import { useBasket } from '../hooks/useBasket';
@@ -436,20 +437,22 @@ const ProductCard = ({ product, onAddToCart }) => {
         productArticle={product.CODE || product.code || product.article}
       />
       
-      <a href={detailUrl} style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
-        <ImageContainer>
-          <Image 
-            src={imageUrl} 
-            alt={productName} 
-            loading="lazy"
-          />
-        </ImageContainer>
-        <Content>
-          <BrandTitle>{brandName}</BrandTitle> 
-          <ProductTitle>{productName}</ProductTitle>
-          <Price>{formattedPrice}</Price>
-        </Content>
-      </a>
+      <Link href={detailUrl} passHref legacyBehavior>
+        <a style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+          <ImageContainer>
+            <Image 
+              src={imageUrl} 
+              alt={productName} 
+              loading="lazy"
+            />
+          </ImageContainer>
+          <Content>
+            <BrandTitle>{brandName}</BrandTitle> 
+            <ProductTitle>{productName}</ProductTitle>
+            <Price>{formattedPrice}</Price>
+          </Content>
+        </a>
+      </Link>
       <DividerLine />
       
       {/* Show QuantityControl if item is in basket, otherwise show Add to Cart or PreOrder button */}

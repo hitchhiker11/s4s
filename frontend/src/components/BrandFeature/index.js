@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
+import Link from 'next/link';
 
 const FeatureContainer = styled.section`
   width: 100%;
@@ -75,6 +76,14 @@ const TextContainer = styled.div`
     width: 50%;
     padding: ${SPACING["3xl"]};
   }
+`;
+
+const HeaderDivider = styled.hr`
+  border: none;
+  height: 4px;
+  background-color: ${COLORS.gray400};
+  width: 100%;
+  // margin: 0 0 22px 0;
 `;
 
 const BrandLogo = styled.img`
