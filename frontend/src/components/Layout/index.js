@@ -19,13 +19,14 @@ const Layout = ({
   useMocksHeader = true, 
   mockBasketCount = 0,
   showMainFooter = true,
+  showDashedBorderFooter = true,
 }) => {
   return (
     <Main>
       <BasketInitializer />
       <Header useMocks={useMocksHeader} mockBasketCount={mockBasketCount} />
       <Content>{children}</Content>
-      <Footer showMainSection={showMainFooter} />
+      <Footer showMainSection={showMainFooter} showDashedBorder={showDashedBorderFooter} />
     </Main>
   );
 };

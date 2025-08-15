@@ -21,6 +21,23 @@ const breadcrumbItems = [
 const PaymentSuccessPage = () => {
   const router = useRouter();
   const { order_id, order_number } = router.query;
+  const [effectiveOrder, setEffectiveOrder] = React.useState({ id: null, number: null });
+
+  React.useEffect(() => {
+    const metaRaw = typeof window !== 'undefined' ? localStorage.getItem('s4s_unpaid_order_meta') : null;
+    if (metaRaw) {
+      try {
+        const meta = JSON.parse(metaRaw);
+        if (meta?.order_id && meta?.order_number) {
+          setEffectiveOrder({ id: meta.order_id, number: meta.order_number });
+          // Очистим, если успешно на странице успеха
+          localStorage.removeItem('s4s_unpaid_order_meta');
+          return;
+        }
+      } catch {}
+    }
+    setEffectiveOrder({ id: order_id || null, number: order_number || null });
+  }, [order_id, order_number]);
 
   // Recently viewed products hook
   const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
@@ -54,7 +71,7 @@ const PaymentSuccessPage = () => {
               className={styles.successImage}
             />
             <h1 className={styles.successTitle}>
-              Заказ №{order_number || order_id || '<>'} оплачен
+              Заказ №{effectiveOrder.number || effectiveOrder.id || '<>'} оплачен
             </h1>
             <p className={styles.successDescription}>
               Спасибо за покупку! Ваш заказ принят в обработку. 

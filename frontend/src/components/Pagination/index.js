@@ -16,14 +16,25 @@ const PaginationContainer = styled.div`
 `;
 
 const ButtonsContainer = styled.div`
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   width: 100%;
   margin-bottom: 10px;
   padding: 0 8px;
-  overflow-x: auto;
   gap: 4px;
+
+  /* Middle container scrolls on very small screens */
+  & > .Pagination__PageButtonsWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    gap: 4px;
+  }
+  & > .Pagination__PageButtonsWrapper::-webkit-scrollbar { display: none; }
   
   /* Скрываем скроллбар на мобильных */
   &::-webkit-scrollbar {
@@ -41,7 +52,6 @@ const ButtonsContainer = styled.div`
     margin-bottom: 15px;
     padding: 0 16px;
     gap: 8px;
-    overflow-x: visible;
   }
 `;
 
@@ -168,19 +178,73 @@ const Pagination = ({ currentPage, totalPages, totalItems, onPageChange }) => {
   // Если страниц меньше 2, не показываем пагинацию
   if (totalPages <= 1) return null;
 
-  // Функция для определения количества отображаемых кнопок в зависимости от ширины экрана
-  const getMaxButtons = () => {
-    if (typeof window !== 'undefined') {
+  // Гидрация: избегаем чтения window при первом рендере, чтобы совпасть с SSR
+  const [maxButtons, setMaxButtons] = React.useState(5);
+
+  React.useEffect(() => {
+    const computeMaxButtons = () => {
       const width = window.innerWidth;
       if (width < 576) return 3; // xs - очень маленькие экраны
-      if (width < 768) return 5; // sm - маленькие экраны  
+      if (width < 768) return 5; // sm - маленькие экраны
       return 7; // md и больше - полный набор
+    };
+
+    const update = () => setMaxButtons(computeMaxButtons());
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // Prefetch next page route in background on capable browsers/devices
+  React.useEffect(() => {
+    if (!totalPages || currentPage >= totalPages) return;
+
+    // Light heuristics for weak devices: avoid prefetch on very slow connections or battery saving
+    const connection = typeof navigator !== 'undefined' && (navigator.connection || navigator.webkitConnection || navigator.mozConnection);
+    const saveData = connection && connection.saveData;
+    const effectiveType = connection && connection.effectiveType; // 'slow-2g','2g','3g','4g'
+    const isSlow = effectiveType === '2g' || effectiveType === 'slow-2g';
+
+    if (saveData || isSlow) return; // Skip prefetch to save data
+
+    // Use Speculation Rules API when available
+    try {
+      if ('speculationRules' in document && document.speculationRules) {
+        const nextPage = currentPage + 1;
+        const link = typeof window !== 'undefined' ? window.location.pathname : '';
+        const url = new URL(link, window.location.origin);
+        url.searchParams.set('page', String(nextPage));
+        const rules = {
+          prefetch: [{ source: 'list', urls: [url.toString()] }]
+        };
+        const script = document.createElement('script');
+        script.type = 'speculationrules';
+        script.text = JSON.stringify(rules);
+        document.head.appendChild(script);
+        return () => {
+          if (document.head.contains(script)) document.head.removeChild(script);
+        };
+      }
+    } catch (_) {
+      // noop
     }
-    return 5; // fallback для SSR
-  };
+
+    // Fallback: create an invisible <link rel="prefetch">
+    const nextPage = currentPage + 1;
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', String(nextPage));
+    const prefetchLink = document.createElement('link');
+    prefetchLink.rel = 'prefetch';
+    prefetchLink.href = url.toString();
+    prefetchLink.as = 'fetch';
+    prefetchLink.crossOrigin = 'anonymous';
+    document.head.appendChild(prefetchLink);
+    return () => {
+      if (document.head.contains(prefetchLink)) document.head.removeChild(prefetchLink);
+    };
+  }, [currentPage, totalPages]);
 
   // Определяем, какие кнопки страниц показывать
-  const maxButtons = getMaxButtons();
   let pageButtons = [];
   let startPage, endPage;
 
@@ -266,7 +330,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, onPageChange }) => {
           Назад
         </NavigationButton>
 
-        <PageButtonsContainer>
+        <PageButtonsContainer className="Pagination__PageButtonsWrapper">
           {pageButtons}
         </PageButtonsContainer>
 

@@ -50,14 +50,18 @@ const PageTitle = styled.h1`
 `;
 
 const BrandInfo = styled.div`
-  margin-bottom: 32px;
+  // margin-bottom: 16px;
+  
   padding: 24px;
+  padding-bottom: 0;
   background: ${COLORS.gray50};
   border-radius: 8px;
   
   ${mediaQueries.md} {
     padding: 32px;
-    margin-bottom: 48px;
+    padding-bottom: 0;
+    // margin-bottom: 48px;
+
   }
 `;
 
@@ -272,6 +276,8 @@ const BrandProductsPage = ({ brandData, initialProducts, seo }) => {
           <>
             <ProductGrid
               showTitleRow={false}
+              showHeaderDivider={false}
+              gridSectionStyles="padding: 0px 12px 16px 12px"
               products={products.map((p) => ({
                 ...p,
                 imageUrl: p.image,

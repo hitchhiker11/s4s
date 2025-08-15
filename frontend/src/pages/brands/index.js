@@ -102,7 +102,8 @@ const SectionHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-bottom: 4px solid #B6B6B6;
+  border-bottom: 2px solid ${COLORS.gray400};
+  ${mediaQueries.lg} { border-bottom-width: 4px; }
   margin-bottom: 22px;
 `;
 
@@ -290,15 +291,15 @@ const SubmitButton = styled.button`
     font-size: 16px;
     background-color: ${COLORS.transparent};
     color: #1C1C1C; 
-    border: none;
+    border: 2px solid ${COLORS.gray400};
     text-transform: uppercase;
     border-radius: 0;
   }
 
-  ${mediaQueries.md} {
-  min-width: 270px;
-  border-right: 4px solid ${COLORS.gray400};
-  border-bottom: 4px solid ${COLORS.gray400};
+  ${mediaQueries.lg} {
+    min-width: 270px;
+    border-right: 4px solid ${COLORS.gray400};
+    border-bottom: 4px solid ${COLORS.gray400};
     &:hover {
       border-right-color: ${COLORS.gray500};
       border-bottom-color: ${COLORS.gray500};
@@ -518,6 +519,8 @@ const BrandsPage = ({ seo, initialBrands }) => {
                 imageUrl="/images/placeholder.png"
                 link="#"
                 disableRotation={true}
+                 showTitle={false}
+                 enableEdgeImagePositioning={false}
                 style={{ opacity: 0.6 }}
               />
             ))}
@@ -536,6 +539,8 @@ const BrandsPage = ({ seo, initialBrands }) => {
               link={brand.link}
               disableRotation={brand.disableRotation}
               rotation={brand.rotation}
+                showTitle={false}
+                enableEdgeImagePositioning={false}
             />
           ))}
         </CategoriesGrid>

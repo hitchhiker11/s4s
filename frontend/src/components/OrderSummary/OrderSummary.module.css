@@ -22,13 +22,13 @@
   transition: background-color 0.3s ease; /* Добавляем плавность для псевдоэлемента */
 }
 
-.orderSummary:hover::after {
+/* .orderSummary:hover::after {
   background-color: #6B6B6B;
 }
 
 .orderSummary:hover {
   border-bottom-color: #6B6B6B;
-}
+} */
 
 /* На экранах телефонов ~390px убираем padding и все границы, включая псевдоэлемент */
 @media (max-width: 390px) {

@@ -43,11 +43,11 @@ const PageTitle = styled.h1`
   line-height: 1em;
   color: #1C1C1C;
   margin-top: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   ${mediaQueries.md} {
     font-size: 36px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 24px;
+    margin-bottom: 12px;
   }
 `;
 
@@ -64,7 +64,8 @@ const SectionHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-bottom: 4px solid #B6B6B6;
+  border-bottom: 2px solid ${COLORS.gray400};
+  ${mediaQueries.lg} { border-bottom-width: 4px; }
   margin-bottom: 22px;
 `;
 
@@ -182,7 +183,10 @@ const transformCategory = (apiCategory) => {
     id: apiCategory.id,
     name: apiCategory.name,
     code: apiCategory.fields?.CODE || '',
-    image: apiCategory.fields?.PICTURE ? `/upload/${apiCategory.fields.PICTURE}` : null,
+    // Prefer direct URLs from API if available; fallback to legacy numeric PICTURE id
+    image: apiCategory.fields?.PICTURE_PREVIEW_SRC
+      || apiCategory.fields?.PICTURE_SRC
+      || (apiCategory.fields?.PICTURE ? `/upload/${apiCategory.fields.PICTURE}` : null),
   };
 };
 
@@ -195,7 +199,10 @@ const transformSubcategories = (apiSubcategories, parentCategoryCode) => {
     code: subcat.fields?.CODE || '',
     // Формируем ссылку в формате /catalog/[categoryCode]/[subCategoryCode]
     link: `/catalog/${parentCategoryCode}/${subcat.fields?.CODE || subcat.id}`,
-    imageUrl: subcat.fields?.PICTURE ? `/upload/${subcat.fields.PICTURE}` : null,
+    // Prefer direct URLs from API if available; fallback to legacy numeric PICTURE id
+    imageUrl: subcat.fields?.PICTURE_PREVIEW_SRC
+      || subcat.fields?.PICTURE_SRC
+      || (subcat.fields?.PICTURE ? `/upload/${subcat.fields.PICTURE}` : null),
   }));
 };
 
@@ -373,7 +380,7 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
           <LoadingState>Загрузка товаров...</LoadingState>
         ) : formattedNewProducts && formattedNewProducts.length > 0 ? (
           <ResponsiveProductSection 
-            title="Новые поступления"
+            title="Недавно просмотренные"
             subtitle=""
             viewAllLink={`/catalog/${categoryCode}/all`}
             showViewAllLink={true}

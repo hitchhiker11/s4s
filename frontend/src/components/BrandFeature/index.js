@@ -42,13 +42,13 @@ const ImageContainer = styled.div`
   width: 100%;
   height: 300px;
 
-  ${mediaQueries.md} {
+  @media (min-width: 1264px) {
     display: block;
     width: 40%;
     height: 600px;
   }
   
-  ${mediaQueries.lg} {
+  @media (min-width: 1200px) {
     width: 50%;
     height: 800px;
   }
@@ -67,12 +67,12 @@ const TextContainer = styled.div`
   flex-direction: column;
   gap: ${SPACING.sm};
   
-  ${mediaQueries.md} {
+  @media (min-width: 1264px) {
     width: 60%;
     padding: ${SPACING["2xl"]};
   }
   
-  ${mediaQueries.lg} {
+  @media (min-width: 1200px) {
     width: 50%;
     padding: ${SPACING["3xl"]};
   }

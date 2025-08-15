@@ -12,7 +12,7 @@
   margin-top: 0;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #e0e0e0;
+  /* border-bottom: 1px solid #e0e0e0; */
 }
 
 .cdekSection,
@@ -68,12 +68,15 @@
   border-bottom: 4px solid #B6B6B6;
   transition: border-color 0.3s ease;
   box-sizing: border-box;
+  height: 56px;
+  max-height: 150px;
 }
 
 /* Ensure textarea matches the visual height of other inputs */
 .inputGroup textarea.inputField {
   min-height: 56px; /* matches approx input height incl. padding and bottom border */
   resize: vertical;
+  grid-column: 1 / -1; /* Let textarea span both columns to align baseline */
 }
 
 .inputField:focus {
@@ -132,10 +135,12 @@
     border-bottom: 3px solid #B6B6B6;
     width: 100%;
     box-sizing: border-box;
+    height: 50px;
   }
 
   .inputGroup textarea.inputField {
     min-height: 50px; /* align with mobile input height */
+    grid-column: auto; /* Single column, no spanning needed */
   }
   
   .inputGroup {
@@ -181,6 +186,7 @@
     font-size: 16px;
     width: 100%;
     box-sizing: border-box;
+    height: 48px;
   }
   
   .formGrid {

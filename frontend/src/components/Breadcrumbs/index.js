@@ -13,7 +13,7 @@ const BreadcrumbsContainer = styled.div`
   border-bottom: 2px solid ${COLORS.gray400};
   height: 40px;
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     border-top: 4px solid ${COLORS.gray400};
     border-bottom: 4px solid ${COLORS.gray400};
     height: 50px;

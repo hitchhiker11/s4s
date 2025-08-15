@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import Image from 'next/image';
 import QuantityControl from '../QuantityControl';
@@ -11,6 +12,13 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
   }
 
   const isLoading = item.isLoading || false; // Get loading state from item
+  const router = useRouter();
+
+  const navigateToProduct = () => {
+    if (item.productLink) {
+      router.push(item.productLink);
+    }
+  };
 
   const handleQuantityChange = (newQuantity) => {
     if (!isLoading) {
@@ -26,7 +34,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
 
   return (
     <div className={styles.cartItem}>
-      <div className={styles.imageContainer}>
+      <div className={styles.imageContainer} onClick={navigateToProduct} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') navigateToProduct(); }}>
         <Image 
           src={item.imageUrl || '/images/placeholder.png'} 
           alt={item.name} 
@@ -35,7 +43,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
           objectFit="contain"
         />
       </div>
-      <div className={styles.detailsContainer}>
+      <div className={styles.detailsContainer} onClick={navigateToProduct} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') navigateToProduct(); }}>
         <div className={styles.productInfo}>
           <h3 className={styles.productName}>{item.name}</h3>
           <p className={styles.productBrand}>{item.brand}</p>
@@ -51,7 +59,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
           {/* {item.stock && <p className={styles.stockInfo}>{`${item.stock} шт. в наличии`}</p>} */}
         </div>
       </div>
-      <div className={styles.quantityAndActions}>
+      <div className={styles.quantityAndActions} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
       {item.stock && <p className={styles.stockInfo}>{`${item.stock} шт. в наличии`}</p>}
         {/* Moved Price for mobile layout - will be visible due to CSS for .quantityAndActions .productPrice */}
         <p className={`${styles.productPrice} ${styles.mobilePrice}`}>{`₽${item.price.toLocaleString('ru-RU')}`}</p>

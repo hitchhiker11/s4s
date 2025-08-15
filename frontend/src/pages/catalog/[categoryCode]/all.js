@@ -43,11 +43,11 @@ const PageTitle = styled.h1`
   line-height: 1em;
   color: #1C1C1C;
   margin-top: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   ${mediaQueries.md} {
     font-size: 36px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 24px;
+    margin-bottom: 12px;
   }
 `;
 
@@ -178,6 +178,43 @@ const CategoryAllProductsPage = ({ initialCategory, initialProducts, seo }) => {
     });
   };
 
+  // Background prefetch of next page for capable devices
+  React.useEffect(() => {
+    const totalPages = pagination.totalPages || 1;
+    if (!totalPages || pagination.currentPage >= totalPages) return;
+
+    const connection = typeof navigator !== 'undefined' && (navigator.connection || navigator.webkitConnection || navigator.mozConnection);
+    const saveData = connection && connection.saveData;
+    const effectiveType = connection && connection.effectiveType;
+    const isSlow = effectiveType === '2g' || effectiveType === 'slow-2g';
+    if (saveData || isSlow) return;
+
+    try {
+      if ('speculationRules' in document && document.speculationRules) {
+        const nextPage = pagination.currentPage + 1;
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(nextPage));
+        const rules = { prefetch: [{ source: 'list', urls: [url.toString()] }] };
+        const script = document.createElement('script');
+        script.type = 'speculationrules';
+        script.text = JSON.stringify(rules);
+        document.head.appendChild(script);
+        return () => { if (document.head.contains(script)) document.head.removeChild(script); };
+      }
+    } catch (_) { /* noop */ }
+
+    const nextPage = pagination.currentPage + 1;
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', String(nextPage));
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = url.toString();
+    link.as = 'fetch';
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+    return () => { if (document.head.contains(link)) document.head.removeChild(link); };
+  }, [pagination]);
+
   useEffect(() => {
     loadBitrixCore();
   }, []);
@@ -220,6 +257,19 @@ const CategoryAllProductsPage = ({ initialCategory, initialProducts, seo }) => {
           <>
             <ProductGrid 
               showTitleRow={false}
+              showHeaderDivider={false}
+              gridSectionStyles={`
+                padding: 0px 0px 16px 12px !important;
+                @media (min-width: 768px) {
+                  padding: 0px 0px 16px 12px !important;
+                }
+                @media (min-width: 1200px) {
+                  padding: 0px 0px 16px 12px !important;
+                }
+                @media (min-width: 1920px) {
+                  padding: 0px 0px 16px 12px !important;
+                }
+              `}
               products={products.map(product => ({
                 ...product,
                 imageUrl: product.image,

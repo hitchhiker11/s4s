@@ -20,7 +20,7 @@ const ProductDetailCard = ({
     return <div>Товар не найден.</div>;
   }
 
-  const [selectedImage, setSelectedImage] = useState(product.images[0] || { url: '/images/placeholder.png', alt: 'Placeholder' });
+  const [selectedImage, setSelectedImage] = useState(product.images[0] || { url: '/images/placeholder.png', alt: 'Placeholder', id: 'placeholder' });
   const [quantity, setQuantity] = useState(1);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -47,6 +47,12 @@ const ProductDetailCard = ({
     window.addEventListener('resize', updateIsMobile);
     return () => window.removeEventListener('resize', updateIsMobile);
   }, []);
+
+  // Reset selected image when product changes (SPA navigation from recently viewed)
+  useEffect(() => {
+    if (!product || !Array.isArray(product.images) || product.images.length === 0) return;
+    setSelectedImage(product.images[0]);
+  }, [product?.id]);
 
   // Предзаказ отображается, если товар недоступен ИЛИ явно указан нулевой остаток.
   // В некоторых ответах API количество может быть не передано — в таком случае ориентируемся
@@ -144,26 +150,29 @@ const ProductDetailCard = ({
           style={{ cursor: 'pointer' }}
         >
           <Image 
+            key={selectedImage.id}
             src={selectedImage.url} 
             alt={selectedImage.alt}
-            width={500} // Adjust as per actual design requirement for largest view
-            height={500} // Adjust as per actual design requirement for largest view
+            width={500}
+            height={500}
             className={styles.mainImage}
-            priority // Prioritize loading of the main product image
+            priority
           />
           {/* {product.recommended && <span className={styles.recommendedBadge}>Рекомендуем этот товар</span>} */}
         </div>
-        <div className={styles.thumbnailContainer}>
-          {product.images.map((image) => (
-            <button 
-              key={image.id} 
-              className={`${styles.thumbnailButton} ${selectedImage.id === image.id ? styles.activeThumbnail : ''}`}
-              onClick={() => handleThumbnailClick(image)}
-            >
-              <Image src={image.url} alt={image.alt} width={80} height={80} className={styles.thumbnailImage} />
-            </button>
-          ))}
-        </div>
+        {product.images.length > 1 && (
+          <div className={styles.thumbnailContainer}>
+            {product.images.map((image) => (
+              <button 
+                key={image.id} 
+                className={`${styles.thumbnailButton} ${selectedImage.id === image.id ? styles.activeThumbnail : ''}`}
+                onClick={() => handleThumbnailClick(image)}
+              >
+                <Image src={image.url} alt={image.alt} width={80} height={80} className={styles.thumbnailImage} />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.detailsContainer}>
@@ -249,10 +258,17 @@ const ProductDetailCard = ({
 
       {/* Image Modal for fullscreen viewing */}
       {isMounted && (
-        <ImageModal 
+        <ImageModal
           isOpen={isImageModalOpen}
           onClose={handleCloseImageModal}
-          image={selectedImage}
+          images={product.images}
+          initialIndex={product.images.findIndex((img) => img.id === selectedImage.id) || 0}
+          onIndexChange={(idx) => {
+            const next = product.images[idx];
+            if (next && next.id !== selectedImage.id) {
+              setSelectedImage(next);
+            }
+          }}
         />
       )}
     </div>

@@ -31,7 +31,7 @@ const Card = styled.div`
     padding-right: 0;
   }
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     border-right-width: 4px;
     border-bottom-width: 4px;
   }
@@ -151,8 +151,8 @@ const DividerLine = styled.hr`
   margin: 0;
   flex-shrink: 0; /* Prevent from shrinking */
 
-  @media (min-width: 1024px) {
-    border-top-width: 2px;
+  @media (min-width: 992px) {
+    border-top-width: 4px;
   }
 `;
 

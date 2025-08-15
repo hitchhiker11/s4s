@@ -344,18 +344,29 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
   };
 
   // Define render functions for cards
-  const renderCategoryCard = (category, cardStyle) => (
-    <CategoryCard 
-      key={category.id} 
-      title={category.title || category.name} // Use title or fallback to name
-      imageUrl={category.imageUrl || category.image} // Use imageUrl or fallback to image
-      link={category.link || category.url} // Use link or fallback to url
-      showTitle={category.showTitle !== undefined ? category.showTitle : true}
-      rotation={category.rotation || 0}
-      disableRotation={category.disableRotation || false}
-      additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
-    />
-  );
+  const renderCategoryCard = (category, cardStyle) => {
+    const isBrandAuto = category?.showTitle === false;
+    const edgeEnabled = (category?.enableEdgeImagePositioning !== undefined)
+      ? category.enableEdgeImagePositioning
+      : !isBrandAuto; // enable for product categories only
+    const disableRotationValue = (category?.disableRotation !== undefined)
+      ? category.disableRotation
+      : isBrandAuto;
+
+    return (
+      <CategoryCard 
+        key={category.id} 
+        title={category.title || category.name}
+        imageUrl={category.imageUrl || category.image}
+        link={category.link || category.url}
+        showTitle={category.showTitle !== undefined ? category.showTitle : true}
+        rotation={category.rotation || 0}
+        disableRotation={disableRotationValue}
+        enableEdgeImagePositioning={edgeEnabled}
+        additionalStyles={cardStyle}
+      />
+    );
+  };
 
   const renderProductCard = (product, cardStyle) => (
     <ProductCard 
@@ -373,7 +384,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
   );
 
   return (
-    <Layout mockBasketCount={basketCount || 0}>
+    <Layout mockBasketCount={basketCount || 0} showDashedBorderFooter={false}>
       <HomePageContainer>
         <AboutSection>
           {/* <SectionTitle>О нас</SectionTitle> */}
@@ -399,42 +410,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
           renderItem={renderCategoryCard} // Pass the render function
           useSliderOnDesktop={true} // Use slider instead of grid on desktop
           showNavigationOnDesktop={true} // Show navigation arrows on hover
-          containerStyle={`
-            /* Styling for image positioning */
-            & > a [class^="CategoryCard__CardImageContainer"] {
-              justify-content: flex-end !important;  /* Align to right */
-              align-items: flex-end !important;  /* Align to bottom */
-              overflow: hidden;  /* Ensure overflow is hidden */
-            }
-
-            & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
-              max-width: 130% !important;  /* Make images larger to allow partial overflow */
-              max-height: 130% !important;
-              transform: translateX(17%) translateY(20%) !important;  
-              object-fit: contain !important;
-              object-position: bottom right !important;
-            }
-
-            & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
-              max-width: 130% !important;
-              max-height: 130% !important;
-              transform: translateX(-45%) translateY(-20%) !important;  
-              object-fit: contain !important;
-              object-position: top left !important;
-            }
-
-            @media (max-width: ${BREAKPOINTS.lg - 1}px) {
-              & > a [class^="CategoryCard__CardImage"]:not([src$=".svg"]) {
-                max-width: 120% !important;
-                transform: translateX(-10%) translateY(10%) !important;
-              }
-              
-              & > a [class^="CategoryCard__CardImage"][src$=".svg"] {
-                max-width: 120% !important;
-                transform: translateX(-25%) translateY(-20%) !important;
-              }
-            }
-          `}
+          edgeImagePositioningMode="enabled"
           sectionStyle={`              overflow: hidden;
           `}
           cardStyle={{ 
@@ -465,6 +441,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
           showNavigationOnDesktop={true} // Show navigation arrows on hover
           alwaysSlider={true} // Always use slider for brands regardless of screen width
           // cardStyle={{ maxWidth: '280px' }}
+          edgeImagePositioningMode="disabled"
         />
         
         {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}

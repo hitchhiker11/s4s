@@ -229,6 +229,7 @@ const CategoryGridWrapper = ({ categories = [], allProductsCard = null }) => {
                 title={category.title || category.name}
                 imageUrl={category.imageUrl || category.image}
                 link={category.link}
+                enableEdgeImagePositioning={true}
                 additionalStyles={baseStyles}
               />
             )}

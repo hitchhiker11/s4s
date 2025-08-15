@@ -170,6 +170,7 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
         <div className={styles.productLayout}>
           <section className={styles.productDetailSection}>
             <ProductDetailCard
+              key={productData.id}
               product={productData}
               onAddToCart={handleAddToCart}
               onPreOrder={handlePreOrder}
@@ -228,8 +229,28 @@ export async function getServerSideProps({ params }) {
     // Transform to component format
     let transformed = transformCatalogItem(apiResponse.data);
 
-    // Normalize images for ProductDetailCard (need id/url/alt)
-    const normalizedImages = (transformed.images || []).map((url, idx) => ({
+    // Normalize images for ProductDetailCard (need id/url/alt) and ensure uniqueness by URL (ignore query params)
+    const normalizeUrlForDedup = (u) => {
+      try {
+        const noQuery = String(u || '').split('?')[0];
+        // Remove common Bitrix resize_cache segments to dedupe different sizes of the same image
+        return noQuery.replace(/\/(resize_cache|resized)\/[^/]+\/[^/]+\/|\/(resize_cache|resized)\//gi, '/');
+      } catch {
+        return String(u || '');
+      }
+    };
+
+    const seen = new Set();
+    const uniqueImageUrls = [];
+    for (const url of Array.isArray(transformed.images) ? transformed.images : []) {
+      const key = normalizeUrlForDedup(url).toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueImageUrls.push(url);
+      }
+    }
+
+    const normalizedImages = uniqueImageUrls.map((url, idx) => ({
       id: `img${idx}`,
       url,
       alt: transformed.name,

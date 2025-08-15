@@ -232,40 +232,44 @@ const MobileMenu = ({
     >
       <MobileNavList>
         <MobileNavItem>
-          <MobileNavLink 
-            href="/catalog"
-            className={router.pathname.startsWith('/catalog') ? 'active' : ''}
-            onClick={handleLinkClick}
-          >
-            Каталог
-          </MobileNavLink>
+          <Link href="/catalog" passHref legacyBehavior>
+            <MobileNavLink 
+              className={router.pathname.startsWith('/catalog') ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
+              Каталог
+            </MobileNavLink>
+          </Link>
         </MobileNavItem>
         <MobileNavItem>
-          <MobileNavLink 
-            href="/brands"
-            className={router.pathname.startsWith('/brands') ? 'active' : ''}
-            onClick={handleLinkClick}
-          >
-            Бренды
-          </MobileNavLink>
+          <Link href="/brands" passHref legacyBehavior>
+            <MobileNavLink 
+              className={router.pathname.startsWith('/brands') ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
+              Бренды
+            </MobileNavLink>
+          </Link>
         </MobileNavItem>
         <MobileNavItem>
-          <MobileNavLink 
-            href="/about"
-            className={router.pathname.startsWith('/about') ? 'active' : ''}
-            onClick={handleLinkClick}
-          >
-            О нас
-          </MobileNavLink>
+          <Link href="/about" passHref legacyBehavior>
+            <MobileNavLink 
+              className={router.pathname.startsWith('/about') ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
+              О нас
+            </MobileNavLink>
+          </Link>
         </MobileNavItem>
         <MobileNavItem>
-          <MobileNavLink 
-            href="/contacts"
-            className={router.pathname.startsWith('/contacts') ? 'active' : ''}
-            onClick={handleLinkClick}
-          >
-            Контакты
-          </MobileNavLink>
+          <Link href="/contacts" passHref legacyBehavior>
+            <MobileNavLink 
+              className={router.pathname.startsWith('/contacts') ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
+              Контакты
+            </MobileNavLink>
+          </Link>
         </MobileNavItem>
       </MobileNavList>
     </MobileMenuContainer>

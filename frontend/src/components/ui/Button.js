@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import { COLORS, TYPOGRAPHY, SHADOWS, SPACING, ANIMATION } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SHADOWS, SPACING, ANIMATION, mediaQueries } from '../../styles/tokens';
 
 // Базовые стили для всех кнопок
 const baseButtonStyles = css`
@@ -62,7 +62,8 @@ const buttonVariants = {
   secondary: css`
     background-color: white;
     color: ${COLORS.primary};
-    border: 1px solid ${COLORS.primary};
+    border: 2px solid ${COLORS.primary};
+    ${mediaQueries.lg} { border-width: 4px; }
     
     &:hover:not(:disabled) {
       background-color: ${COLORS.gray100};

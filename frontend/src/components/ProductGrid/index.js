@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Link from 'next/link';
 import ProductCard from '../ProductCard';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
+import { responsiveBorder } from '../../styles/borders';
 
 const GridSection = styled.section`
   width: 100%;
@@ -47,12 +48,11 @@ const TitleRow = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-top: 2px solid ${COLORS.gray400};
+  ${responsiveBorder('top', COLORS.gray400)}
   padding: ${SPACING.sm} 0;
   max-height: 28px;
 
   ${mediaQueries.sm} {
-    border-top-width: 2px;
     padding: ${SPACING.md} 0;
     max-height: 45px;
   }
@@ -67,14 +67,14 @@ const TitleRow = styled.div`
 const HeaderDivider = styled.hr`
   border: none;
   height: 2px;
-  background-color: ${COLORS.gray400};
+  background: none;
+  border-top: 2px solid ${COLORS.gray400};
   width: 100%;
-  // margin: 0 0 22px 0;
-
+  margin: 0;
   @media (min-width: 992px) {
+    border-top-width: 4px;
     height: 4px;
   }
-
   ${props => props.customStyles}
 `;
 
@@ -156,6 +156,7 @@ const GridContainer = styled.div`
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
+  align-content: start;
 
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
@@ -233,6 +234,7 @@ const ProductGrid = ({
   // New props for customization and control
   showTitleRow = true,
   showViewAllLink = true,
+  showHeaderDivider = true, // <-- added prop
   gridContainerStyle = {},
   preOrderWrapperProps = {},
   productCardProps = {},
@@ -266,8 +268,8 @@ const ProductGrid = ({
             )}
           </TitleRow>
         )}
-        {/* Always render bottom divider below the title */}
-        <HeaderDivider customStyles={headerDividerStyles} />
+        {/* Conditionally render bottom divider below the title */}
+        {showHeaderDivider && <HeaderDivider customStyles={headerDividerStyles} />}
         {subtitle && (
           <SubtitleContainer customStyles={subtitleContainerStyles}>
             <Subtitle customStyles={subtitleStyles}>{subtitle}</Subtitle>
@@ -330,6 +332,7 @@ ProductGrid.propTypes = {
   // New propTypes
   showTitleRow: PropTypes.bool,
   showViewAllLink: PropTypes.bool,
+  showHeaderDivider: PropTypes.bool, // <-- added propType
   gridContainerStyle: PropTypes.object,
   preOrderWrapperProps: PropTypes.object,
   productCardProps: PropTypes.object,

@@ -166,32 +166,6 @@ const SearchResults = ({
         </NoResults>
       )}
       
-      {hasBrands && (
-        <ResultSection>
-          <SectionTitle>Найденный бренд</SectionTitle>
-          {results.brands.map((brand) => (
-            <ResultItem key={`brand-${brand.id}`} onClick={() => onResultClick('brand', brand)}>
-              <Link href={`/brands/${brand.slug}`}>
-                <ResultItemTitle>{brand.name}</ResultItemTitle>
-              </Link>
-            </ResultItem>
-          ))}
-        </ResultSection>
-      )}
-      
-      {hasCategories && (
-        <ResultSection>
-          <SectionTitle>Найденная категория / подкатегория</SectionTitle>
-          {results.categories.map((category) => (
-            <ResultItem key={`category-${category.id}`} onClick={() => onResultClick('category', category)}>
-              <Link href={`/catalog/${category.slug}`}>
-                <ResultItemTitle>{category.name}</ResultItemTitle>
-              </Link>
-            </ResultItem>
-          ))}
-        </ResultSection>
-      )}
-      
       {hasProducts && (
         <ResultSection>
           <SectionTitle>Товары</SectionTitle>
@@ -220,6 +194,34 @@ const SearchResults = ({
         </ResultSection>
       )}
       
+
+
+      {hasBrands && (
+        <ResultSection>
+          <SectionTitle>Найденный бренд</SectionTitle>
+          {results.brands.map((brand) => (
+            <ResultItem key={`brand-${brand.id}`} onClick={() => onResultClick('brand', brand)}>
+              <Link href={`/brands/${brand.slug}`}>
+                <ResultItemTitle>{brand.name}</ResultItemTitle>
+              </Link>
+            </ResultItem>
+          ))}
+        </ResultSection>
+      )}
+      
+      {hasCategories && (
+        <ResultSection>
+          <SectionTitle>Найденная категория / подкатегория</SectionTitle>
+          {results.categories.map((category) => (
+            <ResultItem key={`category-${category.id}`} onClick={() => onResultClick('category', category)}>
+              <Link href={`/catalog/${category.slug}`}>
+                <ResultItemTitle>{category.name}</ResultItemTitle>
+              </Link>
+            </ResultItem>
+          ))}
+        </ResultSection>
+      )}
+      
       {hasResults && (
         <ResultSection>
           <SectionTitle>Поиск по запросу</SectionTitle>
@@ -230,6 +232,7 @@ const SearchResults = ({
           </ResultItem>
         </ResultSection>
       )}
+      
     </ResultsContainer>
   );
 };

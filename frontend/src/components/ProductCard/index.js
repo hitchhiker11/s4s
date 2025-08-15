@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, SHADOWS, ANIMATION, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 import { useBasket } from '../../hooks/useBasket';
+import { useToast } from '../../hooks/useToast';
+import ToastContainer from '../Toast/ToastContainer';
 
 // Completely restructured CardWrapper to fix height calculation issues
 const CardWrapper = styled.div`
@@ -318,8 +320,8 @@ const ProductCard = ({ product, onAddToCart }) => {
   });
   
   const [isLocalLoading, setIsLocalLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const { toasts, showSuccessToast, showErrorToast, removeToast } = useToast();
+  // Remove local toast; use global toast system instead
   const [buttonState, setButtonState] = useState('default'); // 'default', 'loading', 'success', 'error'
   
   const {
@@ -346,20 +348,10 @@ const ProductCard = ({ product, onAddToCart }) => {
   // Disable button for pre-order items or if loading
   const isButtonDisabled = isPreOrder || isLoading || !isAvailable;
 
-  const showToastMessage = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-      setToastMessage('');
-    }, 3000);
-  };
+  // Global toasts are shown from parent pages; keep behavior consistent with /cart
 
   // Function to close toast manually
-  const closeToast = () => {
-    setShowToast(false);
-    setToastMessage('');
-  };
+  const closeToast = () => {};
 
   // Reset button state after showing success/error
   const resetButtonState = () => {
@@ -390,7 +382,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       
       console.log(`✅ [ProductCard] Successfully added product ${id} to basket`);
       setButtonState('success');
-      showToastMessage('Товар успешно добавлен в корзину');
+      showSuccessToast('Товар успешно добавлен в корзину');
       resetButtonState();
       
       // Call the parent component's onAddToCart if provided (for backwards compatibility)
@@ -412,10 +404,10 @@ const ProductCard = ({ product, onAddToCart }) => {
         const errorMessage = availableQuantity > 0 
           ? `Доступно только ${availableQuantity} шт.`
           : 'Товар закончился на складе';
-        showToastMessage(errorMessage);
+        showErrorToast(errorMessage);
         setButtonState('error');
       } else {
-        showToastMessage('Ошибка при добавлении товара');
+        showErrorToast('Ошибка при добавлении товара');
         setButtonState('error');
       }
       
@@ -464,11 +456,10 @@ const ProductCard = ({ product, onAddToCart }) => {
   return (
     <CardWrapper>
       {badge && <Badge>{badge}</Badge>}
-      
-      <ToastContainer visible={showToast}>
-        {toastMessage}
-        <ToastCloseButton onClick={closeToast}>✗</ToastCloseButton>
-      </ToastContainer>
+
+      {/* Global Toasts: appear at top-right like on /cart */}
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+
 
       <Link href={validProductLink} passHref legacyBehavior>
         <ImageLinkWrapper>

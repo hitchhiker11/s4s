@@ -13,10 +13,8 @@ const SubscriptionContainer = styled.section`
   border-bottom: 2px solid ${COLORS.gray400};
   // padding: ${SPACING.lg};
 
-  ${mediaQueries.md} {
-    // border-top-width: 4px;
+  ${mediaQueries.lg} {
     border-bottom-width: 4px;
-    // padding: ${SPACING.xl};
   }
 
   ${mediaQueries.lg} {
@@ -37,22 +35,29 @@ const ContentWrapper = styled.div`
 
   ${mediaQueries.md} {
     flex-direction: row;
-    // align-items: stretch; // This is the default, so ImageContainer should stretch
+    align-items: stretch;
   }
 `;
 
 const FormContainer = styled.div`
   display: flex; 
   flex-direction: column;
+  justify-content: center; /* Center vertically within ContentWrapper */
   background-color: ${COLORS.white};
   width: 100%;
   padding: ${SPACING.lg};
-
-
+  position: relative;
+  overflow: visible;
 
   ${mediaQueries.md} {
-    width: 50%;
-    padding: ${SPACING.lg} ${SPACING['3xl']} ${SPACING.lg} ${SPACING['3xl']};
+    /* Ensure ContentWrapper has enough height for vertical centering to be visible */
+    align-self: center; /* In case ContentWrapper is taller, center self vertically */
+    height: 100%;
+  }
+
+  ${mediaQueries.lg} {
+    width: 52%;
+    padding: ${SPACING.lg} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
   }
 `;
 
@@ -67,9 +72,9 @@ const FormHeading = styled.h2`
   padding-top: 12px;
   padding-bottom: 12px;
 
-  ${mediaQueries.md} {
-    font-size: 54px;
-    margin-bottom: ${SPACING["3xl"]};
+  ${mediaQueries.lg} {
+    font-size: ${TYPOGRAPHY.size["3xl"]}; /* -1 step from tokens */
+    margin-bottom: ${SPACING["2xl"]};
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -81,10 +86,11 @@ const InputsContainer = styled.div`
   gap: 24px;
   margin-bottom: ${SPACING.xl};
   
-  ${mediaQueries.md} {
-    gap: 40px;
-    margin-bottom: ${SPACING["2xl"]};
+  ${mediaQueries.lg} {
+    gap: ${SPACING.lg}; /* reduced gap */
+    margin-bottom: ${SPACING['3xl']};
   }
+    
 `;
 
 const InputWrapper = styled.div`
@@ -93,8 +99,13 @@ const InputWrapper = styled.div`
   border-bottom: 2px solid ${COLORS.gray400};
   padding-bottom: ${SPACING.xs};
 
-  ${mediaQueries.md} {
-    border-bottom-width: 3px;
+  ${mediaQueries.lg} {
+    max-width: none;
+    border-bottom-width: 4px;
+  }
+      @media (min-width: 1200px) {
+    max-width: 600px;
+    padding: ${SPACING.lg} ${SPACING['3xl']} ${SPACING.sm} 0;
   }
 `;
 
@@ -118,8 +129,8 @@ const Input = styled.input`
     outline: none;
   }
 
-  ${mediaQueries.md} {
-    font-size: 27px;
+  ${mediaQueries.lg} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* -1 step from tokens */
     padding: ${SPACING.sm} 0;
     line-height: 1.5;
   }
@@ -144,21 +155,22 @@ const SubmitButton = styled.button`
     background-color: ${COLORS.primaryHover};
   }
 
-  ${mediaQueries.md} {
-    width: 473px;
-    font-size: 20px;
-    padding: 24px 40px;
+  ${mediaQueries.lg} {
+    width: auto;
+    max-width: 380px;
+    font-size: ${TYPOGRAPHY.size.md}; /* -1 step from tokens */
+    padding: ${SPACING.lg} ${SPACING.xl};
   }
 `;
 
 const ImageContainer = styled.div`
   display: none; // Hidden on small screens by default
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     display: block; // Becomes a flex item in ContentWrapper on medium screens and up
-    width: 50%;
-    // height: 100%; // Removed: Rely on flexbox's align-items: stretch (default on ContentWrapper)
-                     // This makes ImageContainer take the full height of the ContentWrapper row.
+    width: 48%;
+    position: relative;
+    overflow: hidden; /* prevent bleed over footer */
   }
 `;
 
@@ -167,6 +179,7 @@ const Image = styled.img`
   width: 100%;    // Image takes full width of ImageContainer
   height: 100%;   // Image takes full height of ImageContainer
   object-fit: cover; // Image maintains aspect ratio, covers the container, may be cropped
+  object-position: center;
 `;
 
 const ClubSubscription = () => {

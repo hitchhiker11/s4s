@@ -83,18 +83,19 @@ const MainHeaderWrapper = styled.div`
   align-items: center;
   justify-content: center;
 
+  @media (max-width: 600px) {
+    min-height: 70px;
+  }
+
   &.sticky {
-    position: sticky;
-    top: 0;
+    /* sticky управляется верхним контейнером HeaderContainer */
     background-color: ${COLORS.white};
     transition: background-color 0.2s ease, min-height 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   }
 
   &.scrolled {
-    position: sticky;
-    top: 0;
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: ${SHADOWS.sm};
+    /* sticky управляется верхним контейнером HeaderContainer */
+    border-bottom: 2px solid ${HEADER_COLORS.lightGray};
     min-height: calc(${HEADER_SIZES.headerHeight} - 10px);
   }
 
@@ -111,6 +112,10 @@ const MainHeaderContent = styled(Container)`
   padding: 0 1rem;
   height: 100%;
   width: 100%;
+  
+  @media (max-width: 600px) {
+    min-height: 70px;
+  }
   
   ${mediaQuery.min.lg} {
     justify-content: center;
@@ -143,6 +148,7 @@ const LogoWrapper = styled.div`
   flex-shrink: 0;
   cursor: pointer;
   transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
+  box-shadow: 0 1px 1px #E7194A;
 
   a {
     display: flex;
@@ -203,9 +209,9 @@ const LogoWrapper = styled.div`
 
     img, svg {
       width: 80%;
-      height: 60%;
+      height: 80%; /* Match container height better */
       max-width: 118px;
-      max-height: 40px;
+      max-height: 56px; /* 80% of 70px container height */
     }
   }
 
@@ -233,6 +239,11 @@ const HeaderNavItem = styled.span`
   ${mediaQuery.max.xl} {
     font-size: clamp(14px, 1.2vw, 20px);
     padding: 1.2em 0.4em;
+  }
+
+    @media (max-width: 1200px) {
+    font-size: 20px;
+    padding: 1em 0.3em;
   }
 
   @media (max-width: 900px) {
@@ -452,7 +463,7 @@ const LoadingIndicator = styled.span`
 const DesktopSearchWrapper = styled.div`
   display: flex;
   align-items: center;
-  position: relative;
+  position: relative; /* Anchor for absolute input */
   z-index: 1001; /* Ensure the search components appear above all other header elements */
 `;
 
@@ -463,13 +474,14 @@ const DesktopSearchInputContainer = styled.div`
 const DesktopSearchInputWrapper = styled.div`
   position: absolute;
   left: calc(100% + 10px); /* Position it right after the search icon with some spacing */
+  right: auto;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
   overflow: hidden;
-  width: ${props => props.$isOpen ? 'clamp(300px, 30vw, 600px)' : '0'}; /* Responsive width */
-  max-width: 600px;
+  width: ${props => props.$isOpen ? `${Math.max(0, props.$width || 0)}px` : '0'}; /* Calculated width */
+  max-width: min(600px, 35vw);
   opacity: ${props => props.$isOpen ? '1' : '0'};
   z-index: 1001;
   background-color: ${COLORS.white};
@@ -514,12 +526,12 @@ const MainHeader = ({
   onOpenContactsModal
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
   const lastScrollYRef = useRef(0);
   const lastTimeRef = useRef(Date.now());
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDesktopSearchOpen, setIsDesktopSearchOpen] = useState(false);
+  const [desktopSearchWidth, setDesktopSearchWidth] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({
     brands: [],
@@ -530,6 +542,8 @@ const MainHeader = ({
   const [showResults, setShowResults] = useState(false);
   const searchInputRef = useRef(null);
   const searchWrapperRef = useRef(null);
+  const headerRef = useRef(null);
+  const rightNavRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -540,13 +554,6 @@ const MainHeader = ({
       const velocity = deltaY / deltaTime; // px per ms
 
       setIsScrolled(currentY > 5);
-
-      // Hide on scroll down, show on quick scroll up
-      if (deltaY > 10) {
-        setIsHidden(true);
-      } else if (deltaY < -20 || velocity < -0.2) {
-        setIsHidden(false);
-      }
 
       lastScrollYRef.current = currentY;
       lastTimeRef.current = now;
@@ -563,11 +570,33 @@ const MainHeader = ({
       setIsSearchOpen(true);
     } else {
       // For desktop, toggle the inline search field
-      setIsDesktopSearchOpen(!isDesktopSearchOpen);
-      // Reset search state when closing
-      if (isDesktopSearchOpen) {
+      const computeWidth = () => {
+        const safeGap = 16;
+        const headerEl = headerRef.current;
+        const searchEl = searchWrapperRef.current;
+        const rightEl = rightNavRef.current;
+        if (!headerEl || !searchEl) return 0;
+        const headerRect = headerEl.getBoundingClientRect();
+        const searchRect = searchEl.getBoundingClientRect();
+        const rightWidth = rightEl ? rightEl.getBoundingClientRect().width : 0;
+        const buttonRight = searchRect.right - headerRect.left;
+        const available = headerRect.width - buttonRight - rightWidth - safeGap;
+        return Math.max(0, Math.min(available, 600));
+      };
+
+      if (!isDesktopSearchOpen) {
+        const w = computeWidth();
+        if (w <= 0) {
+          setDesktopSearchWidth(0);
+          return; // do not open when no space
+        }
+        setDesktopSearchWidth(w);
+        setIsDesktopSearchOpen(true);
+      } else {
+        setIsDesktopSearchOpen(false);
         setSearchQuery('');
         setShowResults(false);
+        setDesktopSearchWidth(0);
       }
     }
   };
@@ -579,6 +608,32 @@ const MainHeader = ({
         searchInputRef.current.focus();
       }, 300); // Wait for animation to complete
     }
+  }, [isDesktopSearchOpen]);
+
+  // Recompute width on resize when open
+  useEffect(() => {
+    if (!isDesktopSearchOpen) return;
+    const onResize = () => {
+      const safeGap = 16;
+      const headerEl = headerRef.current;
+      const searchEl = searchWrapperRef.current;
+      const rightEl = rightNavRef.current;
+      if (!headerEl || !searchEl) return;
+      const headerRect = headerEl.getBoundingClientRect();
+      const searchRect = searchEl.getBoundingClientRect();
+      const rightWidth = rightEl ? rightEl.getBoundingClientRect().width : 0;
+      const buttonRight = searchRect.right - headerRect.left;
+      const available = headerRect.width - buttonRight - rightWidth - safeGap;
+      const w = Math.max(0, Math.min(available, 600));
+      setDesktopSearchWidth(w);
+      if (w <= 0) {
+        setIsDesktopSearchOpen(false);
+        setShowResults(false);
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, [isDesktopSearchOpen]);
 
   // Handle click outside to close desktop search
@@ -693,7 +748,7 @@ const MainHeader = ({
 
   return (
     <>
-      <MainHeaderWrapper className={`${isScrolled ? 'scrolled' : 'sticky'} ${isHidden ? 'hidden' : ''}`}>
+      <MainHeaderWrapper ref={headerRef} className={`${isScrolled ? 'scrolled' : 'sticky'}`}>
         <MainHeaderContent>
           {/* Mobile Menu Button (only visible on mobile) */}
           <MobileMenuButton 
@@ -719,7 +774,7 @@ const MainHeader = ({
                 </HeaderIconStyles>
               </DesktopSearchButton>
               
-              <DesktopSearchInputWrapper $isOpen={isDesktopSearchOpen}>
+              <DesktopSearchInputWrapper $isOpen={isDesktopSearchOpen} $width={desktopSearchWidth}>
                 <form onSubmit={handleSubmit}>
                   <DesktopSearchInput
                     type="text"
@@ -766,7 +821,7 @@ const MainHeader = ({
           </LogoWrapper>
 
           {/* Right Navigation Group (only visible on desktop) */}
-          <NavGroup>
+          <NavGroup ref={rightNavRef}>
             {rightNavLinks.map((item) => (
               <HeaderNavItem 
                 key={item.id}

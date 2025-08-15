@@ -38,6 +38,14 @@ const GlobalStyles = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     width: 100%;
+    transition: opacity 180ms ease, filter 180ms ease; /* SPA fade */
+  }
+
+  /* Subtle SPA transition state toggled from _app via router events */
+  html[data-route-changing='true'],
+  body[data-route-changing='true'] {
+    opacity: 0.96;
+    filter: saturate(0.98);
   }
 
   /* Настройка основных заголовков */

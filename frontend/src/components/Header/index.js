@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 
 import MainHeader from './MainHeader';
@@ -10,13 +10,23 @@ import { useBasketCount } from '../../hooks/useBasket';
 
 // Контейнер заголовка
 const HeaderContainer = styled.header`
-  position: sticky;
+  position: ${props => (props.$fixedVisible && props.$hidden === false ? 'fixed' : 'sticky')};
   top: 0;
   left: 0;
+  right: 0;
   width: 100%;
   z-index: 1000;
   background-color: var(--header-bg-color, white);
-  transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
+  transition: transform ${props => props.$hidden ? '220ms' : '220ms'} ease, background-color ${ANIMATION.duration} ${ANIMATION.timing};
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: ${props => (props.$hidden ? 'translateY(-100%)' : 'translateY(0)')};
+`;
+
+const HeaderSpacer = styled.div`
+  width: 100%;
+  height: ${props => (props.$height ? `${props.$height}px` : '0')};
 `;
 
 /**
@@ -32,6 +42,15 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  // Default state: header shown at top as sticky (not fixed), no overlay
+  const [isHidden, setIsHidden] = useState(false);
+  // Больше не переключаемся в fixed, оставляем единый sticky-контейнер
+  const [isFixedVisible, setIsFixedVisible] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const deltaAccumulatorRef = useRef(0);
+  const lastTimeRef = useRef(Date.now());
+  const headerRef = useRef(null);
+  const [measuredHeight, setMeasuredHeight] = useState(0);
 
   // Получаем количество товаров в корзине через кастомный хук
   const { 
@@ -53,14 +72,90 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
 
   // Обработчик скролла для изменения внешнего вида хедера
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 50);
+    // Hide header only after scrolling at least the header height from the top
+    let threshold = 12;
+    let ticking = false;
+
+    const updateOnScroll = () => {
+      const currentY = window.scrollY || 0;
+      const lastY = lastScrollYRef.current || 0;
+      const deltaY = currentY - lastY;
+      const now = Date.now();
+      const dt = Math.max(1, now - lastTimeRef.current);
+      const velocity = deltaY / dt; // px per ms
+
+      setIsScrolled(currentY > 50);
+
+      // Update threshold dynamically to be at least header height near the top
+      const headerHeight = headerRef.current ? headerRef.current.offsetHeight || 0 : HEADER_SIZES.headerHeight;
+      const numericHeaderHeight = typeof headerHeight === 'number' ? headerHeight : parseInt(headerHeight) || 0;
+      const isNearTop = lastY <= numericHeaderHeight;
+      threshold = isNearTop ? Math.max(12, numericHeaderHeight) : 12;
+
+      if (currentY <= 0) {
+        setIsHidden(false);
+        setIsFixedVisible(false);
+        deltaAccumulatorRef.current = 0;
+      } else {
+        // Instant reaction on fast gestures
+        if (velocity > 0.35) {
+          setIsHidden(true);
+          setIsFixedVisible(false);
+          deltaAccumulatorRef.current = 0;
+        } else if (velocity < -0.35) {
+          setIsHidden(false);
+          // Флаг оставляем только как вспомогательный (без влияния на position)
+          setIsFixedVisible(true);
+          deltaAccumulatorRef.current = 0;
+        } else if (deltaY > 0) {
+          // scrolling down, accumulate
+          deltaAccumulatorRef.current = Math.max(0, deltaAccumulatorRef.current) + deltaY;
+          if (deltaAccumulatorRef.current >= threshold) {
+            setIsHidden(true);
+            setIsFixedVisible(false);
+            deltaAccumulatorRef.current = 0;
+          }
+        } else if (deltaY < 0) {
+          // scrolling up, accumulate
+          deltaAccumulatorRef.current = Math.min(0, deltaAccumulatorRef.current) + deltaY;
+          if (Math.abs(deltaAccumulatorRef.current) >= threshold) {
+            setIsHidden(false);
+            setIsFixedVisible(true);
+            deltaAccumulatorRef.current = 0;
+          }
+        }
+      }
+
+      // Always update last Y to capture fine movements
+      lastScrollYRef.current = currentY;
+      lastTimeRef.current = now;
+      ticking = false;
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateOnScroll);
+        ticking = true;
+      }
+    };
+
+    lastScrollYRef.current = window.scrollY || 0;
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Измеряем текущую высоту хедера для spacer (учитывает responsive/скролл состояния)
+  useEffect(() => {
+    const measure = () => {
+      if (headerRef.current) {
+        const h = headerRef.current.offsetHeight || 0;
+        if (h !== measuredHeight) setMeasuredHeight(h);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measuredHeight, isScrolled]);
 
   // Загружаем скрипты Bitrix и получаем информацию о пользователе
   useEffect(() => {
@@ -120,27 +215,32 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
     }
   }, [basketError]);
 
+  const spacerHeight = isFixedVisible && !isHidden ? measuredHeight : 0;
+
   return (
-    <HeaderContainer role="navigation" aria-label="Основной заголовок сайта">
-      <MainHeader 
-        basketCount={displayBasketCount} 
-        isBasketLoading={isBasketLoading}
-        toggleMobileMenu={toggleMobileMenu}
-        isScrolled={isScrolled}
-        onOpenContactsModal={openContactsModal}
-      />
-      <MobileMenu 
-        isOpen={isMobileMenuOpen} 
-        onClose={closeMobileMenu}
-        isAuthenticated={isAuthenticated}
-        basketCount={displayBasketCount}
-        onOpenContactsModal={openContactsModal}
-      />
-      <ContactsModal
-        isOpen={isContactsModalOpen}
-        onClose={closeContactsModal}
-      />
-    </HeaderContainer>
+    <>
+      <HeaderSpacer aria-hidden="true" $height={spacerHeight} />
+      <HeaderContainer ref={headerRef} role="navigation" aria-label="Основной заголовок сайта" $hidden={isHidden} $fixedVisible={isFixedVisible}>
+        <MainHeader 
+          basketCount={displayBasketCount} 
+          isBasketLoading={isBasketLoading}
+          toggleMobileMenu={toggleMobileMenu}
+          isScrolled={isScrolled}
+          onOpenContactsModal={openContactsModal}
+        />
+        <MobileMenu 
+          isOpen={isMobileMenuOpen} 
+          onClose={closeMobileMenu}
+          isAuthenticated={isAuthenticated}
+          basketCount={displayBasketCount}
+          onOpenContactsModal={openContactsModal}
+        />
+        <ContactsModal
+          isOpen={isContactsModalOpen}
+          onClose={closeContactsModal}
+        />
+      </HeaderContainer>
+    </>
   );
 };
 

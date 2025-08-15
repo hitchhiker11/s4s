@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { COLORS, SPACING, SIZES, ANIMATION } from '../../../styles/tokens';
+import { COLORS, SPACING, SIZES, ANIMATION, mediaQueries } from '../../../styles/tokens';
 
 const variants = {
   primary: css`
@@ -20,7 +20,8 @@ const variants = {
   secondary: css`
     background-color: transparent;
     color: ${COLORS.black};
-    border: 1px solid ${COLORS.gray300};
+    border: 2px solid ${COLORS.gray400};
+    ${mediaQueries.lg} { border-width: 4px; }
     
     &:hover {
       background-color: ${COLORS.gray100};

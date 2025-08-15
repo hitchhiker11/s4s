@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { createPortal } from 'react-dom';
 import Toast from './index';
 
 const ToastContainer = ({ toasts, onRemoveToast }) => {
@@ -7,7 +8,12 @@ const ToastContainer = ({ toasts, onRemoveToast }) => {
     return null;
   }
 
-  return (
+  // Render toasts into body to avoid being affected by CSS transforms/overflow in parents (e.g., sliders)
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return createPortal(
     <>
       {toasts.map(toast => (
         <Toast
@@ -20,7 +26,8 @@ const ToastContainer = ({ toasts, onRemoveToast }) => {
           autoClose={toast.autoClose}
         />
       ))}
-    </>
+    </>,
+    document.body
   );
 };
 

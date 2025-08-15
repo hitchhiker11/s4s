@@ -127,36 +127,57 @@ export const transformCatalogItem = (apiItem) => {
     return fullUrl;
   };
   
-  // Handle the new images structure first if available
+  // Helper to normalize image name for deduplication
+  const normalizeImageName = (name) => {
+    if (!name || typeof name !== 'string') return '';
+    // Remove common resize/cache suffixes and file extensions, keep the core name
+    return name
+      .toLowerCase()
+      .replace(/\.(resize\d*|resized)\./gi, '.')  // Remove .resize1. etc
+      .replace(/\.[^.]+$/, '')  // Remove final extension like .jpg
+      .replace(/_imageid$/, '')  // Remove _imageid suffix
+      .trim();
+  };
+
+  // Handle the new images structure first if available - deduplicate by name
   if (images && typeof images === 'object') {
-    if (images.preview && images.preview.src) {
-      // Use medium size for product cards if available
-      mainImage = images.preview.standard_sizes?.medium?.src || images.preview.src;
-      mainImage = getFullImageUrl(mainImage);
-      imagesList.push(mainImage);
-    }
+    const seenImages = new Set();
+    const addUniqueImage = (imageObj, priority = 0) => {
+      if (!imageObj?.name || !imageObj?.src) return false;
+      
+      const normalizedName = normalizeImageName(imageObj.name);
+      if (!normalizedName || seenImages.has(normalizedName)) return false;
+      
+      seenImages.add(normalizedName);
+      const fullUrl = getFullImageUrl(imageObj.src);
+      
+      // Insert by priority (0 = highest)
+      if (priority === 0) {
+        imagesList.unshift(fullUrl);
+        if (!mainImage || mainImage === '/images/placeholder.png') mainImage = fullUrl;
+      } else {
+        imagesList.push(fullUrl);
+      }
+      return true;
+    };
     
-    if (images.detail && images.detail.src && images.detail.src !== mainImage) {
-      const detailImage = getFullImageUrl(images.detail.src);
-      imagesList.push(detailImage);
-    }
+    // Process images with priority: detail > preview > gallery
+    if (images.detail) addUniqueImage(images.detail, 0);
+    if (images.preview) addUniqueImage(images.preview, 1);
     
-    // Add gallery images if available
     if (images.gallery && Array.isArray(images.gallery)) {
-      imagesList = [...imagesList, ...images.gallery.map(img => img?.src && typeof img.src === 'string' ? getFullImageUrl(img.src) : null).filter(Boolean)];
+      images.gallery.forEach(img => addUniqueImage(img, 2));
     }
     
-    // If all images are available in the 'all' array, use that
-    if (images.all && Array.isArray(images.all) && images.all.length > 0) {
-      // Add any additional images not already included
-      images.all.forEach(img => {
-        if (img?.src && typeof img.src === 'string') {
-          const fullUrl = getFullImageUrl(img.src);
-          if (!imagesList.includes(fullUrl)) {
-            imagesList.push(fullUrl);
-          }
-        }
-      });
+    // Process 'all' array as fallback for any missed images
+    if (images.all && Array.isArray(images.all)) {
+      images.all.forEach(img => addUniqueImage(img, 3));
+    }
+    
+    // Ensure we have at least the main image
+    if (imagesList.length === 0 && images.preview?.src) {
+      mainImage = getFullImageUrl(images.preview.src);
+      imagesList.push(mainImage);
     }
   }
   

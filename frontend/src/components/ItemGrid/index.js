@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Link from 'next/link';
 import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
+import CategoryGridWrapper from '../CategoryGridWrapper';
+import { responsiveBorder } from '../../styles/borders';
 
 const GridSection = styled.section`
   width: 100%;
@@ -42,12 +45,11 @@ const TitleRow = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-top: 2px solid ${COLORS.gray400};
+  ${responsiveBorder('top', COLORS.gray400)}
   padding: 5px 0;
   max-height: 28px;
 
   ${mediaQueries.sm} {
-    border-top-width: 2px;
     padding: ${SPACING.md} 0;
     max-height: 45px;
   }
@@ -60,15 +62,15 @@ const TitleRow = styled.div`
 const HeaderDivider = styled.hr`
   border: none;
   height: 2px;
-  background-color: ${COLORS.gray400};
+  background: none;
+  border-top: 2px solid ${COLORS.gray400};
   width: 100%;
   margin: 0;
-
-  ${mediaQueries.lg} {
+  @media (min-width: 992px) {
+    border-top-width: 4px;
     height: 4px;
   }
 `;
-
 const Title = styled.h2`
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.bold};
@@ -104,7 +106,7 @@ const SubtitleContainer = styled.div`
     padding: ${SPACING.md} 0;
   }
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     max-height: 45px;
     border-bottom-width: 4px;
   }
@@ -215,19 +217,24 @@ const ItemGrid = ({
   renderItem,
   cardStyle,
   containerStyle,
-  sectionStyle
+  sectionStyle,
+  useCategoryGridWrapper = false
 }) => {
   if (!items || items.length === 0) {
     return <EmptyMessage>Нет элементов для отображения.</EmptyMessage>;
   }
 
   return (
-    <GridSection customStyles={sectionStyle}>
+      <GridSection customStyles={sectionStyle}>
       {(title || viewAllLink) && (
         <HeaderContainer>
           <TitleRow>
             {title && <Title useGradient={useGradientTitle}>{title}</Title>}
-            {viewAllLink && <ViewAllLink href={viewAllLink}>{viewAllText}</ViewAllLink>}
+            {viewAllLink && (
+              <Link href={viewAllLink} passHref legacyBehavior>
+                <ViewAllLink>{viewAllText}</ViewAllLink>
+              </Link>
+            )}
           </TitleRow>
           {subtitle && (
             <>
@@ -239,9 +246,13 @@ const ItemGrid = ({
           )}
         </HeaderContainer>
       )}
-      <GridContainer customStyles={containerStyle}>
-        {items.map(item => renderItem(item, cardStyle))}
-      </GridContainer>
+      {useCategoryGridWrapper ? (
+        <CategoryGridWrapper categories={items} />
+      ) : (
+        <GridContainer customStyles={containerStyle}>
+          {items.map(item => renderItem(item, cardStyle))}
+        </GridContainer>
+      )}
     </GridSection>
   );
 };
@@ -256,7 +267,8 @@ ItemGrid.propTypes = {
   renderItem: PropTypes.func.isRequired,
   cardStyle: PropTypes.object,
   containerStyle: PropTypes.string,
-  sectionStyle: PropTypes.string
+  sectionStyle: PropTypes.string,
+  useCategoryGridWrapper: PropTypes.bool
 };
 
 export default ItemGrid; 

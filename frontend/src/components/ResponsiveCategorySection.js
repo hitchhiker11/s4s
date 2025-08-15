@@ -17,6 +17,7 @@ const ResponsiveCategorySection = ({
   useSliderOnDesktop = false,
   showNavigationOnDesktop = true,
   alwaysSlider = false, // Force slider regardless of screen width
+  edgeImagePositioningMode = 'auto',
   ...props 
 }) => {
   const { width } = useViewport();
@@ -26,19 +27,22 @@ const ResponsiveCategorySection = ({
     setHasMounted(true);
   }, []);
 
+  const baseCardStyle = { width: '100%', height: '100%', maxWidth: 'none' };
+
   const categorySliderProps = {
     ...props,
     categories: items,
     renderItem,
-    cardStyle,
+    cardStyle, // Slider merges its own base styles internally
     showNavigation: useSliderOnDesktop ? showNavigationOnDesktop : false, // Show navigation only when forced to use slider on desktop
+    edgeImagePositioningMode,
   };
 
   const itemGridProps = { 
     ...props, 
     items,
     renderItem,
-    cardStyle,
+    cardStyle: { ...baseCardStyle, ...cardStyle },
     containerStyle,
     sectionStyle,
   };
@@ -58,7 +62,7 @@ const ResponsiveCategorySection = ({
     <ResponsiveContainer
       DesktopComponent={ItemGrid}
       MobileComponent={CategorySlider}
-      desktopProps={itemGridProps}
+      desktopProps={{ ...itemGridProps, useCategoryGridWrapper: true }}
       mobileProps={categorySliderProps}
       suppressHydrationWarning={true}
     />
@@ -88,10 +92,12 @@ ResponsiveCategorySection.propTypes = {
   useSliderOnDesktop: PropTypes.bool,
   showNavigationOnDesktop: PropTypes.bool,
   alwaysSlider: PropTypes.bool,
+  edgeImagePositioningMode: PropTypes.oneOf(['auto','enabled','disabled']),
 };
 
 ResponsiveCategorySection.defaultProps = {
   items: [],
+  edgeImagePositioningMode: 'auto',
 };
 
 export default ResponsiveCategorySection; 

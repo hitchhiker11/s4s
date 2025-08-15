@@ -43,25 +43,49 @@ const CardLink = styled.a`
 const CardTitle = styled.h3`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(14px, 3vw, 27.5px);
+  font-size: clamp(11.5px, 2vw, 16px); /* Smaller font size for mobile */
   color: ${COLORS.black};
   text-align: left;
   line-height: 1.2;
-  padding: ${SPACING.sm} ${SPACING.sm}; 
+  padding: ${SPACING.sm} 0; 
   padding-bottom: 0;
   width: 100%;
   margin: 0;
 
+  /* Very small screens - extra small font */
+  @media (max-width: 320px) {
+    font-size: clamp(10px, 3vw, 14px);
+    margin-bottom: ${SPACING.sm};
+  }
+
+  /* Small screens */
+  @media (min-width: 321px) and (max-width: ${BREAKPOINTS.sm - 1}px) {
+    font-size: clamp(11px, 2.2vw, 15px);
+    margin-bottom: ${SPACING.sm};
+  }
+
+  /* Small tablets */
+  @media (min-width: ${BREAKPOINTS.sm}px) and (max-width: ${BREAKPOINTS.md - 1}px) {
+    font-size: clamp(14px, 2.3vw, 18px);
+    padding: ${SPACING.sm} ${SPACING.md};
+    padding-bottom: 0;
+  }
+
+  /* Medium and larger screens */
   ${mediaQueries.md} {
-    font-size: 27.5px;
+    font-size: clamp(${TYPOGRAPHY.size.md}, 2vw, 28px);
     padding: ${SPACING.md};
     padding-bottom: 0;
   }
 
-  /* Mobile specific font size - Force override */
-  @media (max-width: ${BREAKPOINTS.sm - 1}px) {
-    font-size: 14px !important;
-    margin-bottom: ${SPACING.sm};
+  /* Large screens - intelligent sizing based on container width */
+  ${mediaQueries.lg} {
+    font-size: clamp(18px, calc(1.2vw + 0.8rem), 32px);
+  }
+
+  /* Extra large screens */
+  @media (min-width: 1600px) {
+    font-size: clamp(20px, calc(1vw + 1rem), 36px);
   }
 `;
 
@@ -82,10 +106,11 @@ const CardImageContainer = styled.div`
   }
 
   /* Edge positioning for category images (not logos) */
-  ${props => props.showTitle && !props.isBrandLogo && css`
-    justify-content: flex-end; /* align to right */
-    align-items: flex-end; /* align to bottom */
-  `}
+	${props => props.showTitle && !props.isBrandLogo && css`
+		justify-content: flex-end; /* align to right */
+		align-items: flex-end; /* align to bottom */
+		margin-top: auto; /* push container to the bottom to eliminate bottom gap */
+	`}
 `;
 
 // Helper to get random rotation value between -8 and 8 degrees
@@ -95,7 +120,7 @@ const CardImage = styled.img`
   width: auto;
   max-width: 100%;
   height: auto;
-  max-height: 90%;
+  max-height: 100%;
   object-fit: contain;
   transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'};
   scale: 0.95;
@@ -113,9 +138,10 @@ const CardImage = styled.img`
   /* Edge positioning and shifting for category images (not logos) */
   ${props => props.enableEdgePositioning && !props.isBrandLogo && css`
     /* Default/desktop behavior */
-    max-width: 130% !important;
-    max-height: 130% !important;
+    max-width: 150% !important;
+    max-height: 150% !important;
     object-fit: contain !important;
+    position: relative !important;
     ${props.isSvg
       ? css`
           /* SVGs: move to top-left */
@@ -123,20 +149,22 @@ const CardImage = styled.img`
           object-position: top left !important;
         `
       : css`
-          /* Raster images: move to bottom-right */
-          transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(17%) translateY(20%) !important;
+          /* Raster images: move aggressively to bottom-right with clipping */
+          transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(35%) translateY(35%) !important;
           object-position: bottom right !important;
         `}
 
     /* Tablet and below adjustments */
     @media (max-width: ${BREAKPOINTS.lg - 1}px) {
-      max-width: 120% !important;
+      max-width: 140% !important;
+      max-height: 140% !important;
       ${props.isSvg
         ? css`
             transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(-25%) translateY(-20%) !important;
           `
         : css`
-            transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(-10%) translateY(10%) !important;
+            /* More aggressive positioning on mobile for clipping effect */
+            transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(25%) translateY(25%) !important;
           `}
     }
   `}

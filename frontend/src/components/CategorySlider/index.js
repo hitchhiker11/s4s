@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 // Import Swiper React components
@@ -49,10 +49,12 @@ const HeaderContainer = styled.div`
 const HeaderDivider = styled.hr`
   border: none;
   height: 2px;
-  background-color: ${COLORS.gray400};
+  background: none;
+  border-top: 2px solid ${COLORS.gray400};
   width: 100%;
-  // margin: 0 0 22px 0;
+  margin: 0;
   @media (min-width: 992px) {
+    border-top-width: 4px;
     height: 4px;
   }
 `;
@@ -123,8 +125,8 @@ const SubtitleContainer = styled.div`
 
 const Subtitle = styled.p`
   font-family: ${TYPOGRAPHY.fontFamily};
-  font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(1rem, 5vw, ${TYPOGRAPHY.size["2xl"]});
+  font-weight: ${TYPOGRAPHY.weight.bold};
+  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size.xl});
   color: ${COLORS.gray500};
   margin: 0;
   line-height: 1.16;
@@ -148,10 +150,11 @@ const SwiperContainer = styled.div`
   }
 
   .swiper-slide {
-    width: 70%; /* Match Figma design width for mobile */
-    max-width: 140px; /* Based on Figma design */
+    width: 70%; /* Mobile */
+    max-width: 140px;
     height: auto;
     display: flex;
+    flex-shrink: 0;
     
     /* Safari WebKit optimizations */
     -webkit-backface-visibility: hidden;
@@ -160,12 +163,12 @@ const SwiperContainer = styled.div`
     transform: translate3d(0, 0, 0);
   }
 
-  /* Tablet sizing: prevent excessive shrinking */
+  /* Tablet uses mobile-like behavior */
   ${mediaQueries.md} {
     .swiper-slide {
-      width: 240px;
-      min-width: 240px;
-      max-width: 240px;
+      width: clamp(220px, 65%, 280px);
+      min-width: 220px;
+      max-width: 280px;
       flex-shrink: 0;
     }
   }
@@ -195,6 +198,13 @@ const SwiperContainer = styled.div`
     }
   }
 
+  /* Hide disabled arrows completely */
+  .swiper-button-disabled {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+
   .swiper-button-prev {
     left: 10px;
   }
@@ -221,6 +231,8 @@ const SwiperContainer = styled.div`
       max-width: 300px;
     }
   }
+
+  /* Removed forced edge positioning; rely on CategoryCard props to control image alignment */
 `;
 
 const EmptyMessage = styled.div`
@@ -238,13 +250,40 @@ const CategorySlider = ({
   viewAllText = "Смотреть все",
   cardStyle,
   showNavigation = false,
-  subtitle = ""
+  subtitle = "",
+  edgeImagePositioningMode = 'auto' // 'auto' | 'enabled' | 'disabled'
 }) => {
   const displayCategories = Array.isArray(categories) ? categories : [];
   const spaceBetweenValue = 12; // Фиксированные отступы между карточками в слайдере // Use smaller spacing for mobile
+  const swiperRef = useRef(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  const measureOverflow = () => {
+    const swiper = swiperRef.current;
+    if (!swiper || !swiper.el || !swiper.wrapperEl) {
+      setHasOverflow(false);
+      return;
+    }
+    const containerWidth = swiper.el.clientWidth || 0;
+    const contentWidth = swiper.wrapperEl.scrollWidth || 0;
+    setHasOverflow(contentWidth > containerWidth + 1);
+  };
+
+  useEffect(() => {
+    const onResize = () => measureOverflow();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(measureOverflow);
+    return () => cancelAnimationFrame(id);
+  }, [displayCategories.length]);
+
+  const navigationEnabled = Boolean(showNavigation && hasOverflow);
 
   return (
-    <SliderSection showNavigation={showNavigation}>
+    <SliderSection showNavigation={navigationEnabled}>
       <HeaderContainer>
         <TitleRow>
           <Title>{title}</Title>
@@ -263,12 +302,12 @@ const CategorySlider = ({
       </HeaderContainer>
 
       {displayCategories.length > 0 ? (
-        <SwiperContainer showNavigation={showNavigation}>
+        <SwiperContainer showNavigation={navigationEnabled}>
           <Swiper
             modules={[Navigation]}
             spaceBetween={spaceBetweenValue} // Use dynamic smaller gap
             slidesPerView={'auto'} // Let CSS width/max-width control sizing
-            navigation={showNavigation}
+            navigation={navigationEnabled}
             grabCursor={true}
             speed={350}
             cssMode={true}
@@ -277,19 +316,37 @@ const CategorySlider = ({
             simulateTouch={true}
             allowTouchMove={true}
             watchSlidesProgress={true}
+            watchOverflow={true}
             preloadImages={false}
             lazy={true}
             observer={true}
             observeParents={true}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+              measureOverflow();
+              swiper.on('resize', measureOverflow);
+              swiper.on('slidesLengthChange', measureOverflow);
+              swiper.on('update', measureOverflow);
+            }}
           >
-            {displayCategories.map((category) => (
-              <SwiperSlide key={category.id}>
+            {displayCategories.map((item) => {
+              const isBrandAuto = item?.showTitle === false;
+              const edgeEnabled = edgeImagePositioningMode === 'enabled' ? true
+                : edgeImagePositioningMode === 'disabled' ? false
+                : !isBrandAuto; // auto mode
+              const disableRotationValue = edgeImagePositioningMode === 'disabled' || isBrandAuto ? true : false;
+              
+              return (
+              <SwiperSlide key={item.id}>
                 <CategoryCard 
-                  {...category} 
-                  additionalStyles={{ height: '100%', width: '100%', ...cardStyle }}
+                  {...item} 
+                  disableRotation={disableRotationValue}
+                  enableEdgeImagePositioning={edgeEnabled}
+                  additionalStyles={{ height: '100%', width: '100%', overflow: 'hidden', ...cardStyle }}
                 />
               </SwiperSlide>
-            ))}
+              );
+            })}
           </Swiper>
         </SwiperContainer>
       ) : (

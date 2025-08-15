@@ -33,7 +33,7 @@ const SearchWrapper = styled.div`
   padding: 5px 0;
   min-height: 48px;
 
-  ${mediaQueries.md} {
+  ${mediaQueries.lg} {
     padding: 7px 0;
     min-height: 66px;
     border-top: 4px solid ${COLORS.gray400};

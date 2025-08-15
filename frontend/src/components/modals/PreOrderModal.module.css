@@ -123,12 +123,10 @@
 }
 
 .textarea {
-  min-height: 80px;
+  min-height: 56px;
   resize: vertical;
   border-bottom: 2px solid #B6B6B6;
   text-align: left;
-  
-  
 }
 
 .submitButton {
@@ -227,6 +225,7 @@
   
   .textarea {
     font-size: 16px;
+    min-height: 50px;
   }
   
   .submitButton {

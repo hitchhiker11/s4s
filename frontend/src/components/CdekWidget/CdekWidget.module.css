@@ -1,7 +1,8 @@
 .widgetContainer {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  /* background-color: #ffffff; */
+  /* border: 1px solid #e0e0e0; */
   padding: 20px;
+  padding-left: 0;
   min-height: 150px;
   font-family: 'Rubik', sans-serif;
   width: 100%;
@@ -147,6 +148,7 @@
 @media (max-width: 768px) {
   .widgetContainer {
     padding: 16px;
+    padding-left: 0;
     margin: 0;
     min-height: 120px;
     width: 100%;
@@ -215,6 +217,7 @@
 @media (max-width: 480px) {
   .widgetContainer {
     padding: 12px 16px;
+    padding-left: 0;
     min-height: 100px;
   }
   

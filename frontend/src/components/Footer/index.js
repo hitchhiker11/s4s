@@ -7,11 +7,23 @@ import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
 const FooterContainer = styled.footer`
   width: 100%;
   background-color: ${COLORS.white};
-  
+  position: relative;
+
   ${mediaQueries.xxl} {
-    max-width: 1920px;
+    // max-width: 1920px;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  /* Decorative sticker that should fill the entire footer area */
+  .footerSticker {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
   }
 `;
 
@@ -19,20 +31,26 @@ const MainFooter = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${SPACING["2xl"]};
-  padding: ${SPACING.xl} ${SPACING.xl} 0 0;
+  // padding: ${SPACING.xl} ${SPACING.xl} 0 0;
+  position: relative;
+  z-index: 1;
   
   ${mediaQueries.md} {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: ${SPACING["2xl"]} ${SPACING["3xl"]} 0 0;
+    /* Tablet: smaller top padding and add bottom padding */
+    // padding: clamp(12px, 2vw, 24px) ${SPACING["3xl"]} clamp(12px, 2vw, 24px) 0;
     gap: ${SPACING["3xl"]};
+    ${({ $showDashedBorder }) => $showDashedBorder && `border-top: 2px dashed rgba(0, 0, 0, 0.25);`}
   }
   
   ${mediaQueries.lg} {
     flex-wrap: nowrap;
     justify-content: space-between;
-    padding: 0 40px 0 0;
+    align-items: stretch; /* ensure equal column heights */
+    /* Desktop+: adaptive top padding via clamp */
+    // padding: clamp(16px, 2.5vw, 37px) 40px 0 0;
   }
 `;
 
@@ -41,16 +59,17 @@ const LogoContainer = styled.div`
   max-width: 320px;
   display: none;
   position: relative;
-  height: 100%;
+  overflow: hidden; /* prevent image overflow */
 
   ${mediaQueries.md} {
     width: 25%;
-    display: block;
+    display: none; /* hide on 768-991 by default */
   }
   
   ${mediaQueries.lg} {
     width: 20%;
-    display: block;
+    display: flex;
+    align-items: stretch;
   }
 `;
 
@@ -58,13 +77,14 @@ const Logo = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
   width: 100%;
+  align-self: stretch;
   
   img {
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 `;
 
@@ -80,14 +100,16 @@ const MobileGrid = styled.div`
   ${mediaQueries.md} {
     display: flex;
     flex-direction: row;
-    padding: 0;
-    width: 70%;
+    justify-content: center; /* center content horizontally in 768-991 */
+    padding: 0; /* padding now controlled by MainFooter */
+    width: 100%;
+    flex-wrap: nowrap; /* keep in one row on md */
     grid-template-areas: none;
   }
 
   ${mediaQueries.lg} {
     width: 80%;
-    padding: 37px 40px 0 0;
+    padding: 0 40px 0 0;
     justify-content: space-between;
   }
 `;
@@ -99,14 +121,17 @@ const NavSections = styled.div`
 
   ${mediaQueries.md} {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* single row on md */
+    
     width: 100%;
     gap: ${SPACING["3xl"]};
+    align-items: flex-start;
   }
 
   ${mediaQueries.lg} {
     flex-wrap: nowrap;
     gap: ${SPACING["4xl"]};
+    
     width: 65%;
   }
 `;
@@ -115,15 +140,19 @@ const NavSection = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
-  
+  padding: ${SPACING.xl} ${SPACING.xl} 0 0;
+
   ${mediaQueries.md} {
     display: flex;
     flex-direction: column;
-    width: calc(50% - ${SPACING["2xl"]});
+    padding: clamp(12px, 2vw, 24px) ${SPACING["3xl"]} clamp(12px, 2vw, 24px) 0;
+    flex: 0 1 auto;
+    width: auto; /* keep all sections in one row on md */
   }
   
   ${mediaQueries.lg} {
     width: auto;
+    padding: clamp(16px, 2.5vw, 37px) 40px 0 0;
   }
 `;
 
@@ -181,19 +210,22 @@ const BrandsContainer = styled.div`
   gap: ${SPACING.md};
   align-self: start;
   justify-self: start;
-  
+  padding: ${SPACING.xl} ${SPACING.xl} 0 0;
+
   ${mediaQueries.md} {
     grid-area: none;
     flex-direction: row;
-    justify-content: flex-start;
+    padding: clamp(12px, 2vw, 24px) ${SPACING["3xl"]} clamp(12px, 2vw, 24px) 0;
+    justify-content: flex-end; /* brands to the end of the row on md */
     align-items: center;
-    width: 100%;
-    margin-top: ${SPACING.xl};
+    width: auto;
+    margin-top: 0;
   }
   
   ${mediaQueries.lg} {
     width: 25%;
     margin-top: 0;
+    padding: clamp(16px, 2.5vw, 37px) 40px 0 0;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-end;
@@ -224,6 +256,11 @@ const BottomFooter = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${SPACING.md};
+  position: relative;
+  z-index: 1;
+  /* Ensure it visually sticks to content above without gap */
+  margin-top: 0;
+  border-top: none;
   
   ${mediaQueries.md} {
     display: flex;
@@ -272,7 +309,7 @@ const Copyright = styled.div`
   opacity: 0.8;
 `;
 
-const Footer = ({ showMainSection = true }) => {
+const Footer = ({ showMainSection = true, showDashedBorder = true }) => {
   const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -293,7 +330,7 @@ const Footer = ({ showMainSection = true }) => {
   return (
     <FooterContainer>
       {showMainSection && (
-        <MainFooter>
+        <MainFooter $showDashedBorder={showDashedBorder}>
           <LogoContainer>
             <Link href="/" passHref legacyBehavior>
               <Logo>

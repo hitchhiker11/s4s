@@ -9,17 +9,26 @@
   background-color: #FCFCFC;
   gap: 20px;
   transition: border-bottom-color 0.3s ease, border-right-color 0.3s ease;
+  width: 100%;
 }
 
-.cartItem:hover {
+/* .cartItem:hover {
   border-bottom-color: #6B6B6B;
   border-right-color: #6B6B6B;
-}
+} */
 
 @media (min-width: 768px) {
   .cartItem {
     border-bottom-width: 4px;
     border-right-width: 4px;
+  }
+}
+
+/* XL and above: constrain overall item height for better balance */
+@media (min-width: 1200px) {
+  .cartItem {
+    max-height: 360px;
+    overflow: hidden;
   }
 }
 
@@ -39,6 +48,11 @@
   overflow: hidden;
 }
 
+/* Make the image area indicate clickability too */
+.imageContainer {
+  cursor: pointer;
+}
+
 /* 1440px и меньше — чуть меньше */
 @media (max-width: 1440px) {
   .imageContainer img {
@@ -56,6 +70,27 @@
     min-height: 220px;
     width: 220px;
     height: 220px;
+  }
+}
+
+/* Ensure CartItem fills cart layout width on tablet widths */
+@media (min-width: 768px) and (max-width: 991px) {
+  .cartItem {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* 1200px и больше — не раздуваем карточку, немного уменьшаем изображение */
+@media (min-width: 1200px) {
+  .imageContainer img {
+    width: 300px;
+    height: 300px;
+    min-width: 300px;
+    min-height: 300px;
+    max-width: 300px;
+    max-height: 300px;
+    flex-shrink: 0; /* Keep image from shrinking; text column should adapt */
   }
 }
 
@@ -109,6 +144,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  cursor: pointer; /* Indicate details area is clickable (navigates to product) */
 }
 
 .productInfo {

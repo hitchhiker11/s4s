@@ -58,17 +58,46 @@ export const getBasketItemImageUrl = (item) => {
 
   let imagePath = null;
 
+  const pickFrom = (value) => {
+    // Accept string
+    if (typeof value === 'string') return value;
+    // Accept objects like { resized: { src }, src }
+    if (value && typeof value === 'object') {
+      if (value.resized?.src && typeof value.resized.src === 'string') return value.resized.src;
+      if (value.src && typeof value.src === 'string') return value.src;
+      if (value.url && typeof value.url === 'string') return value.url;
+    }
+    return null;
+  };
+
   // Try different image properties from the API response with type checking
-  if (item.picture?.src && typeof item.picture.src === 'string') {
-    imagePath = item.picture.src;
-  } else if (item.product_image && typeof item.product_image === 'string') {
-    imagePath = item.product_image;
-  } else if (item.image && typeof item.image === 'string') {
-    imagePath = item.image;
-  } else if (item.preview_picture && typeof item.preview_picture === 'string') {
-    imagePath = item.preview_picture;
-  } else if (item.detail_picture && typeof item.detail_picture === 'string') {
-    imagePath = item.detail_picture;
+  imagePath = pickFrom(item.picture) 
+    || pickFrom(item.product_image)
+    || pickFrom(item.image)
+    || pickFrom(item.preview_picture)
+    || pickFrom(item.detail_picture)
+    // Nested common containers from various APIs
+    || pickFrom(item.PRODUCT?.picture)
+    || pickFrom(item.PRODUCT?.preview_picture)
+    || pickFrom(item.PRODUCT?.detail_picture)
+    || pickFrom(item.product?.picture)
+    || pickFrom(item.product?.preview_picture)
+    || pickFrom(item.product?.detail_picture)
+    || item.PRODUCT?.PREVIEW_PICTURE_SRC
+    || item.PRODUCT?.DETAIL_PICTURE_SRC
+    || item.product?.PREVIEW_PICTURE_SRC
+    || item.product?.DETAIL_PICTURE_SRC
+    || item.product?.imageUrl
+    || item.product?.image;
+
+  if (!imagePath && item.properties?.PREVIEW_PICTURE_SRC?.value) {
+    imagePath = item.properties.PREVIEW_PICTURE_SRC.value;
+  } else if (!imagePath && item.properties?.DETAIL_PICTURE_SRC?.value) {
+    imagePath = item.properties.DETAIL_PICTURE_SRC.value;
+  } else if (!imagePath && item.PREVIEW_PICTURE_SRC) {
+    imagePath = item.PREVIEW_PICTURE_SRC;
+  } else if (!imagePath && item.DETAIL_PICTURE_SRC) {
+    imagePath = item.DETAIL_PICTURE_SRC;
   }
 
   const fullImageUrl = getFullImageUrl(imagePath);

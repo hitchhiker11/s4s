@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Link from 'next/link';
@@ -50,15 +50,15 @@ const HeaderContainer = styled.div`
 const HeaderDivider = styled.hr`
   border: none;
   height: 2px;
-  background-color: ${COLORS.gray400};
+  background: none;
+  border-top: 2px solid ${COLORS.gray400};
   width: 100%;
-  // margin: 0 0 22px 0;  
-
+  margin: 0;
   @media (min-width: 992px) {
+    border-top-width: 4px;
     height: 4px;
   }
 `;
-
 const SubtitleContainer = styled.div`
   display: none;
   width: 100%;
@@ -76,8 +76,8 @@ const SubtitleContainer = styled.div`
 
 const Subtitle = styled.p`
   font-family: ${TYPOGRAPHY.fontFamily};
-  font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(1rem, 5vw, ${TYPOGRAPHY.size["2xl"]});
+  font-weight: ${TYPOGRAPHY.weight.bold};
+  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size.xl});
   color: ${COLORS.gray500};
   margin: 0;
   line-height: 1.16;
@@ -135,6 +135,10 @@ const SwiperContainer = styled.div`
   width: 100%;
   max-width: ${SIZES.containerMaxWidth};
   margin: 0 auto;
+  margin-top: ${SPACING.md};
+  // ${mediaQueries.lg} {
+  //   margin-top: ${SPACING.md}; 
+  // }
   
   .swiper {
     /* No additional padding since SliderSection now handles all padding */
@@ -148,11 +152,11 @@ const SwiperContainer = styled.div`
   }
 
   .swiper-slide {
-    width: 70%; /* Match Figma design width for mobile */
-    max-width: 173px; /* Based on mobile design */
-    min-width: 173px;
+    width: 70%; /* Mobile behavior aligned with CategorySlider */
+    max-width: 140px;
     height: auto;
     display: flex;
+    flex-shrink: 0;
     
     /* Safari WebKit optimizations */
     -webkit-backface-visibility: hidden;
@@ -161,12 +165,12 @@ const SwiperContainer = styled.div`
     transform: translate3d(0, 0, 0);
   }
   
-  /* For tablet - intermediate size */
+  /* Tablet uses improved adaptive width */
   ${mediaQueries.md} {
     .swiper-slide {
-      width: 240px; /* Slightly wider to avoid over-shrinking */
-      min-width: 240px;
-      max-width: 240px;
+      width: clamp(220px, 65%, 280px);
+      min-width: 220px;
+      max-width: 280px;
       flex-shrink: 0;
     }
   }
@@ -215,6 +219,20 @@ const SwiperContainer = styled.div`
     }
   }
 
+  /* Hide disabled arrows completely */
+  .swiper-button-disabled {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+
+  ${mediaQueries.lg} {
+    .swiper-button-prev,
+    .swiper-button-next {
+      border-width: 4px;
+    }
+  }
+
   .swiper-button-prev {
     left: 10px;
   }
@@ -257,6 +275,35 @@ const ProductSlider = ({
 }) => {
   const displayProducts = Array.isArray(products) ? products : [];
   const spaceBetweenValue = 12; // Фиксированные отступы между карточками в слайдере
+  const swiperRef = useRef(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  const measureOverflow = () => {
+    const swiper = swiperRef.current;
+    if (!swiper || !swiper.el || !swiper.wrapperEl) {
+      setHasOverflow(false);
+      return;
+    }
+    const containerWidth = swiper.el.clientWidth || 0;
+    const contentWidth = swiper.wrapperEl.scrollWidth || 0;
+    setHasOverflow(contentWidth > containerWidth + 1);
+  };
+
+  useEffect(() => {
+    // re-measure on window resize
+    const onResize = () => measureOverflow();
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    // re-measure when number of slides changes
+    // next tick to ensure DOM is updated
+    const id = requestAnimationFrame(measureOverflow);
+    return () => cancelAnimationFrame(id);
+  }, [displayProducts.length]);
 
   if (process.env.NODE_ENV === 'development') {
     console.log(`ProductSlider (${title}) rendering with:`, displayProducts.length);
@@ -265,8 +312,10 @@ const ProductSlider = ({
   // Use sliderSectionStyles if provided, otherwise fall back to gridSectionStyles for compatibility
   const customStyles = sliderSectionStyles || gridSectionStyles;
 
+  const navigationEnabled = Boolean(showNavigation && hasOverflow);
+
   return (
-    <SliderSection showNavigation={showNavigation} customStyles={customStyles}>
+    <SliderSection showNavigation={navigationEnabled} customStyles={customStyles}>
       <HeaderContainer>
         <TitleRow>
           <Title>{title}</Title>
@@ -277,20 +326,20 @@ const ProductSlider = ({
           )}
         </TitleRow>
         <HeaderDivider />
+        {subtitle ? (
+          <SubtitleContainer>
+            <Subtitle>{subtitle}</Subtitle>
+          </SubtitleContainer>
+        ) : null}
       </HeaderContainer>
-      {subtitle ? (
-        <SubtitleContainer>
-          <Subtitle>{subtitle}</Subtitle>
-        </SubtitleContainer>
-      ) : null}
 
       {displayProducts.length > 0 ? (
-        <SwiperContainer showNavigation={showNavigation}>
+        <SwiperContainer showNavigation={navigationEnabled}>
           <Swiper
             modules={[Navigation]}
             spaceBetween={spaceBetweenValue}
             slidesPerView={'auto'}
-            navigation={showNavigation}
+            navigation={navigationEnabled}
             grabCursor={true}
             speed={350}
             cssMode={true}
@@ -299,10 +348,18 @@ const ProductSlider = ({
             simulateTouch={true}
             allowTouchMove={true}
             watchSlidesProgress={true}
+            watchOverflow={true}
             preloadImages={false}
             lazy={true}
             observer={true}
             observeParents={true}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+              measureOverflow();
+              swiper.on('resize', measureOverflow);
+              swiper.on('slidesLengthChange', measureOverflow);
+              swiper.on('update', measureOverflow);
+            }}
           >
             {displayProducts.map((product) => (
               <SwiperSlide key={product.id}>

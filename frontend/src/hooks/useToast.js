@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 export const useToast = () => {
   const [toasts, setToasts] = useState([]);
 
-  // Show a toast message
+  // Show a toast message (replaces any existing toast)
   const showToast = useCallback((message, type = 'error', options = {}) => {
     const id = Date.now() + Math.random();
     const toast = {
@@ -18,7 +18,8 @@ export const useToast = () => {
       ...options
     };
 
-    setToasts(prev => [...prev, toast]);
+    // Replace previous toasts to ensure only one is visible at a time
+    setToasts([toast]);
 
     // Auto-remove toast after duration (default 7 seconds)
     const duration = options.duration ?? 7000;

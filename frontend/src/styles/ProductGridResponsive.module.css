@@ -6,6 +6,7 @@
   grid-gap: 10px;
   row-gap: 20px;
   align-items: start;
+  align-content: start;
   width: 100%;
   max-width: 100%;
   min-width: 0; /* Allow shrinking below content size */

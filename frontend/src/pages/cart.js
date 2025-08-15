@@ -42,6 +42,7 @@ const CartPage = () => {
   // Order state
   const [orderId, setOrderId] = useState(null);
   const [orderNumber, setOrderNumber] = useState(null);
+  const [orderTotal, setOrderTotal] = useState(null);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [isOrderLoading, setIsOrderLoading] = useState(false);
   const [isExistingOrder, setIsExistingOrder] = useState(false);
@@ -61,6 +62,66 @@ const CartPage = () => {
 
   // Check for order_id parameter and handle existing orders
   const { order_id } = router.query;
+  
+  // Basket hook moved up to avoid TDZ in effects
+  const {
+    basketItems,
+    basketData,
+    basketCount,
+    basketTotalPrice,
+    isLoading: isBasketLoading,
+    error,
+    updateBasketItem,
+    removeFromBasket,
+    addToBasket,
+    clearBasket,
+    refetchBasket,
+    isFuserIdInitialized,
+    fuserId,
+    checkStock: basketCheckStock
+  } = useBasket({
+    initialFetch: true,
+    refetchOnWindowFocus: true,
+    staleTime: 30000, // 30 seconds
+    autoInitialize: true
+  });
+
+  const hasBasketItems = Array.isArray(basketItems) && basketItems.length > 0;
+  // Ref to track if we've already checked stock for current basket items
+  const checkedBasketItemsRef = useRef(new Set());
+  
+  // Load last order from localStorage if no state and on payment tab
+  useEffect(() => {
+    if (activeTab === 'payment' && !orderId && !orderNumber && !orderTotal && !hasBasketItems) {
+      try {
+        const ordersRaw = localStorage.getItem('s4s_recent_orders');
+        if (ordersRaw) {
+          const orders = JSON.parse(ordersRaw);
+          if (Array.isArray(orders) && orders.length > 0) {
+            const lastOrder = orders[0]; // Первый = последний добавленный
+            console.log('🔄 [Cart] Загружаем последний заказ из localStorage:', lastOrder);
+            setOrderId(lastOrder.order_id);
+            setOrderNumber(lastOrder.order_number);
+            setOrderTotal(Number(lastOrder.total_amount));
+            // Восстанавливаем данные пользователя если они есть
+            if (lastOrder.customer_data) {
+              const [firstName = '', lastName = ''] = (lastOrder.customer_data.name || '').split(' ');
+              setUserFormData(prev => ({
+                ...prev,
+                firstName: firstName,
+                lastName: lastName,
+                phoneNumber: lastOrder.customer_data.phone || '',
+                email: lastOrder.customer_data.email || '',
+                comment: lastOrder.customer_data.comment || ''
+              }));
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ [Cart] Ошибка загрузки заказа из localStorage:', error);
+      }
+    }
+  }, [activeTab, orderId, orderNumber, orderTotal, hasBasketItems]);
   
   useEffect(() => {
     const handleExistingOrder = async () => {
@@ -106,32 +167,6 @@ const CartPage = () => {
     handleExistingOrder();
   }, [router.isReady, order_id, router, showErrorToast]);
   
-  // Ref to track if we've already checked stock for current basket items
-  const checkedBasketItemsRef = useRef(new Set());
-  
-  // Use the basket hook to get real basket data
-  const {
-    basketItems,
-    basketData,
-    basketCount,
-    basketTotalPrice,
-    isLoading: isBasketLoading,
-    error,
-    updateBasketItem,
-    removeFromBasket,
-    addToBasket,
-    clearBasket,
-    refetchBasket,
-    isFuserIdInitialized,
-    fuserId,
-    checkStock: basketCheckStock
-  } = useBasket({
-    initialFetch: true,
-    refetchOnWindowFocus: true,
-    staleTime: 30000, // 30 seconds
-    autoInitialize: true
-  });
-
   // Check stock for all items when basket items are loaded
   useEffect(() => {
     const checkStockForCurrentBasketItems = async () => {
@@ -456,9 +491,54 @@ const CartPage = () => {
         const response = await createOrder(orderData);
         
         if (response.success) {
-          setOrderId(response.data.order_id);
-          setOrderNumber(response.data.order_number);
-          showSuccessToast(`Заказ №${response.data.order_number} успешно создан!`);
+          const orderId = response.data.order_id;
+          const orderNumber = response.data.order_number;
+          const totalAmount = Number(response.data.total_amount || subtotal);
+          
+          setOrderId(orderId);
+          setOrderNumber(orderNumber);
+          setOrderTotal(totalAmount);
+          
+          // Сохраняем заказ в localStorage (максимум 2 последних)
+          try {
+            const newOrder = {
+              order_id: orderId,
+              order_number: orderNumber,
+              total_amount: totalAmount,
+              customer_data: {
+                name: `${userFormData.firstName} ${userFormData.lastName}`,
+                phone: normalizePhoneNumber(userFormData.phoneNumber || ''),
+                email: userFormData.email,
+                delivery_address: deliveryAddress,
+                comment: userFormData.comment || ''
+              },
+              created_at: Date.now()
+            };
+            
+            // Получаем существующие заказы
+            const existingOrdersRaw = localStorage.getItem('s4s_recent_orders');
+            let existingOrders = [];
+            
+            if (existingOrdersRaw) {
+              try {
+                existingOrders = JSON.parse(existingOrdersRaw);
+                if (!Array.isArray(existingOrders)) existingOrders = [];
+              } catch {
+                existingOrders = [];
+              }
+            }
+            
+            // Добавляем новый заказ в начало и оставляем максимум 2
+            existingOrders.unshift(newOrder);
+            existingOrders = existingOrders.slice(0, 2);
+            
+            localStorage.setItem('s4s_recent_orders', JSON.stringify(existingOrders));
+            console.log('💾 [Cart] Заказ сохранен в localStorage:', newOrder);
+          } catch (error) {
+            console.warn('⚠️ [Cart] Не удалось сохранить заказ в localStorage:', error);
+          }
+          
+          showSuccessToast(`Заказ №${orderNumber} успешно создан!`);
           
           // Очищаем корзину после успешного создания заказа
           try {
@@ -497,6 +577,8 @@ const CartPage = () => {
     return 'Продолжить';
   };
 
+
+
   // Dynamic breadcrumb based on active tab
   const dynamicBreadcrumbs = [
     { name: 'Главная', link: '/' },
@@ -512,9 +594,14 @@ const CartPage = () => {
   ];
 
   // Calculate order summary values
-  const subtotal = basketTotalPrice || 0;
   const shippingCost = 0; // Temporarily set to 0 as per user request
   const packagingCost = 0; // Free packaging
+  
+  // Use order total for payment step, basket total for other steps
+  // On payment: show last-order total only when basket is empty; otherwise 0
+  const subtotal = activeTab === 'payment'
+    ? ((orderTotal && orderTotal > 0 && !hasBasketItems) ? Number(orderTotal) : 0)
+    : (basketTotalPrice || 0);
   const total = subtotal + packagingCost; // + shippingCost; // Commented out shipping cost addition
 
   // Format cart items for the CartItem component
@@ -654,6 +741,13 @@ const CartPage = () => {
                               <span>Номер заказа:</span>
                               <strong>№{orderNumber || orderId}</strong>
                             </div>
+                            {orderTotal ? (
+                              <div className={styles.orderInfoRow}>
+                                <span>Сумма заказа:</span>
+                                <strong>₽{Number(orderTotal).toLocaleString('ru-RU')}</strong>
+                              </div>
+                            ) : null}
+
                             {!isExistingOrder && (
                               <>
                                 <div className={styles.orderInfoRow}>

@@ -53,12 +53,12 @@ const Title = styled.h1`
   line-height: 1em;
   color: #1C1C1C;
   margin-top: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   
   ${mediaQueries.md} {
     font-size: 36px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 24px;
+    margin-bottom: 12px;
   }
 `;
 
@@ -85,7 +85,10 @@ const transformCategory = (apiCategory) => {
     id: apiCategory.id,
     name: apiCategory.name,
     code: apiCategory.fields?.CODE || '',
-    image: apiCategory.fields?.PICTURE ? `/upload/${apiCategory.fields.PICTURE}` : null,
+    // Prefer direct URLs from API if available; fallback to legacy numeric PICTURE id
+    image: apiCategory.fields?.PICTURE_PREVIEW_SRC
+      || apiCategory.fields?.PICTURE_SRC
+      || (apiCategory.fields?.PICTURE ? `/upload/${apiCategory.fields.PICTURE}` : null),
   };
 };
 
@@ -98,7 +101,10 @@ const transformSubcategories = (apiSubcategories, parentCategoryCode, parentSubC
     name: subcat.name,
     code: subcat.fields?.CODE || '',
     link: `/catalog/${parentCategoryCode}/${parentSubCategoryCode}/${subcat.fields?.CODE || subcat.id}`,
-    imageUrl: subcat.fields?.PICTURE ? `/upload/${subcat.fields.PICTURE}` : null,
+    // Prefer direct URLs from API if available; fallback to legacy numeric PICTURE id
+    imageUrl: subcat.fields?.PICTURE_PREVIEW_SRC
+      || subcat.fields?.PICTURE_SRC
+      || (subcat.fields?.PICTURE ? `/upload/${subcat.fields.PICTURE}` : null),
   }));
 };
 
@@ -311,6 +317,19 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
           <>
             <ProductGrid
               showTitleRow={false}
+              showHeaderDivider={false}
+              gridSectionStyles={`
+                padding: 0px 0px 16px 0px  !important;
+                @media (min-width: 768px) {
+                  padding: 0px 0px 16px 0px  !important;
+                }
+                @media (min-width: 1200px) {
+                  padding: 0px 0px 16px 0px  !important;
+                }
+                @media (min-width: 1920px) {
+                  padding: 0px 0px 16px 0px  !important;
+                }
+              `}
               products={products.map((product) => ({
                 ...product,
                 imageUrl: product.image,
