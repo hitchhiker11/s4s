@@ -14,11 +14,10 @@ const CardLink = styled.a`
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
   position: relative;
-  min-height: 100px;
+  min-height: 120px;
   width: 100%; /* Always fill parent width */
   max-width: 100%;
   min-width: 0;
-  min-height: 0;
   contain: paint;
   will-change: transform;
   ${props => props.additionalStyles && css(props.additionalStyles)};
@@ -41,6 +40,16 @@ const CardLink = styled.a`
 
     /* Для выравнивания содержимого по высоте */
     justify-content: flex-start;
+  }
+
+  /* Small screens (576-767) */
+  @media (min-width: ${BREAKPOINTS.sm}) and (max-width: ${BREAKPOINTS.md - 1}px) {
+    min-height: 140px;
+  }
+
+  /* Tablets (768-991) */
+  @media (min-width: ${BREAKPOINTS.md}) and (max-width: ${BREAKPOINTS.lg - 1}px) {
+    min-height: 170px;
   }
 `;
 
