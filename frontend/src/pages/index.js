@@ -96,7 +96,7 @@ const HeroTitle = styled.h1`
   letter-spacing: -5%;
   color: ${COLORS.black};
   margin: 0;
-  padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
+  // padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
 
   ${mediaQueries.sm} {
     padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
