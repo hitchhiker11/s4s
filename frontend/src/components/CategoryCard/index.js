@@ -14,7 +14,7 @@ const CardLink = styled.a`
   border-right: 2px solid ${COLORS.gray400};
   border-bottom: 2px solid ${COLORS.gray400};
   position: relative;
-  min-height: 120px;
+  min-height: 100px;
   width: 100%; /* Always fill parent width */
   max-width: 100%;
   min-width: 0;
@@ -47,11 +47,11 @@ const CardLink = styled.a`
 const CardTitle = styled.h3`
   font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
   font-weight: ${TYPOGRAPHY.weight.bold};
-  font-size: clamp(11.5px, 2vw, 16px); /* Smaller font size for mobile */
+  font-size: clamp(11px, 1.9vw, 15px); /* Slightly smaller for tighter height */
   color: ${COLORS.black};
   text-align: left;
   line-height: 1.2;
-  padding: ${SPACING.sm} 0; 
+  padding: ${SPACING.xs} 0; 
   padding-bottom: 0;
   width: 100%;
   margin: 0;
@@ -101,14 +101,14 @@ const CardImageContainer = styled.div`
   overflow: hidden;
   flex: 0 0 auto;
   width: 100%; /* Ensure image container fills the full width */
-  max-height: 90px; /* Slightly shorter for smaller screens */
+  max-height: 72px; /* Slightly shorter for smaller screens */
   min-height: 0;
   padding: ${SPACING.xs} 0 0; /* Add small padding in mobile */
   
   ${mediaQueries.md} {
     flex-grow: 1;
     padding: ${SPACING.lg};
-    max-height: 250px;
+    max-height: 200px;
   }
 
   /* Edge positioning for category images (not logos) */

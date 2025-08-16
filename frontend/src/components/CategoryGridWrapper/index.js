@@ -34,42 +34,27 @@ const GridContainer = styled.div`
 
 // Обертка для правильного позиционирования карточек в grid
 const CardGridWrapper = styled.div`
-  /* Явные префиксы для Safari */
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-grid;
-  display: grid;
-  -webkit-grid-column: ${props => props.mobileGridColumn || 'span 2'};
+  /* МОБИЛЬНАЯ версия: 6-колоночная система с точным позиционированием */
+  /* 🚨 ВАЖНО: СТРОГО ТОЛЬКО span 2, span 3, span 6! */
   grid-column: ${props => props.mobileGridColumn || 'span 2'};
-  
-  ${props => props.mobileGridRow ? `
-    -webkit-grid-row: ${props.mobileGridRow};
-    grid-row: ${props.mobileGridRow};
-  ` : ''}
-  
+  ${props => props.mobileGridRow ? `grid-row: ${props.mobileGridRow};` : ''}
   min-width: 0;
   min-height: 0;
-  contain: none; /* или paint если критично */
-  will-change: transform;
-  backface-visibility: hidden;
-  
-  /* Фикс для Safari размеров */
-  width: -webkit-fill-available;
-  width: -moz-available;
-  width: stretch;
-  height: -webkit-fill-available;
-  
-  /* Явное управление потоком */
-  grid-auto-flow: dense;
+  contain: layout paint;
+  will-change: contents;
+  transform: translateZ(0);
   
   ${mediaQueries.lg} {
-    & {
-      -webkit-grid-column: ${props => props.desktopGridColumn || 'span 1'} !important;
-      grid-column: ${props => props.desktopGridColumn || 'span 1'} !important;
-      -webkit-grid-row: initial !important;
-      grid-row: initial !important;
-    }
+    /* ДЕСКТОПНАЯ версия: простой 4-колоночный грид */
+    /* 🚨 КРИТИЧЕСКИ ВАЖНО: Переопределяем ВСЕ grid свойства */
+    grid-column: ${props => props.desktopGridColumn || 'span 1'} !important;
+    grid-row: auto !important; /* Принудительно убираем мобильный grid-row */
+    /* Автоматическое размещение - CSS Grid сам определит позиции */
   }
+  
+  /* Обеспечиваем, что содержимое заполняет всю доступную ширину */
+  width: 100%;
+  align-self: start;
 `;
 
 // Стилизованная карточка "Все товары" с особыми стилями только на мобильной версии
