@@ -110,7 +110,7 @@ const CardImageContainer = styled.div`
   overflow: hidden;
   flex: 0 0 auto;
   width: 100%; /* Ensure image container fills the full width */
-  max-height: 72px; /* Slightly shorter for smaller screens */
+  max-height: 125px; /* Slightly shorter for smaller screens */
   min-height: 0;
   padding: ${SPACING.xs} 0 0; /* Add small padding in mobile */
   
@@ -169,15 +169,30 @@ const CardImage = styled.img`
           object-position: bottom right !important;
         `}
 
-    /* Mobile adjustments - disable edge positioning to avoid WebKit grid height bugs */
+    /* Mobile adjustments - move even further right and down for stronger out-of-frame effect */
+      // max-width: 100% !important;
+      // max-height: 100% !important;
+      // transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} !important;
+      // object-position: center center !important;
     @media (max-width: 575px) {
-      max-width: 100% !important;
-      max-height: 100% !important;
-      transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} !important;
-      object-position: center center !important;
+      max-width: 125% !important;
+      max-height: 125% !important;
+      ${props.isSvg
+        ? css`
+            /* SVGs: move further top-left (not typical, but for completeness) */
+            transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(-35%) translateY(-15%) !important;
+            object-position: top left !important;
+          `
+        : css`
+            /* Raster: move much further bottom-right for strong out-of-frame effect */
+            transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} translateX(30%) translateY(30%) !important;
+            object-position: bottom right !important;
+          `}
     }
+          ///
 
     /* Tablet and below adjustments */
+    // @media (max-width: ${BREAKPOINTS.lg - 1}px) {
     @media (min-width: 576px) and (max-width: ${BREAKPOINTS.lg - 1}px) {
       max-width: 140% !important;
       max-height: 140% !important;

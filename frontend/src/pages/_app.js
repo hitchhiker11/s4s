@@ -27,6 +27,7 @@ function MyApp({ Component, pageProps }) {
   // Создаем QueryClient на стороне клиента
   const [queryClient] = useState(() => createQueryClient());
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobileWebkit, setIsMobileWebkit] = useState(false);
   const router = useRouter();
 
   // Подключаем инструменты для работы с моками в режиме разработки
@@ -38,17 +39,28 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
 
+  // Detect mobile WebKit browsers (iOS Safari, Android WebKit, etc)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const ua = navigator.userAgent;
+      // iOS Safari or Android WebKit-based browsers
+      const isWebkit = /AppleWebKit/.test(ua) && !/Chrome/.test(ua);
+      const isMobile = /Mobile|iPhone|iPad|iPod|Android/i.test(ua);
+      setIsMobileWebkit(isWebkit && isMobile);
+    }
+  }, []);
+
   // Enhanced overlay transition animation
   useEffect(() => {
     const handleStart = () => {
       setIsTransitioning(true);
     };
-    
+
     const handleEnd = () => {
-      // Небольшая задержка для плавного завершения анимации
+      // Для WebKit на мобильных — чуть дольше задержка и плавнее
       setTimeout(() => {
         setIsTransitioning(false);
-      }, 30);
+      }, isMobileWebkit ? 120 : 30);
     };
 
     router.events.on('routeChangeStart', handleStart);
@@ -60,8 +72,40 @@ function MyApp({ Component, pageProps }) {
       router.events.off('routeChangeComplete', handleEnd);
       router.events.off('routeChangeError', handleEnd);
     };
-  }, [router.events]);
-  
+  }, [router.events, isMobileWebkit]);
+
+  // Стили для overlay с учетом WebKit/mobile и большей прозрачности
+  const overlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: isMobileWebkit
+      ? 'rgba(255,255,255,0.32)'
+      : 'rgba(255,255,255,0.22)',
+    // Для WebKit используем blur(2.5px) и -webkit-backdrop-filter
+    backdropFilter: isMobileWebkit ? 'blur(2.5px)' : 'blur(1px)',
+    WebkitBackdropFilter: isMobileWebkit ? 'blur(2.5px)' : 'blur(1px)',
+    zIndex: 9999,
+    pointerEvents: isTransitioning ? 'auto' : 'none',
+    opacity: isTransitioning ? 1 : 0,
+    transition: isTransitioning
+      ? isMobileWebkit
+        ? 'opacity 220ms cubic-bezier(0.4,0,0.2,1)'
+        : 'opacity 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+      : isMobileWebkit
+        ? 'opacity 350ms cubic-bezier(0.4,0,0.2,1)'
+        : 'opacity 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Для WebKit: убираем лишние артефакты
+    willChange: isMobileWebkit ? 'opacity, backdrop-filter' : 'opacity',
+    touchAction: isMobileWebkit ? 'none' : undefined,
+    overscrollBehavior: isMobileWebkit ? 'none' : undefined,
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
@@ -71,53 +115,10 @@ function MyApp({ Component, pageProps }) {
             <title>Shop4Shoot</title>
           </Head>
           <GlobalStyles />
-          
-          {/* Subtle overlay transition element */}
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundColor: 'rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(1px)',
-              zIndex: 9999,
-              pointerEvents: isTransitioning ? 'auto' : 'none',
-              opacity: isTransitioning ? 1 : 0,
-              transition: isTransitioning 
-                ? 'opacity 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                : 'opacity 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {/* Very subtle loading indicator */}
-            <div
-              style={{
-                width: '16px',
-                height: '16px',
-                border: '1px solid rgba(0, 0, 0, 0.05)',
-                borderTop: '1px solid rgba(0, 0, 0, 0.15)',
-                borderRadius: '50%',
-                animation: isTransitioning ? 'spin 1.2s linear infinite' : 'none',
-                opacity: isTransitioning ? 0.7 : 0,
-                transform: `scale(${isTransitioning ? 1 : 0.9})`,
-                transition: 'opacity 100ms ease, transform 100ms ease'
-              }}
-            />
-          </div>
-          
-          {/* Add keyframes for spinner */}
-          <style jsx global>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
-          
-          {/* <Header useMocks={true} mockBasketCount={5} /> */}
+
+          {/* Subtle overlay transition element, optimized for WebKit/mobile, more transparent, no spinner */}
+          <div style={overlayStyle}></div>
+
           <Component {...pageProps} />
           {process.env.NODE_ENV !== 'production' && <ReactQueryDevtools initialIsOpen={false} />}
           {process.env.NODE_ENV !== 'production' && <Logger />}
