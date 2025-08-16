@@ -394,7 +394,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     e.preventDefault();
     
     if (isButtonDisabled) {
-      // console.log(`Product ${id} - button disabled. PreOrder: ${isPreOrder}, Available: ${isAvailable}, Loading: ${isLoading}`);
+      console.log(`Product ${id} - button disabled. PreOrder: ${isPreOrder}, Available: ${isAvailable}, Loading: ${isLoading}`);
       return;
     }
     
@@ -402,7 +402,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     setButtonState('loading');
     
     try {
-      // console.log('🛒 [ProductCard] Adding product to basket with stock check:', { id, name, isAvailable, isPreOrder });
+      console.log('🛒 [ProductCard] Adding product to basket with stock check:', { id, name, isAvailable, isPreOrder });
       
       // Use the new async API method with stock check to add to basket
       await addToBasketWithStockCheck({
@@ -410,7 +410,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         quantity: 1
       });
       
-      // console.log(`✅ [ProductCard] Successfully added product ${id} to basket`);
+      console.log(`✅ [ProductCard] Successfully added product ${id} to basket`);
       setButtonState('success');
       showSuccessToast('Товар успешно добавлен в корзину');
       resetButtonState();
@@ -421,15 +421,15 @@ const ProductCard = ({ product, onAddToCart }) => {
         try {
           onAddToCart(id);
         } catch (callbackError) {
-          // console.warn('Error in onAddToCart callback:', callbackError);
+          console.warn('Error in onAddToCart callback:', callbackError);
         }
       }
     } catch (error) {
-      // console.error(`❌ [ProductCard] Failed to add product ${id} to basket:`, error);
+      console.error(`❌ [ProductCard] Failed to add product ${id} to basket:`, error);
       
       // Check if it's a stock-related error
       if (error.stockResponse) {
-        // console.log('📊 [ProductCard] Stock error details:', error.stockResponse);
+        console.log('📊 [ProductCard] Stock error details:', error.stockResponse);
         const availableQuantity = error.stockResponse.available_quantity || 0;
         const errorMessage = availableQuantity > 0 
           ? `Доступно только ${availableQuantity} шт.`

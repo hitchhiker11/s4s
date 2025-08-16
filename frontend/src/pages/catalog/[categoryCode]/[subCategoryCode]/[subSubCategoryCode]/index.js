@@ -160,7 +160,7 @@ const SubSubCategoryProductsPage = ({ initialCategory, initialSubCategory, initi
     try {
       await addToBasket({ product_id: productId, quantity: 1 });
     } catch (e) {
-      // console.error(e);
+      console.error(e);
     }
   };
 
@@ -295,7 +295,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (e) {
-    // console.error(e);
+    console.error(e);
     return { notFound: true };
   }
 }

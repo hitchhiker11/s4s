@@ -314,7 +314,7 @@ const ProductSlider = ({
   }, [displayProducts.length]);
 
   if (process.env.NODE_ENV === 'development') {
-    // console.log(`ProductSlider (${title}) rendering with:`, displayProducts.length);
+    console.log(`ProductSlider (${title}) rendering with:`, displayProducts.length);
   }
 
   // Use sliderSectionStyles if provided, otherwise fall back to gridSectionStyles for compatibility

@@ -12,7 +12,7 @@ const BASE_URL = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'ht
 export const getFullImageUrl = (imagePath) => {
   // Check if imagePath is null, undefined, or not a string
   if (!imagePath || typeof imagePath !== 'string') {
-    // console.warn('🖼️ [ImageUtils] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
+    console.warn('🖼️ [ImageUtils] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
     return '/images/placeholder.png';
   }
 
@@ -40,11 +40,11 @@ export const getFullImageUrl = (imagePath) => {
 export const getBasketItemImageUrl = (item) => {
   // Validate input
   if (!item || typeof item !== 'object') {
-    // console.warn('🖼️ [ImageUtils] Invalid item provided to getBasketItemImageUrl:', item);
+    console.warn('🖼️ [ImageUtils] Invalid item provided to getBasketItemImageUrl:', item);
     return getFullImageUrl(null); // Will return placeholder
   }
 
-  // console.log('🖼️ [ImageUtils] Processing basket item image:', {
+  console.log('🖼️ [ImageUtils] Processing basket item image:', {
     itemId: item.id,
     itemName: item.name,
     rawImageData: {
@@ -102,7 +102,7 @@ export const getBasketItemImageUrl = (item) => {
 
   const fullImageUrl = getFullImageUrl(imagePath);
   
-  // console.log('🖼️ [ImageUtils] Final image URL:', {
+  console.log('🖼️ [ImageUtils] Final image URL:', {
     itemId: item.id,
     originalPath: imagePath,
     originalPathType: typeof imagePath,

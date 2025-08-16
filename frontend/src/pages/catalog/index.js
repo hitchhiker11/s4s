@@ -109,7 +109,7 @@ const CatalogPage = ({ seo, initialCategories }) => {
       section.raw?.fields?.CODE === "katalog_sayta" || section.raw?.fields?.NAME === "Каталог сайта"
     )?.id || "572"; // Default to "572" if not found
     
-    // console.log('Found "Каталог сайта" with ID:', catalogSectionId);
+    console.log('Found "Каталог сайта" with ID:', catalogSectionId);
     
     // Filter sections that are direct children of "Каталог сайта" (level 2 categories)
     const mainCategories = allSections.filter(section => {
@@ -120,7 +120,7 @@ const CatalogPage = ({ seo, initialCategories }) => {
       return false;
     });
     
-    // console.log('Found main categories count:', mainCategories.length);
+    console.log('Found main categories count:', mainCategories.length);
     
     // Map to match expected props for CategoryCard
     const mappedCategories = mainCategories.map(section => {
@@ -135,7 +135,7 @@ const CatalogPage = ({ seo, initialCategories }) => {
       };
     });
     
-    // console.log('Main categories for display:', mappedCategories);
+    console.log('Main categories for display:', mappedCategories);
     
     // Fallback to static categories if no API data
     return mappedCategories.length > 0 ? mappedCategories : [
@@ -203,7 +203,7 @@ export async function getServerSideProps(context) {
     );
     
     const categoriesResult = queryClient.getQueryData('catalogCategories');
-    // console.log('[SSR Catalog] Categories prefetched. Result available:', !!categoriesResult);
+    console.log('[SSR Catalog] Categories prefetched. Result available:', !!categoriesResult);
     
     const initialCategoriesVal = (categoriesResult && !categoriesResult.error && categoriesResult.data) ? categoriesResult.data : [];
     
@@ -219,7 +219,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
-    // console.error('Error fetching main catalog data:', error);
+    console.error('Error fetching main catalog data:', error);
     return {
       props: {
         seo: {

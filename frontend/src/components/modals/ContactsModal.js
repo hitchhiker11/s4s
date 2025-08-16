@@ -110,7 +110,7 @@ const ContactsModal = ({ isOpen, onClose }) => {
         throw new Error(apiMessage);
       }
     } catch (error) {
-      // console.error('Error submitting callback form:', error);
+      console.error('Error submitting callback form:', error);
       showErrorToast(error.message || 'Произошла ошибка при заказе звонка');
     } finally {
       setIsSubmitting(false);

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base API URL from environment variables
 const API_BASE_URL = process.env.NEXT_PUBLIC_BITRIX_URL || 'https://shop4shoot.com/api';
-// console.log('SHOP4SHOOT DEBUG: API_BASE_URL in bitrix.js initialized to:', API_BASE_URL);
+console.log('SHOP4SHOOT DEBUG: API_BASE_URL in bitrix.js initialized to:', API_BASE_URL);
 const CATALOG_IBLOCK_ID = process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21';
 const BRANDS_IBLOCK_ID = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '22'; // Assuming brands might be in the same iblock or a different one
 const SLIDER_IBLOCK_ID = process.env.NEXT_PUBLIC_SLIDER_IBLOCK_ID || '27'; // ID инфоблока со слайдерами
@@ -17,7 +17,7 @@ const bitrixApi = axios.create({
 
 // Helper for handling API errors consistently
 const handleApiError = (error, endpoint) => {
-  // console.error(`API Error (${endpoint}):`, error.response?.status, error.response?.data, error.message);
+  console.error(`API Error (${endpoint}):`, error.response?.status, error.response?.data, error.message);
   
   // Prefer nested error message when present
   const serverMessage = error.response?.data?.error?.message || error.response?.data?.message;
@@ -261,12 +261,12 @@ export const getBrands = async (params = {}) => {
       ...params,
     };
     
-    // console.log('🏷️ [API] Getting brands with params:', queryParams);
+    console.log('🏷️ [API] Getting brands with params:', queryParams);
     const response = await bitrixApi.get('/catalog', { params: queryParams });
-    // console.log('✅ [API] Brands retrieved successfully:', response.data);
+    console.log('✅ [API] Brands retrieved successfully:', response.data);
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to get brands:', error);
+    console.error('❌ [API] Failed to get brands:', error);
     return handleApiError(error, 'getBrands');
   }
 };
@@ -322,12 +322,12 @@ export const getCatalogItemsByBrand = async (brandId, params = {}) => {
       ...params,
     };
     
-    // console.log('🏷️ [API] Getting catalog items by brand:', { brandId, params: queryParams });
+    console.log('🏷️ [API] Getting catalog items by brand:', { brandId, params: queryParams });
     const response = await bitrixApi.get('/catalog', { params: queryParams });
-    // console.log('✅ [API] Brand catalog items retrieved successfully:', response.data);
+    console.log('✅ [API] Brand catalog items retrieved successfully:', response.data);
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to get catalog items by brand:', error);
+    console.error('❌ [API] Failed to get catalog items by brand:', error);
     return handleApiError(error, 'getCatalogItemsByBrand');
   }
 };
@@ -342,7 +342,7 @@ export const getBrandByCode = async (brandCode, params = {}) => {
   try {
     if (!brandCode) throw new Error('Brand code is required');
     
-    // console.log('🏷️ [API] Getting brand by code:', brandCode);
+    console.log('🏷️ [API] Getting brand by code:', brandCode);
     
     // Strategy 1: Try with search parameter first
     let brandsResponse = await getBrands({ 
@@ -361,7 +361,7 @@ export const getBrandByCode = async (brandCode, params = {}) => {
     
     // Strategy 2: If not found with search, get all brands and search manually
     if (!exactMatch) {
-      // console.log('🔍 [API] Brand not found with search, trying to get all brands...');
+      console.log('🔍 [API] Brand not found with search, trying to get all brands...');
       brandsResponse = await getBrands({ 
         limit: 200, // Get more brands
         ...params 
@@ -376,7 +376,7 @@ export const getBrandByCode = async (brandCode, params = {}) => {
     
     // Strategy 3: Try with name search if code search failed
     if (!exactMatch) {
-      // console.log('🔍 [API] Brand not found by code, trying name search...');
+      console.log('🔍 [API] Brand not found by code, trying name search...');
       brandsResponse = await getBrands({ 
         search: brandCode.replace(/-/g, ' '), // Replace dashes with spaces
         limit: 50,
@@ -395,10 +395,10 @@ export const getBrandByCode = async (brandCode, params = {}) => {
       throw new Error(`Brand with code "${brandCode}" not found`);
     }
     
-    // console.log('✅ [API] Brand found by code:', exactMatch);
+    console.log('✅ [API] Brand found by code:', exactMatch);
     return exactMatch;
   } catch (error) {
-    // console.error('❌ [API] Failed to get brand by code:', error);
+    console.error('❌ [API] Failed to get brand by code:', error);
     return handleApiError(error, 'getBrandByCode');
   }
 };
@@ -439,12 +439,12 @@ export const getAboutSliderData = async (params = {}) => {
  */
 export const getBasket = async (params = {}) => {
   try {
-    // console.log('🛒 [API] Getting basket with params:', params);
+    console.log('🛒 [API] Getting basket with params:', params);
     const response = await bitrixApi.get('/basket', { params });
-    // console.log('✅ [API] Basket retrieved successfully:', response.data);
+    console.log('✅ [API] Basket retrieved successfully:', response.data);
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to get basket:', error);
+    console.error('❌ [API] Failed to get basket:', error);
     return handleApiError(error, 'getBasket');
   }
 };
@@ -471,9 +471,9 @@ export const addToBasket = async (productData) => {
       properties: productData.properties || {}
     };
     
-    // console.log('🛒 [API] Adding product to basket:', data);
+    console.log('🛒 [API] Adding product to basket:', data);
     const response = await bitrixApi.post('/basket', data);
-    // console.log('✅ [API] Product added to basket successfully:', response.data);
+    console.log('✅ [API] Product added to basket successfully:', response.data);
     
     // Check if the API returned an error in the response data
     if (response.data && response.data.success === false) {
@@ -482,7 +482,7 @@ export const addToBasket = async (productData) => {
     
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to add product to basket:', error);
+    console.error('❌ [API] Failed to add product to basket:', error);
     
     // If it's an API error with error field, throw it
     if (error.response?.data?.error) {
@@ -515,9 +515,9 @@ export const updateBasketItemQuantity = async (updateData) => {
     if (!updateData.basket_item_id) throw new Error('Basket item ID is required');
     if (updateData.quantity === undefined) throw new Error('Quantity is required');
     
-    // console.log('🛒 [API] Updating basket item quantity:', updateData);
+    console.log('🛒 [API] Updating basket item quantity:', updateData);
     const response = await bitrixApi.patch('/basket', updateData);
-    // console.log('✅ [API] Basket item quantity updated successfully:', response.data);
+    console.log('✅ [API] Basket item quantity updated successfully:', response.data);
     
     // Check if the API returned an error in the response data
     if (response.data && response.data.success === false) {
@@ -526,7 +526,7 @@ export const updateBasketItemQuantity = async (updateData) => {
     
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to update basket item quantity:', error);
+    console.error('❌ [API] Failed to update basket item quantity:', error);
     
     // If it's an API error with error field, throw it
     if (error.response?.data?.error) {
@@ -556,9 +556,9 @@ export const removeFromBasket = async (removeData) => {
     if (!removeData.fuser_id) throw new Error('fuser_id is required');
     if (!removeData.basket_item_id) throw new Error('Basket item ID is required');
     
-    // console.log('🛒 [API] Removing item from basket:', removeData);
+    console.log('🛒 [API] Removing item from basket:', removeData);
     const response = await bitrixApi.delete('/basket', { data: removeData });
-    // console.log('✅ [API] Item removed from basket successfully:', response.data);
+    console.log('✅ [API] Item removed from basket successfully:', response.data);
     
     // Check if the API returned an error in the response data
     if (response.data && response.data.success === false) {
@@ -567,7 +567,7 @@ export const removeFromBasket = async (removeData) => {
     
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to remove item from basket:', error);
+    console.error('❌ [API] Failed to remove item from basket:', error);
     
     // If it's an API error with error field, throw it
     if (error.response?.data?.error) {
@@ -600,7 +600,7 @@ export const clearBasket = async (fuserId) => {
         clear_all: 'Y' 
       } 
     });
-    // console.log('Basket cleared:', response.data);
+    console.log('Basket cleared:', response.data);
     return response.data;
   } catch (error) {
     return handleApiError(error, 'clearBasket');
@@ -626,13 +626,13 @@ export const checkStock = async (stockData) => {
         quantity: stockData.quantity
       }
     });
-    // console.log('Stock check result:', response.data);
+    console.log('Stock check result:', response.data);
     
     // For stock check, we don't throw an error if stock is insufficient
     // We return the response data which contains available/unavailable info
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to check stock:', error);
+    console.error('❌ [API] Failed to check stock:', error);
     
     // For stock check, throw only on actual API errors, not stock unavailability
     if (error.response?.status === 400 && error.response?.data?.error) {
@@ -674,7 +674,7 @@ export const createOrder = async (orderData) => {
     if (!orderData.delivery_address) throw new Error('Delivery address is required');
     
     const response = await bitrixApi.post('/order', orderData);
-    // console.log('Order created:', response.data);
+    console.log('Order created:', response.data);
     return response.data;
   } catch (error) {
     return handleApiError(error, 'createOrder');
@@ -692,7 +692,7 @@ export const getOrderStatus = async (orderId) => {
     
     // Используем прямой запрос к удаленному API для заказов
     const directApiUrl = `${API_BASE_URL}/order?action=get_status&order_id=${orderId}`;
-    // console.log('Making direct API call to:', directApiUrl);
+    console.log('Making direct API call to:', directApiUrl);
     
     const response = await fetch(directApiUrl, {
       method: 'GET',
@@ -705,22 +705,22 @@ export const getOrderStatus = async (orderId) => {
     
     if (!response.ok) {
       const errorText = await response.text();
-      // console.error('API response error:', errorText);
+      console.error('API response error:', errorText);
       throw new Error(`HTTP error! status: ${response.status}, response: ${errorText.substring(0, 200)}`);
     }
     
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
-      // console.error('Non-JSON response received:', text.substring(0, 500));
+      console.error('Non-JSON response received:', text.substring(0, 500));
       throw new Error(`Expected JSON response but got ${contentType}. Response: ${text.substring(0, 200)}`);
     }
     
     const data = await response.json();
-    // console.log('Order status retrieved:', data);
+    console.log('Order status retrieved:', data);
     return data;
   } catch (error) {
-    // console.error('Error getting order status:', error);
+    console.error('Error getting order status:', error);
     return handleApiError(error, 'getOrderStatus');
   }
 };
@@ -736,7 +736,7 @@ export const getPaymentForm = async (orderId) => {
     
     // Используем прямой запрос к удаленному API для заказов
     const directApiUrl = `${API_BASE_URL}/order?action=get_payment_form&order_id=${orderId}`;
-    // console.log('Making direct API call to:', directApiUrl);
+    console.log('Making direct API call to:', directApiUrl);
     
     const response = await fetch(directApiUrl, {
       method: 'GET',
@@ -749,22 +749,22 @@ export const getPaymentForm = async (orderId) => {
     
     if (!response.ok) {
       const errorText = await response.text();
-      // console.error('API response error:', errorText);
+      console.error('API response error:', errorText);
       throw new Error(`HTTP error! status: ${response.status}, response: ${errorText.substring(0, 200)}`);
     }
     
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
-      // console.error('Non-JSON response received:', text.substring(0, 500));
+      console.error('Non-JSON response received:', text.substring(0, 500));
       throw new Error(`Expected JSON response but got ${contentType}. Response: ${text.substring(0, 200)}`);
     }
     
     const data = await response.json();
-    // console.log('Payment form retrieved:', data);
+    console.log('Payment form retrieved:', data);
     return data;
   } catch (error) {
-    // console.error('Error getting payment form:', error);
+    console.error('Error getting payment form:', error);
     return handleApiError(error, 'getPaymentForm');
   }
 };
@@ -928,9 +928,9 @@ export const submitForm = async (formData) => {
     if (!formData.iblock_id) throw new Error('Info block ID is required');
     if (!formData.fields) throw new Error('Form fields are required');
     
-    // console.log('📝 [API] Submitting form:', formData);
+    console.log('📝 [API] Submitting form:', formData);
     const response = await bitrixApi.post(`/form/?iblock_id=${formData.iblock_id}`, formData);
-    // console.log('✅ [API] Form submitted successfully:', response.data);
+    console.log('✅ [API] Form submitted successfully:', response.data);
     
     // Check if the API returned an error in the response data
     if (response.data && response.data.success === false) {
@@ -940,7 +940,7 @@ export const submitForm = async (formData) => {
     
     return response.data;
   } catch (error) {
-    // console.error('❌ [API] Failed to submit form:', error);
+    console.error('❌ [API] Failed to submit form:', error);
     const errorResult = handleApiError(error, 'submitForm');
     throw new Error(errorResult.message);
   }

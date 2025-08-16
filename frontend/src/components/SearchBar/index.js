@@ -200,17 +200,17 @@ const SearchBar = () => {
     setIsLoading(true);
 
     const handler = setTimeout(async () => {
-      // console.log('Calling search API after debounce for:', searchQuery);
+      console.log('Calling search API after debounce for:', searchQuery);
       try {
         // Pass 'desktop' context regardless of view, as results format is likely the same
         const results = await searchData(searchQuery, 'desktop');
         setSearchResults(results);
       } catch (error) {
-        // console.error("Search API error:", error);
+        console.error("Search API error:", error);
         setSearchResults({ brands: [], categories: [], products: [] }); // Clear results on error
       } finally {
         setIsLoading(false);
-        // console.log('Search results updated');
+        console.log('Search results updated');
       }
     }, 300);
 
@@ -224,7 +224,7 @@ const SearchBar = () => {
   const handleInputChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    // console.log('Search input changed:', query);
+    console.log('Search input changed:', query);
   };
 
   // Handle search result click

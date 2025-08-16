@@ -22,7 +22,7 @@ export const useRecentlyViewed = () => {
         const products = getRecentlyViewedProducts();
         setRecentlyViewed(products);
       } catch (error) {
-        // console.error('Error loading recently viewed products:', error);
+        console.error('Error loading recently viewed products:', error);
         setRecentlyViewed([]);
       } finally {
         setIsLoaded(true);
@@ -43,7 +43,7 @@ export const useRecentlyViewed = () => {
    */
   const addRecentlyViewed = useCallback((productData) => {
     if (!productData) {
-      // console.warn('No product data provided to addRecentlyViewed');
+      console.warn('No product data provided to addRecentlyViewed');
       return;
     }
 
@@ -52,7 +52,7 @@ export const useRecentlyViewed = () => {
       const transformedProduct = transformProductForRecentlyViewed(productData);
       
       if (!transformedProduct) {
-        // console.warn('Failed to transform product data for recently viewed');
+        console.warn('Failed to transform product data for recently viewed');
         return;
       }
 
@@ -73,7 +73,7 @@ export const useRecentlyViewed = () => {
         return updatedProducts.slice(0, 10);
       });
     } catch (error) {
-      // console.error('Error adding product to recently viewed:', error);
+      console.error('Error adding product to recently viewed:', error);
     }
   }, []);
 
@@ -85,7 +85,7 @@ export const useRecentlyViewed = () => {
       clearRecentlyViewedProducts();
       setRecentlyViewed([]);
     } catch (error) {
-      // console.error('Error clearing recently viewed products:', error);
+      console.error('Error clearing recently viewed products:', error);
     }
   }, []);
 
@@ -98,7 +98,7 @@ export const useRecentlyViewed = () => {
       const products = getRecentlyViewedProducts();
       setRecentlyViewed(products);
     } catch (error) {
-      // console.error('Error refreshing recently viewed products:', error);
+      console.error('Error refreshing recently viewed products:', error);
     }
   }, []);
 

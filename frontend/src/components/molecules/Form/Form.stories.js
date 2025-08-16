@@ -112,7 +112,7 @@ export const LoginForm = () => (
     submitLabel="Log In" 
     showCancel={false}
     buttonAlign="center"
-    // onSubmit={(e) => console.log('Login form submitted')}
+    onSubmit={(e) => console.log('Login form submitted')}
   >
     <Form.Field
       label="Email or Username"
@@ -135,8 +135,8 @@ export const RegistrationForm = () => (
     showCancel={true}
     cancelLabel="Back"
     buttonAlign="space-between"
-    // onSubmit={(e) => console.log('Registration form submitted')}
-    // onCancel={() => console.log('Registration cancelled')}
+    onSubmit={(e) => console.log('Registration form submitted')}
+    onCancel={() => console.log('Registration cancelled')}
   >
     <Form.Field
       label="First Name"

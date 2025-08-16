@@ -48,7 +48,7 @@ const simpleSlugify = (text = '') => {
 
 // Build full category path by traversing up the hierarchy
 const buildCategoryPath = async (categoryId, categoryCode) => {
-  // console.log('🔧 Building path for category:', { categoryId, categoryCode });
+  console.log('🔧 Building path for category:', { categoryId, categoryCode });
   
   if (!categoryId) {
     return categoryCode || '';
@@ -81,10 +81,10 @@ const buildCategoryPath = async (categoryId, categoryCode) => {
     }
     
     const fullPath = pathSegments.join('/');
-    // console.log('✅ Built category path:', fullPath);
+    console.log('✅ Built category path:', fullPath);
     return fullPath || categoryCode || '';
   } catch (error) {
-    // console.error('❌ Error building category path:', error);
+    console.error('❌ Error building category path:', error);
     return categoryCode || '';
   }
 };
@@ -138,7 +138,7 @@ const mapBrand = (item) => {
     slug = name ? simpleSlugify(name) : String(id);
   }
 
-  // console.log('🔍 [Search] Mapping brand:', { id, name, code, slug });
+  console.log('🔍 [Search] Mapping brand:', { id, name, code, slug });
 
   return {
     id: String(id),
@@ -195,7 +195,7 @@ const mapCategory = async (item) => {
  * @returns {Object} Object containing brands, categories and products arrays
  */
 export const searchData = async (query, source = 'unknown') => {
-  // console.log(`[${source}] searchData (API) called with query:`, query);
+  console.log(`[${source}] searchData (API) called with query:`, query);
 
   // Return empty if query is too short
   if (!query || query.trim().length < 2) {
@@ -231,10 +231,10 @@ export const searchData = async (query, source = 'unknown') => {
 
     const results = { brands, categories, products };
 
-    // console.debug(`[${source}] API search results:`, results);
+    console.debug(`[${source}] API search results:`, results);
     return results;
   } catch (error) {
-    // console.error(`[${source}] searchData failed:`, error);
+    console.error(`[${source}] searchData failed:`, error);
     // Fallback to empty results on error
     return { brands: [], categories: [], products: [] };
   }

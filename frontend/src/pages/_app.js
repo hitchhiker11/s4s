@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production' && USE_MOCKS) {
       import('../lib/mocks/mocks').then((module) => {
-        // console.log('[App] Моковый слой инициализирован');
+        console.log('[App] Моковый слой инициализирован');
       });
     }
   }, []);

@@ -131,7 +131,7 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
   const handleInputChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    // console.log('Mobile search input changed:', query);
+    console.log('Mobile search input changed:', query);
     
     if (query.length >= 2) {
       setIsLoading(true);
@@ -139,16 +139,16 @@ const MobileSearchOverlay = ({ isOpen, onClose }) => {
       
       // Debounce the API call
       const timeoutId = setTimeout(async () => {
-        // console.log('Mobile: Calling search API after debounce');
+        console.log('Mobile: Calling search API after debounce');
         const results = await searchData(query, 'mobile');
         setSearchResults(results);
         setIsLoading(false);
-        // console.log('Mobile: Results set to state:', results);
+        console.log('Mobile: Results set to state:', results);
       }, 300);
       
       return () => clearTimeout(timeoutId);
     } else {
-      // console.log('Mobile: Query too short, hiding results');
+      console.log('Mobile: Query too short, hiding results');
       setShowResults(false);
       setSearchResults({ brands: [], categories: [], products: [] });
     }

@@ -34,7 +34,7 @@ const CdekWidget = ({
 
   // Function to log errors
   const logError = (message, error) => {
-    // console.error(`[CdekWidget] ${message}`, error);
+    console.error(`[CdekWidget] ${message}`, error);
   };
 
   // Check if CDEK script is loaded
@@ -46,7 +46,7 @@ const CdekWidget = ({
   const initializeWidget = useCallback(() => {
     // Skip initialization if widget is already ready and instance exists
     if (isWidgetReady && widget.current) {
-      // console.log('[CdekWidget] Widget already initialized, skipping re-initialization');
+      console.log('[CdekWidget] Widget already initialized, skipping re-initialization');
       return;
     }
 
@@ -58,7 +58,7 @@ const CdekWidget = ({
     try {
       widget.current = new window.CDEKWidget(getWidgetConfig());
       setIsWidgetReady(true);
-      // console.log('[CdekWidget] Widget initialized successfully');
+      console.log('[CdekWidget] Widget initialized successfully');
     } catch (error) {
       logError('Error initializing CDEK Widget:', error);
     }
@@ -86,13 +86,13 @@ const CdekWidget = ({
 
     // Function called after the widget finishes loading
     onReady: () => {
-      // console.log('[CdekWidget] Widget is ready');
+      console.log('[CdekWidget] Widget is ready');
       setIsWidgetReady(true);
     },
 
     // Function called after the customer selects a pickup point
     onChoose: (delivery, rate, address) => {
-      // console.log('[CdekWidget] Delivery selected:', { delivery, rate, address });
+      console.log('[CdekWidget] Delivery selected:', { delivery, rate, address });
       
       const deliveryData = {
         delivery,
@@ -136,7 +136,7 @@ const CdekWidget = ({
       script.async = true;
       
       script.onload = () => {
-        // console.log('[CdekWidget] CDEK script loaded successfully');
+        console.log('[CdekWidget] CDEK script loaded successfully');
         setIsScriptLoaded(true);
       };
       
@@ -169,7 +169,7 @@ const CdekWidget = ({
         logError('Error opening CDEK Widget:', error);
       }
     } else {
-      // console.warn('[CdekWidget] Widget is not ready yet');
+      console.warn('[CdekWidget] Widget is not ready yet');
     }
   };
 

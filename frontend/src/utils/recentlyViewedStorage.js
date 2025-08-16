@@ -36,14 +36,14 @@ export const getRecentlyViewedProducts = () => {
     
     // Validate that it's an array
     if (!Array.isArray(products)) {
-      // console.warn('Invalid recently viewed products data, resetting...');
+      console.warn('Invalid recently viewed products data, resetting...');
       localStorage.removeItem(STORAGE_KEY);
       return [];
     }
 
     return products;
   } catch (error) {
-    // console.error('Error reading recently viewed products from localStorage:', error);
+    console.error('Error reading recently viewed products from localStorage:', error);
     // Clear corrupted data
     if (isLocalStorageAvailable()) {
       localStorage.removeItem(STORAGE_KEY);
@@ -69,7 +69,7 @@ export const addRecentlyViewedProduct = (product) => {
   }
 
   if (!product || !product.id) {
-    // console.warn('Invalid product data for recently viewed');
+    console.warn('Invalid product data for recently viewed');
     return;
   }
 
@@ -90,7 +90,7 @@ export const addRecentlyViewedProduct = (product) => {
     // Save to localStorage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(limitedProducts));
   } catch (error) {
-    // console.error('Error saving recently viewed product to localStorage:', error);
+    console.error('Error saving recently viewed product to localStorage:', error);
   }
 };
 
@@ -105,7 +105,7 @@ export const clearRecentlyViewedProducts = () => {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
-    // console.error('Error clearing recently viewed products from localStorage:', error);
+    console.error('Error clearing recently viewed products from localStorage:', error);
   }
 };
 
@@ -126,7 +126,7 @@ export const removeRecentlyViewedProduct = (productId) => {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredProducts));
   } catch (error) {
-    // console.error('Error removing recently viewed product from localStorage:', error);
+    console.error('Error removing recently viewed product from localStorage:', error);
   }
 };
 

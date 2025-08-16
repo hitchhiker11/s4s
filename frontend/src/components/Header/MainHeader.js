@@ -681,7 +681,7 @@ const MainHeader = ({
         const results = await searchData(searchQuery, 'desktop');
         setSearchResults(results);
       } catch (error) {
-        // console.error("Search API error:", error);
+        console.error("Search API error:", error);
         setSearchResults({ brands: [], categories: [], products: [] });
       } finally {
         setIsLoading(false);

@@ -43,7 +43,7 @@ const brandImageMap = {
 export const getFullImageUrl = (imagePath) => {
   // Check if imagePath is null, undefined, or not a string
   if (!imagePath || typeof imagePath !== 'string') {
-    // console.warn('🖼️ [Transformer] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
+    console.warn('🖼️ [Transformer] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
     return '/images/placeholder.png';
   }
   
@@ -59,14 +59,14 @@ export const getFullImageUrl = (imagePath) => {
   if (imagePath.startsWith('/')) {
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     const fullUrl = `${cleanBaseUrl}${imagePath}`;
-    // console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
+    console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
     return fullUrl;
   }
   
   // For relative paths, add base URL with /
   const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   const fullUrl = `${cleanBaseUrl}${imagePath}`;
-  // console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
+  console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
   return fullUrl;
 };
 
@@ -103,7 +103,7 @@ export const transformCatalogItem = (apiItem) => {
   const getFullImageUrl = (path) => {
     // Check if path is null, undefined, or not a string
     if (!path || typeof path !== 'string') {
-      // console.warn('🖼️ [Transformer-Local] Invalid path provided:', { path, type: typeof path });
+      console.warn('🖼️ [Transformer-Local] Invalid path provided:', { path, type: typeof path });
       return '/images/placeholder.png';
     }
     
@@ -116,14 +116,14 @@ export const transformCatalogItem = (apiItem) => {
     if (path.startsWith('/')) {
       const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
       const fullUrl = `${cleanBaseUrl}${path}`;
-      // console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
+      console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
       return fullUrl;
     }
     
     // For relative paths, add base URL with /
     const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
     const fullUrl = `${cleanBaseUrl}${path}`;
-    // console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
+    console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
     return fullUrl;
   };
   

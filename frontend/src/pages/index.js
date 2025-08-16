@@ -177,7 +177,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
   // Fetch basket data on component mount, but only after fuser_id is initialized
   useEffect(() => {
     if (isFuserIdInitialized) {
-      // console.log('fuser_id initialized, fetching basket data on homepage load');
+      console.log('fuser_id initialized, fetching basket data on homepage load');
       refetchBasket();
     }
   }, [refetchBasket, isFuserIdInitialized]);
@@ -235,7 +235,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       section.raw?.fields?.CODE === "katalog_sayta" || section.raw?.fields?.NAME === "Каталог сайта"
     )?.id || "572"; // Default to "572" if not found
     
-    // console.log('Found "Каталог сайта" with ID:', catalogSectionId);
+    console.log('Found "Каталог сайта" with ID:', catalogSectionId);
     
     // Filter sections that are direct children of "Каталог сайта" (level 2 categories)
     const mainCategories = allSections.filter(section => {
@@ -246,7 +246,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       return false;
     });
     
-    // console.log('Found main categories count:', mainCategories.length);
+    console.log('Found main categories count:', mainCategories.length);
     
     // Map to match expected props for ResponsiveCategorySection
     const mappedCategories = mainCategories.map(section => {
@@ -261,7 +261,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       };
     });
     
-    // console.log('Main categories for display:', mappedCategories);
+    console.log('Main categories for display:', mappedCategories);
     
     return mappedCategories.length > 0 ? mappedCategories : mockCategories;
   }, [categoriesData, categoriesIsError, initialCategories]);
@@ -285,7 +285,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N', // Add required CATALOG_AVAILABLE field
     }));
     
-    // console.log('New arrivals for display:', mappedProducts);
+    console.log('New arrivals for display:', mappedProducts);
     
     return mappedProducts;
   }, [newArrivalsData, newArrivalsIsError, initialNewArrivals]);
@@ -301,7 +301,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     // Transform brands using updated transformer for new API
     const transformedBrands = transformBrands(Array.isArray(dataToUse) ? dataToUse : []);
     
-    // console.log('🏷️ [HomePage] Brands for display:', transformedBrands);
+    console.log('🏷️ [HomePage] Brands for display:', transformedBrands);
     
     // No more fallback to mockBrands - using real API data only
     return transformedBrands.map(brand => ({
@@ -331,14 +331,14 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N', // Add required CATALOG_AVAILABLE field
     }));
     
-    // console.log('Bestsellers for display:', mappedProducts);
+    console.log('Bestsellers for display:', mappedProducts);
     
     return mappedProducts;
   }, [bestsellersData, bestsellersIsError, initialBestsellers]);
 
   // Updated add to cart handler with stock check
   const handleAddToCart = (productId) => {
-    // console.log(`Adding product ${productId} to cart from HomePage - ProductCard will handle stock check`);
+    console.log(`Adding product ${productId} to cart from HomePage - ProductCard will handle stock check`);
     // Note: Stock check is now handled directly in ProductCard component via addToBasketWithStockCheck
     // This function is kept for backwards compatibility but actual logic is in ProductCard
   };
@@ -476,21 +476,21 @@ export async function getServerSideProps() {
   const brandsIblockId = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '21';
   const sliderIblockId = process.env.NEXT_PUBLIC_SLIDER_IBLOCK_ID || '27';
 
-  // console.log('[SSR] Initializing getServerSideProps...');
-  // console.log(`[SSR] Using catalogIblockId: ${catalogIblockId}, brandsIblockId: ${brandsIblockId}, sliderIblockId: ${sliderIblockId}`);
+  console.log('[SSR] Initializing getServerSideProps...');
+  console.log(`[SSR] Using catalogIblockId: ${catalogIblockId}, brandsIblockId: ${brandsIblockId}, sliderIblockId: ${sliderIblockId}`);
 
   try {
-    // console.log('[SSR] Prefetching homeCategories...');
+    console.log('[SSR] Prefetching homeCategories...');
     await queryClient.prefetchQuery('homeCategories', () => {
-      // console.log('[SSR] Executing getCatalogSections query function with simplified params');
+      console.log('[SSR] Executing getCatalogSections query function with simplified params');
       return getCatalogSections({ iblock_id: catalogIblockId, tree_mode: 'flat', depth: 3 });
     });
     const categoriesResult = queryClient.getQueryData('homeCategories');
-    // console.log('[SSR] homeCategories prefetched. Result:', JSON.stringify(categoriesResult, null, 2));
+    console.log('[SSR] homeCategories prefetched. Result:', JSON.stringify(categoriesResult, null, 2));
 
-    // console.log('[SSR] Prefetching homeNewArrivals...');
+    console.log('[SSR] Prefetching homeNewArrivals...');
     await queryClient.prefetchQuery('homeNewArrivals', () => {
-      // console.log('[SSR] Executing getCatalogItems (New Arrivals) query function');
+      console.log('[SSR] Executing getCatalogItems (New Arrivals) query function');
       return getCatalogItems({ 
         iblock_id: catalogIblockId, 
         limit: 8, 
@@ -501,11 +501,11 @@ export async function getServerSideProps() {
       });
     });
     const newArrivalsResult = queryClient.getQueryData('homeNewArrivals');
-    // console.log('[SSR] homeNewArrivals prefetched. Result:', JSON.stringify(newArrivalsResult, null, 2));
+    console.log('[SSR] homeNewArrivals prefetched. Result:', JSON.stringify(newArrivalsResult, null, 2));
 
-    // console.log('[SSR] Prefetching homeBrands...');
+    console.log('[SSR] Prefetching homeBrands...');
     await queryClient.prefetchQuery('homeBrands', () => {
-      // console.log('[SSR] Executing getBrands query function with new API');
+      console.log('[SSR] Executing getBrands query function with new API');
       return getBrands({ 
         with_products_count: 'Y', 
         limit: 8,
@@ -514,40 +514,40 @@ export async function getServerSideProps() {
       });
     });
     const brandsResult = queryClient.getQueryData('homeBrands');
-    // console.log('[SSR] homeBrands prefetched. Result:', JSON.stringify(brandsResult, null, 2));
+    console.log('[SSR] homeBrands prefetched. Result:', JSON.stringify(brandsResult, null, 2));
     
-    // console.log('[SSR] Prefetching homeBestsellers...');
+    console.log('[SSR] Prefetching homeBestsellers...');
     await queryClient.prefetchQuery('homeBestsellers', () => {
-      // console.log('[SSR] Executing getCatalogItems (Bestsellers) query function');
+      console.log('[SSR] Executing getCatalogItems (Bestsellers) query function');
       return getCatalogItems({ iblock_id: catalogIblockId, 'property[BESTSELLER]': 'Y', limit: 8, sort: 'sort:asc' });
     });
     const bestsellersResult = queryClient.getQueryData('homeBestsellers');
-    // console.log('[SSR] homeBestsellers prefetched. Result:', JSON.stringify(bestsellersResult, null, 2));
+    console.log('[SSR] homeBestsellers prefetched. Result:', JSON.stringify(bestsellersResult, null, 2));
 
-    // console.log('[SSR] Prefetching aboutSliderData...');
+    console.log('[SSR] Prefetching aboutSliderData...');
     await queryClient.prefetchQuery(['aboutSliderData'], () => {
-      // console.log('[SSR] Executing getAboutSliderData query function');
+      console.log('[SSR] Executing getAboutSliderData query function');
       return getAboutSliderData({ iblock_id: sliderIblockId });
     });
     const sliderDataResult = queryClient.getQueryData(['aboutSliderData']);
-    // console.log('[SSR] aboutSliderData prefetched. Result:', JSON.stringify(sliderDataResult, null, 2));
+    console.log('[SSR] aboutSliderData prefetched. Result:', JSON.stringify(sliderDataResult, null, 2));
     
     // Prefetch basket data on server side
-    // console.log('[SSR] Prefetching basket data...');
+    console.log('[SSR] Prefetching basket data...');
     await queryClient.prefetchQuery(['basket', 'full'], () => {
-      // console.log('[SSR] Executing getBasket query function');
+      console.log('[SSR] Executing getBasket query function');
       return getBasket();
     });
     const basketResult = queryClient.getQueryData(['basket', 'full']);
-    // console.log('[SSR] basket data prefetched. Result:', JSON.stringify(basketResult, null, 2));
+    console.log('[SSR] basket data prefetched. Result:', JSON.stringify(basketResult, null, 2));
     
     const initialCategoriesVal = (categoriesResult && !categoriesResult.error && categoriesResult.data) ? categoriesResult.data : [];
     const initialNewArrivalsVal = (newArrivalsResult && !newArrivalsResult.error && newArrivalsResult.data) ? newArrivalsResult.data : [];
     const initialBrandsVal = (brandsResult && !brandsResult.error && brandsResult.data) ? brandsResult.data : [];
     const initialBestsellersVal = (bestsellersResult && !bestsellersResult.error && bestsellersResult.data) ? bestsellersResult.data : [];
 
-    // console.log('[SSR] initialCategories to be passed as props:', JSON.stringify(initialCategoriesVal, null, 2));
-    // console.log('[SSR] initialBrands to be passed as props:', JSON.stringify(initialBrandsVal, null, 2));
+    console.log('[SSR] initialCategories to be passed as props:', JSON.stringify(initialCategoriesVal, null, 2));
+    console.log('[SSR] initialBrands to be passed as props:', JSON.stringify(initialBrandsVal, null, 2));
 
     return {
       props: {
@@ -559,7 +559,7 @@ export async function getServerSideProps() {
       },
     };
   } catch (error) {
-    // console.error('[SSR] Error prefetching homepage data:', error);
+    console.error('[SSR] Error prefetching homepage data:', error);
     // Fallback to empty arrays for initial props in case of a major error during prefetch setup
     return {
       props: {

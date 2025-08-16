@@ -145,7 +145,7 @@ const SearchResults = ({
   const hasProducts = results?.products?.length > 0;
   const hasResults = hasBrands || hasCategories || hasProducts;
 
-  // console.log('Rendering search results:', { hasBrands, hasCategories, hasProducts, results });
+  console.log('Rendering search results:', { hasBrands, hasCategories, hasProducts, results });
 
   // Форматирование цены
   const formatPrice = (price) => {

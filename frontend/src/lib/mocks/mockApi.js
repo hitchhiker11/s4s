@@ -32,10 +32,10 @@ export const mockAsyncResponse = (data, delay = 500, shouldFail = false) => {
  */
 export const createMockApiFunction = (endpoint, mockData, delay = 500) => {
   // Логирование для отладки
-  // console.log(`[MOCK API] Создан мок для эндпоинта ${endpoint}`);
+  console.log(`[MOCK API] Создан мок для эндпоинта ${endpoint}`);
   
   return async (...args) => {
-    // console.log(`[MOCK API] Запрос к ${endpoint}`, args);
+    console.log(`[MOCK API] Запрос к ${endpoint}`, args);
     return mockAsyncResponse(mockData, delay);
   };
 };

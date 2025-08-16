@@ -123,7 +123,7 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
       await updateBasketItem(basketItem.id, newQuantity);
       showSuccessToast('Количество обновлено');
     } catch (err) {
-      // console.error('Error updating quantity', err);
+      console.error('Error updating quantity', err);
       showErrorToast(err.message || 'Ошибка при изменении количества');
     } finally {
       setQuantityLoading(false);
@@ -138,7 +138,7 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
       await removeFromBasket(basketItem.id);
       showSuccessToast('Товар удалён из корзины');
     } catch (err) {
-      // console.error('Error removing from basket', err);
+      console.error('Error removing from basket', err);
       showErrorToast(err.message || 'Ошибка при удалении товара');
     } finally {
       setQuantityLoading(false);
@@ -293,7 +293,7 @@ export async function getServerSideProps({ params }) {
         }
       }
     } catch (brandErr) {
-      // console.warn('Could not resolve brand code for product:', brandErr);
+      console.warn('Could not resolve brand code for product:', brandErr);
     }
 
     // Build breadcrumbs chain based on category hierarchy
@@ -344,7 +344,7 @@ export async function getServerSideProps({ params }) {
         });
       }
     } catch (crumbErr) {
-      // console.error('Error building breadcrumbs:', crumbErr);
+      console.error('Error building breadcrumbs:', crumbErr);
     }
 
     // Finally add the product itself (no link)
@@ -352,7 +352,7 @@ export async function getServerSideProps({ params }) {
 
     return { props: { productData, breadcrumbs } };
   } catch (err) {
-    // console.error('Error fetching product data', err);
+    console.error('Error fetching product data', err);
     return { notFound: true };
   }
 }

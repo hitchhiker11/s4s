@@ -162,14 +162,14 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
     const initAuth = async () => {
       // Если используем моки, симулируем аутентификацию
       if (useMocks) {
-        // console.log("Using mocked authentication");
+        console.log("Using mocked authentication");
         await new Promise(resolve => setTimeout(resolve, 300));
         setIsAuthenticated(false);
         setUserId(null);
         return;
       }
 
-      // console.log("Bitrix Auth init...");
+      console.log("Bitrix Auth init...");
       try {
         const isAuth = await isUserAuthenticated();
         setIsAuthenticated(isAuth);
@@ -181,7 +181,7 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
           setUserId(null);
         }
       } catch (error) {
-        // console.error("Failed to initialize authentication:", error);
+        console.error("Failed to initialize authentication:", error);
         setIsAuthenticated(false);
         setUserId(null);
       }
@@ -211,7 +211,7 @@ const Header = ({ useMocks = false, mockBasketCount = 5 }) => {
   // Если произошла ошибка при загрузке корзины, выводим в консоль
   useEffect(() => {
     if (basketError) {
-      // console.error('Basket load error:', basketError);
+      console.error('Basket load error:', basketError);
     }
   }, [basketError]);
 

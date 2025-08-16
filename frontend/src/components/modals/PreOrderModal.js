@@ -144,7 +144,7 @@ const PreOrderModal = ({
         throw new Error(apiMessage);
       }
     } catch (error) {
-      // console.error('Error submitting pre-order form:', error);
+      console.error('Error submitting pre-order form:', error);
       showErrorToast(error.message || 'Произошла ошибка при оформлении предзаказа');
     } finally {
       setIsSubmitting(false);

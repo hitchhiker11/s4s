@@ -21,9 +21,9 @@ const BasketInitializer = () => {
   useEffect(() => {
     if (isFuserIdInitialized) {
       if (fuserId) {
-        // console.log('BasketInitializer: Basket system initialized with fuser_id:', fuserId);
+        console.log('BasketInitializer: Basket system initialized with fuser_id:', fuserId);
       } else {
-        // console.log('BasketInitializer: Basket system initialized, fuser_id will be obtained on first basket operation');
+        console.log('BasketInitializer: Basket system initialized, fuser_id will be obtained on first basket operation');
       }
     }
   }, [isFuserIdInitialized, fuserId]);

@@ -27,7 +27,7 @@ const ResponsiveProductSection = ({
   
   // Log the items for debugging
   if (process.env.NODE_ENV === 'development') {
-    // console.log(`${props.title || 'Product Section'} - Mobile?: ${isMobile} - Items:`, items?.length ?? 0, items);
+    console.log(`${props.title || 'Product Section'} - Mobile?: ${isMobile} - Items:`, items?.length ?? 0, items);
   }
 
   // Props for ProductSlider (expects 'products')

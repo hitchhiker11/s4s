@@ -132,7 +132,7 @@ const RequestModal = ({
         throw new Error(result.message || 'Произошла ошибка при отправке заявки');
       }
     } catch (error) {
-      // console.error('Error submitting request form:', error);
+      console.error('Error submitting request form:', error);
       showErrorToast(error.message || 'Произошла ошибка при отправке заявки');
     } finally {
       setIsSubmitting(false);
