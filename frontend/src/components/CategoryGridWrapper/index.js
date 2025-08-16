@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import CategoryCard from '../CategoryCard';
-import { COLORS, mediaQueries } from '../../styles/tokens';
+import { COLORS, mediaQueries, SIZES } from '../../styles/tokens';
 
 // Основная сетка с правильной адаптивной системой
 const GridContainer = styled.div`
@@ -11,6 +11,9 @@ const GridContainer = styled.div`
   margin-bottom: 24px;
   grid-auto-rows: minmax(0, auto);
   grid-auto-flow: dense;
+  max-width: ${SIZES.containerMaxWidth};
+  margin-left: auto;
+  margin-right: auto;
 
   /* МОБИЛЬНАЯ версия: 6-колоночная система с умным позиционированием */
   grid-template-columns: repeat(6, 1fr);

@@ -4,6 +4,30 @@ import { submitPreOrderForm } from '../../lib/api/bitrix';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../Toast/ToastContainer';
 import styles from './PreOrderModal.module.css';
+
+// Decode common HTML entities in API-provided strings (e.g., &quot;)
+const decodeHtmlEntities = (str) => {
+  if (typeof str !== 'string') return str;
+  const entityMap = {
+    '&quot;': '"',
+    '&#34;': '"',
+    '&#x22;': '"',
+    '&apos;': '\'',
+    '&#39;': '\'',
+    '&#x27;': '\'',
+    '&amp;': '&',
+    '&#38;': '&',
+    '&#x26;': '&',
+    '&lt;': '<',
+    '&#60;': '<',
+    '&#x3C;': '<',
+    '&gt;': '>',
+    '&#62;': '>',
+    '&#x3E;': '>',
+    '&nbsp;': ' ',
+  };
+  return str.replace(/(&quot;|&#34;|&#x22;|&apos;|&#39;|&#x27;|&amp;|&#38;|&#x26;|&lt;|&#60;|&#x3C;|&gt;|&#62;|&#x3E;|&nbsp;)/g, (m) => entityMap[m] || m);
+};
 import { normalizePhoneNumber, isValidRussianPhone } from '../../lib/phone';
 
 const PreOrderModal = ({ 
@@ -177,7 +201,7 @@ const PreOrderModal = ({
         <div className={styles.content}>
           <div className={styles.infoSection}>
             <h2 className={styles.title}>Оформите предзаказ</h2>
-            {productName && <h3 className={styles.productName}>{productName}</h3>}
+            {productName && <h3 className={styles.productName}>{decodeHtmlEntities(productName)}</h3>}
             {/* {productDescription && <p className={styles.productDescription}>{productDescription}</p>} */}
             <p className={styles.availabilityNote}>
               Мы рассмотрим вашу заявку и сообщим, когда товар появится в наличии

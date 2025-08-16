@@ -206,6 +206,13 @@ const CardImage = styled.img`
           `}
     }
   `}
+
+  /* Upscale category images on very wide screens */
+  ${props => !props.isBrandLogo && css`
+    @media (min-width: 1550px) {
+      scale: 1.2;
+    }
+  `}
 `;
 
 const CategoryCard = ({ title, imageUrl, link = '#', showTitle = true, rotation, additionalStyles, disableRotation = false, enableEdgeImagePositioning = true }) => {

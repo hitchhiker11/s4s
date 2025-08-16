@@ -372,7 +372,11 @@ const ProductCard = ({ product, onAddToCart }) => {
   };
 
   const isAvailable = CATALOG_AVAILABLE === 'Y';
-  const isPreOrder = CATALOG_QUANTITY === "0" || CATALOG_QUANTITY === 0;
+  // Fallback to product.quantity (from transformers) if explicit CATALOG_QUANTITY not provided
+  const effectiveQuantity = (CATALOG_QUANTITY !== undefined && CATALOG_QUANTITY !== null)
+    ? Number(CATALOG_QUANTITY)
+    : (typeof product.quantity === 'number' ? product.quantity : undefined);
+  const isPreOrder = effectiveQuantity === 0;
   const isLoading = isBasketLoading || isLocalLoading || buttonState === 'loading';
   
   // Disable button for pre-order items or if loading

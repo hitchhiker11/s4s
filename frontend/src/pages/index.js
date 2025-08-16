@@ -96,10 +96,10 @@ const HeroTitle = styled.h1`
   letter-spacing: -5%;
   color: ${COLORS.black};
   margin: 0;
-  padding: 0;
+  padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
 
   ${mediaQueries.sm} {
-    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
   }
 
   ${mediaQueries.md} {
@@ -107,7 +107,7 @@ const HeroTitle = styled.h1`
   }
 
   ${mediaQueries.lg} {
-    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING['2xl']} ${SPACING['2xl']};
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
   }
   ${mediaQueries.xl} {
     padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};

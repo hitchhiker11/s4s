@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, SIZES, mediaQueries, BREAKPOINTS } from '../../styles/tokens';
 import { SearchIcon } from '../icons';
 import SearchResults from './SearchResults';
 // Import searchData utility
@@ -11,14 +11,21 @@ import ContactsModal from '../../components/modals/ContactsModal';
 
 const SearchSection = styled.section`
   width: 100%;
-  padding: 12px; 
+  padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
   background-color: ${COLORS.white};
   position: relative; /* Needed for ResultsContainer positioning */
 
-  ${mediaQueries.md} {
-    padding: 29px 40px; /* Desktop padding */
+  ${mediaQueries.sm} {
+    padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
   }
 
+  ${mediaQueries.md} {
+    padding: ${SPACING.xl} ${SPACING['2xl']} ${SPACING.lg} ${SPACING['2xl']};
+  }
+
+  ${mediaQueries.lg} {
+    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+  }
 `;
 
 const SearchWrapper = styled.div`
@@ -68,7 +75,7 @@ const StyledInput = styled.input`
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(14px, 3vw, 30px);
+  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size.xl});
   color: ${COLORS.black};
   padding: 5px 0;
   width: 100%;
@@ -82,9 +89,8 @@ const StyledInput = styled.input`
     font-weight: ${TYPOGRAPHY.weight.medium};
   }
 
-  ${mediaQueries.md} {
-    font-size: 30px; /* Fixed desktop font size */
-    padding: 7px 0;
+  @media (max-width: ${BREAKPOINTS.sm - 1}px) {
+    font-size: 14px !important;
   }
 `;
 
@@ -115,7 +121,7 @@ const MobileLinkContainer = styled.div`
   align-items: center; /* Center vertically if needed */
   max-width: ${SIZES.containerMaxWidth};
   margin: ${SPACING.small} auto 0; /* Add some top margin */
-  padding: 0 12px; /* Match SearchSection horizontal padding */
+  padding: 0 ${SPACING.md}; /* Match SearchSection horizontal padding */
 
   ${mediaQueries.md} {
     display: none; // Hide on desktop
@@ -139,7 +145,7 @@ const StyledLink = styled.a`
   color: ${COLORS.primary};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(14px, 3vw, 30px);
+  font-size: clamp(0.9rem, 4vw, ${TYPOGRAPHY.size.lg});
   text-decoration: none;
   white-space: nowrap;
   display: block; // Ensure it behaves predictably
@@ -147,11 +153,6 @@ const StyledLink = styled.a`
   &:hover {
     color: ${COLORS.primaryHover};
     text-decoration: underline;
-  }
-
-  ${mediaQueries.md} {
-    font-size: 30px; /* Fixed desktop font size */
-    padding: 7px 0;
   }
 `;
 
@@ -164,11 +165,19 @@ const ResultsContainer = styled.div`
   margin: 0 auto; /* Center it */
   z-index: 1000;
   /* Match SearchSection horizontal padding for alignment */
-  padding: 0 12px; /* Mobile padding */
+  padding: 0 ${SPACING.md};
 
-   ${mediaQueries.md} {
-     padding: 0 40px; /* Desktop padding */
-   }
+  ${mediaQueries.sm} {
+    padding: 0 ${SPACING.lg};
+  }
+
+  ${mediaQueries.md} {
+    padding: 0 ${SPACING['2xl']};
+  }
+
+  ${mediaQueries.lg} {
+    padding: 0 ${SPACING['3xl']};
+  }
 `;
 
 const SearchBar = () => {

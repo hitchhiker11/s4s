@@ -8,13 +8,18 @@ import { subscribeToNews } from '../../lib/api/bitrix';
 
 const SubscriptionContainer = styled.section`
   width: 100%;
-  // margin-bottom: ${SPACING["4xl"]};
-  // border-top: 2px solid ${COLORS.gray400};
+  /* Bottom border is visible on mobile/tablet only */
   border-bottom: 2px solid ${COLORS.gray400};
-  // padding: ${SPACING.lg};
+  border-top: none;
 
+  /* Hide bottom border from 992px and up */
   ${mediaQueries.lg} {
-    border-bottom-width: 4px;
+    border-bottom: none;
+  }
+
+  /* Show top border only from 1264px and up (desktop wide) */
+  @media (min-width: 1264px) {
+    border-top: 4px solid ${COLORS.gray400};
   }
 
   ${mediaQueries.lg} {
