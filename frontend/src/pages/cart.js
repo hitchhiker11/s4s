@@ -303,7 +303,7 @@ const CartPage = () => {
 
   // Handle CDEK delivery price changes
   // const handleDeliveryPriceChange = (price) => {
-    console.log('🚚 [Cart] CDEK delivery price changed:', price);
+  //   console.log('🚚 [Cart] CDEK delivery price changed:', price);
   //   setCdekDeliveryPrice(price);
   // };
 
