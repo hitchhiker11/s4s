@@ -7,7 +7,7 @@
  */
 export const loadBitrixCore = async () => {
   // В реальном приложении здесь был бы код для загрузки скриптов Bitrix
-  console.log('Loading Bitrix core...');
+  // console.log('Loading Bitrix core...');
   return new Promise(resolve => setTimeout(resolve, 500));
 };
 
@@ -16,7 +16,7 @@ export const loadBitrixCore = async () => {
  */
 export const isUserAuthenticated = async () => {
   // В режиме разработки всегда возвращаем false для удобства тестирования
-  console.log('Checking if user is authenticated...');
+  // console.log('Checking if user is authenticated...');
   return false;
 };
 
@@ -25,7 +25,7 @@ export const isUserAuthenticated = async () => {
  */
 export const getCurrentUserId = async () => {
   // В реальном приложении здесь был бы запрос к Bitrix
-  console.log('Getting current user ID...');
+  // console.log('Getting current user ID...');
   return null;
 };
 
@@ -34,7 +34,7 @@ export const getCurrentUserId = async () => {
  */
 export const getUserInfo = async (userId) => {
   // В реальном приложении здесь был бы запрос к Bitrix
-  console.log('Getting user info for ID:', userId);
+  // console.log('Getting user info for ID:', userId);
   return null;
 };
 
@@ -64,7 +64,7 @@ export const logout = async () => {
     window.location.reload();
     return true;
   } catch (error) {
-    console.warn('Ошибка при выходе пользователя:', error);
+    // console.warn('Ошибка при выходе пользователя:', error);
     return false;
   }
 }; 

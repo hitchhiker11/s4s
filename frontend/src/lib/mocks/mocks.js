@@ -18,7 +18,7 @@ const MockTools = {
   
   // Функция для восстановления исходных данных
   resetMocks() {
-    console.log('[MOCK] Восстановление исходных данных');
+    // console.log('[MOCK] Восстановление исходных данных');
     this.currentData = { ...this.originalData };
     
     // Обновляем мок-функции
@@ -30,11 +30,11 @@ const MockTools = {
   // Функция для обновления данных конкретного мока
   updateMock(mockName, newData) {
     if (!this.currentData[mockName]) {
-      console.error(`[MOCK] Мок ${mockName} не найден`);
+      // console.error(`[MOCK] Мок ${mockName} не найден`);
       return `Ошибка: Мок ${mockName} не найден`;
     }
     
-    console.log(`[MOCK] Обновление мока ${mockName}`);
+    // console.log(`[MOCK] Обновление мока ${mockName}`);
     this.currentData[mockName] = {
       ...this.currentData[mockName],
       ...newData
@@ -48,7 +48,7 @@ const MockTools = {
   
   // Функция для симуляции ошибки API
   simulateError(apiMethod, duration = 5000) {
-    console.log(`[MOCK] Симуляция ошибки для метода ${apiMethod}`);
+    // console.log(`[MOCK] Симуляция ошибки для метода ${apiMethod}`);
     
     // Создаем временную функцию, которая возвращает ошибку
     const originalMethod = mockApi[apiMethod];
@@ -59,7 +59,7 @@ const MockTools = {
     
     // Восстанавливаем оригинальную функцию через заданное время
     setTimeout(() => {
-      console.log(`[MOCK] Восстановление нормальной работы метода ${apiMethod}`);
+      // console.log(`[MOCK] Восстановление нормальной работы метода ${apiMethod}`);
       mockApi[apiMethod] = originalMethod;
     }, duration);
     
@@ -68,7 +68,7 @@ const MockTools = {
   
   // Функция для симуляции задержки
   simulateDelay(apiMethod, delay = 3000, duration = 10000) {
-    console.log(`[MOCK] Симуляция задержки ${delay}ms для метода ${apiMethod}`);
+    // console.log(`[MOCK] Симуляция задержки ${delay}ms для метода ${apiMethod}`);
     
     // Запоминаем оригинальный метод
     const originalMethod = mockApi[apiMethod];
@@ -81,7 +81,7 @@ const MockTools = {
     
     // Восстанавливаем оригинальный метод через заданное время
     setTimeout(() => {
-      console.log(`[MOCK] Восстановление нормальной работы метода ${apiMethod}`);
+      // console.log(`[MOCK] Восстановление нормальной работы метода ${apiMethod}`);
       mockApi[apiMethod] = originalMethod;
     }, duration);
     
@@ -91,7 +91,7 @@ const MockTools = {
   // Обновление мок-функций с текущими данными
   updateMockApiFunctions() {
     // Здесь можно добавить логику для динамического обновления мок-функций
-    console.log('[MOCK] Обновление мок-функций');
+    // console.log('[MOCK] Обновление мок-функций');
   },
   
   // Информация о доступных командах
@@ -117,8 +117,8 @@ const MockTools = {
 // Если код выполняется в браузере, добавляем API в глобальную область видимости
 if (typeof window !== 'undefined') {
   window.MockTools = MockTools;
-  console.log('[MOCK] Инструменты для работы с моками доступны через глобальный объект MockTools');
-  console.log('[MOCK] Введите MockTools.help() для получения справки');
+  // console.log('[MOCK] Инструменты для работы с моками доступны через глобальный объект MockTools');
+  // console.log('[MOCK] Введите MockTools.help() для получения справки');
 }
 
 export default MockTools; 

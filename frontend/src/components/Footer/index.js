@@ -8,6 +8,9 @@ const FooterContainer = styled.footer`
   width: 100%;
   background-color: ${COLORS.white};
   position: relative;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  max-width: 100vw;
 
   ${mediaQueries.xxl} {
     // max-width: 1920px;
@@ -100,10 +103,12 @@ const MobileGrid = styled.div`
   ${mediaQueries.md} {
     display: flex;
     flex-direction: row;
-    justify-content: center; /* center content horizontally in 768-991 */
-    padding: 0; /* padding now controlled by MainFooter */
+    justify-content: flex-start;
+    padding: 0 12px;
     width: 100%;
-    flex-wrap: nowrap; /* keep in one row on md */
+    flex-wrap: wrap;
+    align-items: start;
+    gap: clamp(8px, 2vw, 24px);
     grid-template-areas: none;
   }
 
@@ -121,10 +126,9 @@ const NavSections = styled.div`
 
   ${mediaQueries.md} {
     flex-direction: row;
-    flex-wrap: nowrap; /* single row on md */
-    
+    flex-wrap: wrap;
     width: 100%;
-    gap: ${SPACING["3xl"]};
+    gap: clamp(12px, 2.5vw, 32px);
     align-items: flex-start;
   }
 
@@ -145,9 +149,10 @@ const NavSection = styled.div`
   ${mediaQueries.md} {
     display: flex;
     flex-direction: column;
-    padding: clamp(12px, 2vw, 24px) ${SPACING["3xl"]} clamp(12px, 2vw, 24px) 0;
-    flex: 0 1 auto;
-    width: auto; /* keep all sections in one row on md */
+    padding: clamp(8px, 1.5vw, 16px);
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
   }
   
   ${mediaQueries.lg} {
@@ -215,9 +220,11 @@ const BrandsContainer = styled.div`
   ${mediaQueries.md} {
     grid-area: none;
     flex-direction: row;
-    padding: clamp(12px, 2vw, 24px) ${SPACING["3xl"]} clamp(12px, 2vw, 24px) 0;
-    justify-content: flex-end; /* brands to the end of the row on md */
+    padding: clamp(8px, 1.5vw, 16px);
+    justify-content: flex-start;
     align-items: center;
+    flex: 1 1 0;
+    min-width: 0;
     width: auto;
     margin-top: 0;
   }

@@ -45,6 +45,11 @@ const ImageLinkWrapper = styled.a`
   position: relative;
   overflow: hidden;
 
+  @media (min-width: 500px) and (max-width: 767px) {
+    aspect-ratio: 4 / 3;
+    padding: ${SPACING.xs};
+  }
+
   ${mediaQueries.md} {
     aspect-ratio: 4 / 3; /* Slightly shorter on tablet */
   }
@@ -87,6 +92,10 @@ const TextContent = styled.div`
   max-width: 100%;
   overflow: hidden; /* Prevent text overflow */
   
+  @media (min-width: 500px) and (max-width: 767px) {
+    padding: ${SPACING.sm} ${SPACING.sm};
+  }
+  
   ${mediaQueries.lg} {
     padding: ${SPACING.xl} ${SPACING.lg};
   }
@@ -114,6 +123,10 @@ const Brand = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   
+  @media (min-width: 500px) and (max-width: 767px) {
+    font-size: clamp(10px, 1.7vw, 16px);
+  }
+  
   ${mediaQueries.lg} {
     font-size: 23.27px;
     margin-bottom: ${SPACING.sm};
@@ -136,6 +149,11 @@ const Name = styled.h3`
   word-wrap: break-word;
   hyphens: auto;
   
+  @media (min-width: 500px) and (max-width: 767px) {
+    font-size: clamp(10px, 1.9vw, 15px);
+    -webkit-line-clamp: 2;
+  }
+  
   ${mediaQueries.lg} {
     font-size: 18px;
     -webkit-line-clamp: 3; /* Allow 3 lines on larger screens */
@@ -153,6 +171,10 @@ const Price = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  
+  @media (min-width: 500px) and (max-width: 767px) {
+    font-size: clamp(13px, 2.2vw, 24px);
+  }
   
   ${mediaQueries.lg} {
     font-size: 35px;
@@ -191,6 +213,10 @@ const AddToCartContainer = styled.div`
   background-color: ${COLORS.white};
   width: 100%;
   max-width: 100%;
+  
+  @media (min-width: 500px) and (max-width: 767px) {
+    padding: ${SPACING.xs} ${SPACING.sm} ${SPACING.xs};
+  }
   
   ${mediaQueries.lg} {
     padding: ${SPACING.md} ${SPACING.lg} ${SPACING.md};
@@ -286,6 +312,10 @@ const AddToCartButton = styled.button`
     cursor: not-allowed;
   }
   
+  @media (min-width: 500px) and (max-width: 767px) {
+    font-size: clamp(10px, 1.8vw, 13px);
+  }
+  
   ${mediaQueries.lg} {
     font-size: 14px;
     padding: ${SPACING.sm} 0;
@@ -364,7 +394,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     e.preventDefault();
     
     if (isButtonDisabled) {
-      console.log(`Product ${id} - button disabled. PreOrder: ${isPreOrder}, Available: ${isAvailable}, Loading: ${isLoading}`);
+      // console.log(`Product ${id} - button disabled. PreOrder: ${isPreOrder}, Available: ${isAvailable}, Loading: ${isLoading}`);
       return;
     }
     
@@ -372,7 +402,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     setButtonState('loading');
     
     try {
-      console.log('🛒 [ProductCard] Adding product to basket with stock check:', { id, name, isAvailable, isPreOrder });
+      // console.log('🛒 [ProductCard] Adding product to basket with stock check:', { id, name, isAvailable, isPreOrder });
       
       // Use the new async API method with stock check to add to basket
       await addToBasketWithStockCheck({
@@ -380,7 +410,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         quantity: 1
       });
       
-      console.log(`✅ [ProductCard] Successfully added product ${id} to basket`);
+      // console.log(`✅ [ProductCard] Successfully added product ${id} to basket`);
       setButtonState('success');
       showSuccessToast('Товар успешно добавлен в корзину');
       resetButtonState();
@@ -391,15 +421,15 @@ const ProductCard = ({ product, onAddToCart }) => {
         try {
           onAddToCart(id);
         } catch (callbackError) {
-          console.warn('Error in onAddToCart callback:', callbackError);
+          // console.warn('Error in onAddToCart callback:', callbackError);
         }
       }
     } catch (error) {
-      console.error(`❌ [ProductCard] Failed to add product ${id} to basket:`, error);
+      // console.error(`❌ [ProductCard] Failed to add product ${id} to basket:`, error);
       
       // Check if it's a stock-related error
       if (error.stockResponse) {
-        console.log('📊 [ProductCard] Stock error details:', error.stockResponse);
+        // console.log('📊 [ProductCard] Stock error details:', error.stockResponse);
         const availableQuantity = error.stockResponse.available_quantity || 0;
         const errorMessage = availableQuantity > 0 
           ? `Доступно только ${availableQuantity} шт.`

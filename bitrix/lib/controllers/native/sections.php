@@ -238,6 +238,9 @@ class Sections
         } else {
             $cache->startDataCache();
 
+            // Получаем базовый URL для формирования полных ссылок
+            $baseUrl = 'https://' . $_SERVER['HTTP_HOST'];
+
             // Батчевая обработка изображений
             foreach (array_unique($pictureIds) as $pictureId) {
                 $imageUrls[$pictureId] = [
@@ -249,7 +252,7 @@ class Sections
                     // Получаем путь к оригинальному изображению
                     $originalPath = \CFile::GetPath($pictureId);
                     if ($originalPath) {
-                        $imageUrls[$pictureId]['original'] = $originalPath;
+                        $imageUrls[$pictureId]['original'] = $baseUrl . $originalPath;
                     }
 
                     // Создаем превью 300x300 с сохранением пропорций
@@ -261,7 +264,7 @@ class Sections
                     );
 
                     if ($resizeResult && !empty($resizeResult['src'])) {
-                        $imageUrls[$pictureId]['preview'] = $resizeResult['src'];
+                        $imageUrls[$pictureId]['preview'] = $baseUrl . $resizeResult['src'];
                     }
                 } catch (\Exception $e) {
                     // В случае ошибки оставляем пустые строки

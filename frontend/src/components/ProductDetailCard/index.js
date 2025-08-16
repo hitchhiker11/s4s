@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import PropTypes from 'prop-types';
 import styles from './ProductDetailCard.module.css';
 import QuantityControl from '../QuantityControl';
 import ImageModal from '../modals/ImageModal';
 // Removed heroicons import which was causing the build error
+import { COLORS } from '../../styles/tokens';
 
 const ProductDetailCard = ({
   product,
@@ -137,6 +139,15 @@ const ProductDetailCard = ({
   const currentPrice = product.discountPrice || product.price;
   const oldPrice = product.discountPrice ? product.price : null;
 
+  // Prefer brand code resolved on the server; fallback to slugified brand name
+  const brandSlug = product.brandCode
+    ? String(product.brandCode)
+    : (product.brand || '')
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9а-яё-]/gi, '');
+
   return (
     <div className={styles.productDetailCard}>
       <div className={styles.galleryContainer}>
@@ -179,7 +190,21 @@ const ProductDetailCard = ({
         <h1 className={styles.productName}>{product.name}</h1>
         
         <div className={styles.metaInfo}>
-            <p className={styles.brand}>Бренд: {product.brand}</p>
+            <p className={styles.brand}>
+              Бренд: {' '}
+              {brandSlug ? (
+                <Link href={`/brands/${brandSlug}?page=1`} prefetch>
+                  <span
+                    className={styles.brandLink}
+                    style={{ color: COLORS.primary, textDecoration: 'underline' }}
+                  >
+                    {product.brand}
+                  </span>
+                </Link>
+              ) : (
+                <span>{product.brand}</span>
+              )}
+            </p>
             <p className={styles.article}>Артикул: {product.article}</p>
             <p className={styles.availability}>{product.availability}</p>
         </div>

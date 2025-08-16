@@ -242,12 +242,12 @@ const ProductCard = ({ product, onAddToCart }) => {
   // Function to add item to basket with stock check
   const addToBasketWithStockCheck = async (productId, quantity = 1) => {
     try {
-      console.log('🔍 [ProductCard] Checking stock before adding to basket:', { productId, quantity });
+      // console.log('🔍 [ProductCard] Checking stock before adding to basket:', { productId, quantity });
       
       // First check stock availability
       const stockResponse = await checkStock(productId, quantity);
       
-      console.log('📋 [ProductCard] Stock check response:', stockResponse);
+      // console.log('📋 [ProductCard] Stock check response:', stockResponse);
       
       if (stockResponse && stockResponse.success !== undefined) {
         const availableQuantity = parseInt(stockResponse.available_quantity, 10) || 0;
@@ -259,20 +259,20 @@ const ProductCard = ({ product, onAddToCart }) => {
             return false;
           } else if (availableQuantity > 0 && availableQuantity < quantity) {
             // Partial stock available - add available quantity
-            console.log(`🔄 [ProductCard] Adding available quantity: ${availableQuantity} instead of ${quantity}`);
+            // console.log(`🔄 [ProductCard] Adding available quantity: ${availableQuantity} instead of ${quantity}`);
             await addToBasket({ product_id: productId, quantity: availableQuantity });
             showErrorToast(`Добавлено ${availableQuantity} шт. Больше нет на складе`);
             return true;
           }
         } else if (stockResponse.success && stockResponse.available === true) {
           // Stock is available in requested quantity
-          console.log(`✅ [ProductCard] Stock available, adding ${quantity} to basket`);
+          // console.log(`✅ [ProductCard] Stock available, adding ${quantity} to basket`);
           await addToBasket({ product_id: productId, quantity });
           return true;
         }
       } else if (stockResponse && stockResponse.error) {
         // Handle API error responses
-        console.error(`❌ [ProductCard] Stock check error:`, stockResponse.error);
+        // console.error(`❌ [ProductCard] Stock check error:`, stockResponse.error);
         showErrorToast(`Ошибка при проверке товара: ${stockResponse.error}`);
         return false;
       }
@@ -281,7 +281,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       await addToBasket({ product_id: productId, quantity });
       return true;
     } catch (error) {
-      console.error('❌ [ProductCard] Exception during stock check and add:', error);
+      // console.error('❌ [ProductCard] Exception during stock check and add:', error);
       
       // Check if it's a stock-related error
       if (error.message.includes('недостаточно') || error.message.includes('insufficient')) {
@@ -318,7 +318,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       
       queryClient.invalidateQueries(['basket']);
     } catch (error) {
-      console.error('Error adding product to cart:', error);
+      // console.error('Error adding product to cart:', error);
       // Error toast is already shown in addToBasketWithStockCheck
     } finally {
       setIsLoading(false);
@@ -347,7 +347,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       const productId = parseInt(basketItem.product_id, 10);
       
       // Check stock before updating quantity
-      console.log('🔍 [ProductCard] Checking stock for quantity change:', { productId, quantity });
+      // console.log('🔍 [ProductCard] Checking stock for quantity change:', { productId, quantity });
       
       const stockResponse = await checkStock(productId, quantity);
       
@@ -357,14 +357,14 @@ const ProductCard = ({ product, onAddToCart }) => {
         if (!stockResponse.success && stockResponse.available === false) {
           if (availableQuantity === 0) {
             // Remove item completely if no stock available
-            console.log(`❌ [ProductCard] Removing item: no stock available`);
+            // console.log(`❌ [ProductCard] Removing item: no stock available`);
             await removeFromBasket(basketItem.id);
             showErrorToast(`Товар "${product.NAME || product.name}" больше не доступен и был удален из корзины`);
             queryClient.invalidateQueries(['basket']);
             return;
           } else if (availableQuantity > 0 && availableQuantity < quantity) {
             // Update quantity to available amount
-            console.log(`🔄 [ProductCard] Updating quantity to available amount: ${availableQuantity}`);
+            // console.log(`🔄 [ProductCard] Updating quantity to available amount: ${availableQuantity}`);
             await updateBasketItem(basketItem.id, availableQuantity);
             // showErrorToast(`Количество изменено на ${availableQuantity} (недостаточно на складе)`);
             showErrorToast(`Недостаточно на складе (доступно ${availableQuantity} шт.)`);
@@ -378,7 +378,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       await updateBasketItem(basketItem.id, quantity);
       queryClient.invalidateQueries(['basket']);
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      // console.error('Error updating quantity:', error);
       showErrorToast(`Ошибка при изменении количества: ${error.message}`);
     } finally {
       setQuantityLoading(false);
@@ -396,7 +396,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       showSuccessToast(`Товар "${productName}" удален из корзины`);
       queryClient.invalidateQueries(['basket']);
     } catch (error) {
-      console.error('Error removing from basket:', error);
+      // console.error('Error removing from basket:', error);
       showErrorToast(`Ошибка при удалении товара: ${error.message}`);
     } finally {
       setQuantityLoading(false);

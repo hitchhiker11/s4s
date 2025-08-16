@@ -74,6 +74,18 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
     }
   }, [productData, addRecentlyViewed]);
 
+  // Prefetch brand page on product view to speed up brand navigation
+  React.useEffect(() => {
+    if (productData && productData.brandCode) {
+      const target = `/brands/${productData.brandCode}?page=1`;
+      try {
+        router.prefetch(target);
+      } catch (e) {
+        // no-op
+      }
+    }
+  }, [productData?.brandCode]);
+
   const handleAddToCart = async (product) => {
     const productId = parseInt(product.productId || product.id || product.ID, 10);
     try {
@@ -111,7 +123,7 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
       await updateBasketItem(basketItem.id, newQuantity);
       showSuccessToast('Количество обновлено');
     } catch (err) {
-      console.error('Error updating quantity', err);
+      // console.error('Error updating quantity', err);
       showErrorToast(err.message || 'Ошибка при изменении количества');
     } finally {
       setQuantityLoading(false);
@@ -126,7 +138,7 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
       await removeFromBasket(basketItem.id);
       showSuccessToast('Товар удалён из корзины');
     } catch (err) {
-      console.error('Error removing from basket', err);
+      // console.error('Error removing from basket', err);
       showErrorToast(err.message || 'Ошибка при удалении товара');
     } finally {
       setQuantityLoading(false);
@@ -217,7 +229,7 @@ export async function getServerSideProps({ params }) {
 
   try {
     // Fetch product data from Bitrix via API
-    const { getCatalogItem, getCatalogSectionById } = await import('../../lib/api/bitrix');
+    const { getCatalogItem, getCatalogSectionById, getBrands } = await import('../../lib/api/bitrix');
     const { transformCatalogItem } = await import('../../lib/api/transformers');
 
     const apiResponse = await getCatalogItem({ code: productCode, with_images: 'Y', format: 'full' });
@@ -257,6 +269,32 @@ export async function getServerSideProps({ params }) {
     }));
 
     const productData = { ...transformed, images: normalizedImages };
+
+    // Try to resolve brand code from brands directory to build correct brand links
+    try {
+      if (productData.brand) {
+        const brandsResponse = await getBrands({ search: productData.brand, limit: 50, with_products_count: 'N' });
+        if (!brandsResponse.error && Array.isArray(brandsResponse.data)) {
+          // Prefer exact name match (case-insensitive)
+          const exactByName = brandsResponse.data.find((b) =>
+            (b.name || '').toLowerCase() === productData.brand.toLowerCase()
+          );
+          const matched = exactByName || brandsResponse.data[0] || null;
+          if (matched && matched.code) {
+            productData.brandCode = matched.code;
+          }
+        }
+        // Fallback: slugify brand name if code not found
+        if (!productData.brandCode) {
+          productData.brandCode = productData.brand
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9а-яё-]/gi, '');
+        }
+      }
+    } catch (brandErr) {
+      // console.warn('Could not resolve brand code for product:', brandErr);
+    }
 
     // Build breadcrumbs chain based on category hierarchy
     const breadcrumbs = [
@@ -306,7 +344,7 @@ export async function getServerSideProps({ params }) {
         });
       }
     } catch (crumbErr) {
-      console.error('Error building breadcrumbs:', crumbErr);
+      // console.error('Error building breadcrumbs:', crumbErr);
     }
 
     // Finally add the product itself (no link)
@@ -314,7 +352,7 @@ export async function getServerSideProps({ params }) {
 
     return { props: { productData, breadcrumbs } };
   } catch (err) {
-    console.error('Error fetching product data', err);
+    // console.error('Error fetching product data', err);
     return { notFound: true };
   }
 }

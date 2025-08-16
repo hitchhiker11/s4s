@@ -51,18 +51,18 @@ export const useBasket = (options = {}) => {
         const storedId = getStoredFuserId();
         
         if (storedId) {
-          console.log('Found stored fuser_id:', storedId);
+          // console.log('Found stored fuser_id:', storedId);
           setFuserId(storedId);
           setIsFuserIdInitialized(true);
         } else if (autoInitialize) {
-          console.log('No stored fuser_id, will initialize on first basket request');
+          // console.log('No stored fuser_id, will initialize on first basket request');
           setIsFuserIdInitialized(true);
         } else {
-          console.log('fuser_id auto-initialization disabled');
+          // console.log('fuser_id auto-initialization disabled');
           setIsFuserIdInitialized(true);
         }
       } catch (error) {
-        console.error('Failed to initialize fuser_id:', error);
+        // console.error('Failed to initialize fuser_id:', error);
         setIsFuserIdInitialized(true);
       }
     };
@@ -89,7 +89,7 @@ export const useBasket = (options = {}) => {
       }
       throw new Error('Failed to obtain fuser_id');
     } catch (error) {
-      console.error('Failed to ensure fuser_id:', error);
+      // console.error('Failed to ensure fuser_id:', error);
       return null;
     }
   }, [fuserId]);
@@ -97,12 +97,12 @@ export const useBasket = (options = {}) => {
   // Function to fetch basket data
   const fetchBasket = async () => {
     try {
-      console.log('🔄 [useBasket] Starting fetchBasket...');
+      // console.log('🔄 [useBasket] Starting fetchBasket...');
       
       const currentFuserId = await ensureFuserId();
       
       if (!currentFuserId) {
-        console.warn('⚠️ [useBasket] No fuser_id available, returning empty basket');
+        // console.warn('⚠️ [useBasket] No fuser_id available, returning empty basket');
         return { 
           basket: { 
             items: { items: [], summary: { count: 0, quantity: 0, total_price: 0 } },
@@ -112,36 +112,36 @@ export const useBasket = (options = {}) => {
         };
       }
 
-      console.log('✅ [useBasket] Using fuser_id for fetch:', currentFuserId);
+      // console.log('✅ [useBasket] Using fuser_id for fetch:', currentFuserId);
       
       const requestParams = { 
         fuser_id: currentFuserId, 
         format 
       };
       
-      console.log('📤 [useBasket] Fetching basket with params:', requestParams);
+      // console.log('📤 [useBasket] Fetching basket with params:', requestParams);
 
       const response = await getBasket(requestParams);
       
-      console.log('📥 [useBasket] Fetched basket response:', response);
+      // console.log('📥 [useBasket] Fetched basket response:', response);
       
       // Update fuser_id if the server returns a different one
       if (response?.meta?.fuser_id && response.meta.fuser_id !== currentFuserId) {
         const newFuserId = String(response.meta.fuser_id);
-        console.log(`🔄 [useBasket] Updating fuser_id from ${currentFuserId} to ${newFuserId}`);
+        // console.log(`🔄 [useBasket] Updating fuser_id from ${currentFuserId} to ${newFuserId}`);
         storeFuserId(newFuserId);
         setFuserId(newFuserId);
       }
       
       // Log basket items for debugging
       if (response?.basket?.items?.items) {
-        console.log('📦 [useBasket] Basket items:', response.basket.items.items);
-        console.log('📊 [useBasket] Basket summary:', response.basket.summary);
+        // console.log('📦 [useBasket] Basket items:', response.basket.items.items);
+        // console.log('📊 [useBasket] Basket summary:', response.basket.summary);
       }
       
       return response;
     } catch (error) {
-      console.error('❌ [useBasket] Error fetching basket data:', error);
+      // console.error('❌ [useBasket] Error fetching basket data:', error);
       // Return empty basket structure on error
       return { 
         basket: { 
@@ -167,7 +167,7 @@ export const useBasket = (options = {}) => {
       refetchOnWindowFocus,
       staleTime,
       onError: (error) => {
-        console.error('Basket query error:', error);
+        // console.error('Basket query error:', error);
       }
     }
   );
@@ -180,41 +180,41 @@ export const useBasket = (options = {}) => {
 
   // Invalidate basket queries to refresh data
   const invalidateBasketQueries = useCallback(() => {
-    console.log('🔄 [useBasket] Invalidating basket queries to trigger refresh...');
+    // console.log('🔄 [useBasket] Invalidating basket queries to trigger refresh...');
     queryClient.invalidateQueries(['basket']);
-    console.log('✅ [useBasket] Basket queries invalidated');
+    // console.log('✅ [useBasket] Basket queries invalidated');
   }, [queryClient]);
 
   // Add item to basket mutation
   const addToBasketMutation = useMutation(
     async (productData) => {
-      console.log('🔄 [useBasket] Starting addToBasket mutation:', productData);
+      // console.log('🔄 [useBasket] Starting addToBasket mutation:', productData);
       
       const currentFuserId = await ensureFuserId();
       if (!currentFuserId) {
-        console.error('❌ [useBasket] Cannot add to basket: fuser_id not available');
+        // console.error('❌ [useBasket] Cannot add to basket: fuser_id not available');
         throw new Error('Cannot add to basket: fuser_id not available');
       }
       
-      console.log('✅ [useBasket] Using fuser_id for add operation:', currentFuserId);
+      // console.log('✅ [useBasket] Using fuser_id for add operation:', currentFuserId);
       
       const requestData = {
         ...productData,
         fuser_id: currentFuserId
       };
       
-      console.log('📤 [useBasket] Sending add request with data:', requestData);
+      // console.log('📤 [useBasket] Sending add request with data:', requestData);
       
       return addToBasket(requestData);
     },
     {
       onSuccess: (data) => {
-        console.log('✅ [useBasket] Item added to basket successfully:', data);
-        console.log('🔄 [useBasket] Invalidating basket queries...');
+        // console.log('✅ [useBasket] Item added to basket successfully:', data);
+        // console.log('🔄 [useBasket] Invalidating basket queries...');
         invalidateBasketQueries();
       },
       onError: (error) => {
-        console.error('❌ [useBasket] Error adding item to basket:', error);
+        // console.error('❌ [useBasket] Error adding item to basket:', error);
       }
     }
   );
@@ -222,12 +222,12 @@ export const useBasket = (options = {}) => {
   // Add item to basket with pre-check stock mutation  
   const addToBasketWithStockCheckMutation = useMutation(
     async (productData) => {
-      console.log('🔄 [useBasket] Starting addToBasket with stock check:', productData);
+      // console.log('🔄 [useBasket] Starting addToBasket with stock check:', productData);
       
       const { product_id, quantity = 1 } = productData;
       
       // First check stock availability
-      console.log('🔍 [useBasket] Checking stock before adding to basket:', { product_id, quantity });
+      // console.log('🔍 [useBasket] Checking stock before adding to basket:', { product_id, quantity });
       const stockResponse = await checkStock({ product_id, quantity });
       
       if (!stockResponse.success || !stockResponse.available) {
@@ -236,7 +236,7 @@ export const useBasket = (options = {}) => {
         throw error;
       }
       
-      console.log('✅ [useBasket] Stock check passed, proceeding to add item');
+      // console.log('✅ [useBasket] Stock check passed, proceeding to add item');
       
       // If stock check passes, add to basket
       const currentFuserId = await ensureFuserId();
@@ -253,11 +253,11 @@ export const useBasket = (options = {}) => {
     },
     {
       onSuccess: (data) => {
-        console.log('✅ [useBasket] Item added to basket successfully with stock check:', data);
+        // console.log('✅ [useBasket] Item added to basket successfully with stock check:', data);
         invalidateBasketQueries();
       },
       onError: (error) => {
-        console.error('❌ [useBasket] Error adding item to basket with stock check:', error);
+        // console.error('❌ [useBasket] Error adding item to basket with stock check:', error);
       }
     }
   );
@@ -265,33 +265,33 @@ export const useBasket = (options = {}) => {
   // Update basket item quantity mutation
   const updateBasketItemMutation = useMutation(
     async (updateData) => {
-      console.log('🔄 [useBasket] Starting updateBasketItem mutation:', updateData);
+      // console.log('🔄 [useBasket] Starting updateBasketItem mutation:', updateData);
       
       const currentFuserId = await ensureFuserId();
       if (!currentFuserId) {
-        console.error('❌ [useBasket] Cannot update basket item: fuser_id not available');
+        // console.error('❌ [useBasket] Cannot update basket item: fuser_id not available');
         throw new Error('Cannot update basket item: fuser_id not available');
       }
       
-      console.log('✅ [useBasket] Using fuser_id for update operation:', currentFuserId);
+      // console.log('✅ [useBasket] Using fuser_id for update operation:', currentFuserId);
       
       const requestData = {
         ...updateData,
         fuser_id: currentFuserId
       };
       
-      console.log('📤 [useBasket] Sending update request with data:', requestData);
+      // console.log('📤 [useBasket] Sending update request with data:', requestData);
       
       return updateBasketItemQuantity(requestData);
     },
     {
       onSuccess: (data) => {
-        console.log('✅ [useBasket] Basket item updated successfully:', data);
-        console.log('🔄 [useBasket] Invalidating basket queries...');
+        // console.log('✅ [useBasket] Basket item updated successfully:', data);
+        // console.log('🔄 [useBasket] Invalidating basket queries...');
         invalidateBasketQueries();
       },
       onError: (error) => {
-        console.error('❌ [useBasket] Error updating basket item:', error);
+        // console.error('❌ [useBasket] Error updating basket item:', error);
       }
     }
   );
@@ -299,33 +299,33 @@ export const useBasket = (options = {}) => {
   // Remove item from basket mutation
   const removeFromBasketMutation = useMutation(
     async (removeData) => {
-      console.log('🔄 [useBasket] Starting removeFromBasket mutation:', removeData);
+      // console.log('🔄 [useBasket] Starting removeFromBasket mutation:', removeData);
       
       const currentFuserId = await ensureFuserId();
       if (!currentFuserId) {
-        console.error('❌ [useBasket] Cannot remove from basket: fuser_id not available');
+        // console.error('❌ [useBasket] Cannot remove from basket: fuser_id not available');
         throw new Error('Cannot remove from basket: fuser_id not available');
       }
       
-      console.log('✅ [useBasket] Using fuser_id for remove operation:', currentFuserId);
+      // console.log('✅ [useBasket] Using fuser_id for remove operation:', currentFuserId);
       
       const requestData = {
         ...removeData,
         fuser_id: currentFuserId
       };
       
-      console.log('📤 [useBasket] Sending remove request with data:', requestData);
+      // console.log('📤 [useBasket] Sending remove request with data:', requestData);
       
       return removeFromBasket(requestData);
     },
     {
       onSuccess: (data) => {
-        console.log('✅ [useBasket] Item removed from basket successfully:', data);
-        console.log('🔄 [useBasket] Invalidating basket queries...');
+        // console.log('✅ [useBasket] Item removed from basket successfully:', data);
+        // console.log('🔄 [useBasket] Invalidating basket queries...');
         invalidateBasketQueries();
       },
       onError: (error) => {
-        console.error('❌ [useBasket] Error removing item from basket:', error);
+        // console.error('❌ [useBasket] Error removing item from basket:', error);
       }
     }
   );
@@ -342,11 +342,11 @@ export const useBasket = (options = {}) => {
     },
     {
       onSuccess: (data) => {
-        console.log('Basket cleared:', data);
+        // console.log('Basket cleared:', data);
         invalidateBasketQueries();
       },
       onError: (error) => {
-        console.error('Error clearing basket:', error);
+        // console.error('Error clearing basket:', error);
       }
     }
   );
@@ -356,7 +356,7 @@ export const useBasket = (options = {}) => {
     (stockData) => checkStock(stockData),
     {
       onError: (error) => {
-        console.error('Error checking stock:', error);
+        // console.error('Error checking stock:', error);
       }
     }
   );
@@ -365,8 +365,8 @@ export const useBasket = (options = {}) => {
   const basketItems = basketData?.items?.items || [];
   
   // Log basket data for debugging
-  console.log('🔍 [useBasket] Raw basketData:', basketData);
-  console.log('🔍 [useBasket] Extracted basketItems:', basketItems);
+  // console.log('🔍 [useBasket] Raw basketData:', basketData);
+  // console.log('🔍 [useBasket] Extracted basketItems:', basketItems);
   
   const basketSummary = basketData?.summary || basketData?.items?.summary || { 
     count: 0, 

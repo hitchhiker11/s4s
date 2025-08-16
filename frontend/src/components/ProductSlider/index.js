@@ -165,6 +165,14 @@ const SwiperContainer = styled.div`
     transform: translate3d(0, 0, 0);
   }
   
+  /* Mobile to tablet transition - smaller cards */
+  @media (min-width: 500px) and (max-width: 767px) {
+    .swiper-slide {
+      width: clamp(180px, 60%, 240px);
+      max-width: 240px;
+    }
+  }
+  
   /* Tablet uses improved adaptive width */
   ${mediaQueries.md} {
     .swiper-slide {
@@ -306,7 +314,7 @@ const ProductSlider = ({
   }, [displayProducts.length]);
 
   if (process.env.NODE_ENV === 'development') {
-    console.log(`ProductSlider (${title}) rendering with:`, displayProducts.length);
+    // console.log(`ProductSlider (${title}) rendering with:`, displayProducts.length);
   }
 
   // Use sliderSectionStyles if provided, otherwise fall back to gridSectionStyles for compatibility

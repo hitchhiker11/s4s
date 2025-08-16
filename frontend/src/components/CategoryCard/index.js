@@ -17,6 +17,10 @@ const CardLink = styled.a`
   min-height: 120px;
   width: 100%; /* Always fill parent width */
   max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  contain: paint;
+  will-change: transform;
   ${props => props.additionalStyles && css(props.additionalStyles)};
 
   &:hover {
@@ -95,12 +99,14 @@ const CardImageContainer = styled.div`
   justify-content: center;
   background: transparent;
   overflow: hidden;
-  flex-grow: 1;
+  flex: 0 0 auto;
   width: 100%; /* Ensure image container fills the full width */
   max-height: 90px; /* Slightly shorter for smaller screens */
+  min-height: 0;
   padding: ${SPACING.xs} 0 0; /* Add small padding in mobile */
   
   ${mediaQueries.md} {
+    flex-grow: 1;
     padding: ${SPACING.lg};
     max-height: 250px;
   }
@@ -154,8 +160,16 @@ const CardImage = styled.img`
           object-position: bottom right !important;
         `}
 
+    /* Mobile adjustments - disable edge positioning to avoid WebKit grid height bugs */
+    @media (max-width: 575px) {
+      max-width: 100% !important;
+      max-height: 100% !important;
+      transform: ${props.$rotation ? `rotate(${props.$rotation}deg)` : 'none'} !important;
+      object-position: center center !important;
+    }
+
     /* Tablet and below adjustments */
-    @media (max-width: ${BREAKPOINTS.lg - 1}px) {
+    @media (min-width: 576px) and (max-width: ${BREAKPOINTS.lg - 1}px) {
       max-width: 140% !important;
       max-height: 140% !important;
       ${props.isSvg

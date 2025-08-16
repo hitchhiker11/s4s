@@ -36,6 +36,7 @@ const GlobalStyles = createGlobalStyle`
     background-color: ${COLORS.white};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
     overflow-x: hidden;
     width: 100%;
     transition: opacity 180ms ease, filter 180ms ease; /* SPA fade */

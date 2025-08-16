@@ -128,3 +128,18 @@
 .swiper-lazy-loaded {
   opacity: 1;
 }
+
+/* iOS Safari grid transform fixes */
+.grid-item, .category-card {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Additional grid stability for mobile Safari */
+@media (max-width: 575px) {
+  .grid-item, .category-card {
+    will-change: auto;
+    contain: layout style;
+  }
+}

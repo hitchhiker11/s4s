@@ -112,7 +112,7 @@ const BrandDescription = styled.div`
 
 const BrandFeature = ({ brandData }) => {
   if (!brandData) {
-    console.error('BrandFeature: brandData is undefined');
+    // console.error('BrandFeature: brandData is undefined');
     return null;
   }
 

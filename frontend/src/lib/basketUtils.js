@@ -35,7 +35,7 @@ export const getStoredFuserId = () => {
 
     return fuserId;
   } catch (error) {
-    console.warn('Failed to get stored fuser_id:', error);
+    // console.warn('Failed to get stored fuser_id:', error);
     return null;
   }
 };
@@ -53,7 +53,7 @@ export const storeFuserId = (fuserId, expiryDays = DEFAULT_EXPIRY_DAYS) => {
     }
 
     if (!fuserId) {
-      console.warn('Cannot store empty fuser_id');
+      // console.warn('Cannot store empty fuser_id');
       return;
     }
 
@@ -62,9 +62,9 @@ export const storeFuserId = (fuserId, expiryDays = DEFAULT_EXPIRY_DAYS) => {
     localStorage.setItem(FUSER_ID_STORAGE_KEY, String(fuserId));
     localStorage.setItem(FUSER_ID_EXPIRY_KEY, String(expiryTime));
     
-    console.log(`Stored fuser_id: ${fuserId} with expiry: ${new Date(expiryTime).toISOString()}`);
+    // console.log(`Stored fuser_id: ${fuserId} with expiry: ${new Date(expiryTime).toISOString()}`);
   } catch (error) {
-    console.warn('Failed to store fuser_id:', error);
+    // console.warn('Failed to store fuser_id:', error);
   }
 };
 
@@ -80,9 +80,9 @@ export const clearStoredFuserId = () => {
     localStorage.removeItem(FUSER_ID_STORAGE_KEY);
     localStorage.removeItem(FUSER_ID_EXPIRY_KEY);
     
-    console.log('Cleared stored fuser_id');
+    // console.log('Cleared stored fuser_id');
   } catch (error) {
-    console.warn('Failed to clear stored fuser_id:', error);
+    // console.warn('Failed to clear stored fuser_id:', error);
   }
 };
 
@@ -110,11 +110,11 @@ export const getOrInitializeFuserId = async (getBasketApi) => {
     const storedFuserId = getStoredFuserId();
     
     if (storedFuserId) {
-      console.log('Using stored fuser_id:', storedFuserId);
+      // console.log('Using stored fuser_id:', storedFuserId);
       return storedFuserId;
     }
 
-    console.log('No stored fuser_id found, initializing new basket...');
+    // console.log('No stored fuser_id found, initializing new basket...');
     
     // Make a GET request without fuser_id to initialize a new basket
     const response = await getBasketApi();
@@ -123,15 +123,15 @@ export const getOrInitializeFuserId = async (getBasketApi) => {
       const newFuserId = String(response.meta.fuser_id);
       storeFuserId(newFuserId);
       
-      console.log('Initialized new fuser_id:', newFuserId);
+      // console.log('Initialized new fuser_id:', newFuserId);
       return newFuserId;
     }
 
-    console.warn('Failed to get fuser_id from basket API response:', response);
+    // console.warn('Failed to get fuser_id from basket API response:', response);
     return null;
     
   } catch (error) {
-    console.error('Failed to get or initialize fuser_id:', error);
+    // console.error('Failed to get or initialize fuser_id:', error);
     return null;
   }
 };
@@ -154,7 +154,7 @@ export const validateAndRefreshFuserId = async (fuserId, getBasketApi) => {
       
       // If the response contains a different fuser_id, update our stored one
       if (responseFuserId !== fuserId) {
-        console.log(`Updating fuser_id from ${fuserId} to ${responseFuserId}`);
+        // console.log(`Updating fuser_id from ${fuserId} to ${responseFuserId}`);
         storeFuserId(responseFuserId);
         return responseFuserId;
       }
@@ -163,11 +163,11 @@ export const validateAndRefreshFuserId = async (fuserId, getBasketApi) => {
     }
 
     // If validation failed, get a new fuser_id
-    console.warn('fuser_id validation failed, getting new one...');
+    // console.warn('fuser_id validation failed, getting new one...');
     return await getOrInitializeFuserId(getBasketApi);
     
   } catch (error) {
-    console.error('Failed to validate fuser_id:', error);
+    // console.error('Failed to validate fuser_id:', error);
     // If there's an error, try to get a new fuser_id
     return await getOrInitializeFuserId(getBasketApi);
   }

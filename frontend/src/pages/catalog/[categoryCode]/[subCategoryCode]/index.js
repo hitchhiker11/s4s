@@ -234,9 +234,9 @@ const SubCategoryProductsPage = ({ initialCategory, initialSubCategory, initialP
     const productId = parseInt(product.ID || product.id, 10);
     try {
       await addToBasket({ product_id: productId, quantity: 1 });
-      console.log('Product added to cart:', productId);
+      // console.log('Product added to cart:', productId);
     } catch (error) {
-      console.error('Error adding product to cart:', error);
+      // console.error('Error adding product to cart:', error);
     }
   };
 
@@ -444,7 +444,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
-    console.error('Error in getServerSideProps:', error);
+    // console.error('Error in getServerSideProps:', error);
     return { notFound: true };
   }
 }

@@ -333,17 +333,17 @@ export async function getServerSideProps(context) {
   const queryClient = new QueryClient();
   
   try {
-    console.log('[SSR] Fetching brand data for code:', brandCode);
+    // console.log('[SSR] Fetching brand data for code:', brandCode);
     
     // Получаем данные бренда
     const brandData = await getBrandByCode(brandCode);
     
     if (!brandData || brandData.error) {
-      console.log('[SSR] Brand not found:', brandCode);
+      // console.log('[SSR] Brand not found:', brandCode);
       return { notFound: true };
     }
     
-    console.log('[SSR] Brand found:', brandData.name, 'ID:', brandData.id);
+    // console.log('[SSR] Brand found:', brandData.name, 'ID:', brandData.id);
     
     // Получаем товары бренда для SSR
     await queryClient.prefetchQuery(
@@ -356,7 +356,7 @@ export async function getServerSideProps(context) {
     );
     
     const productsData = queryClient.getQueryData(['brandProducts', brandData.id, parseInt(page), sort]);
-    console.log('[SSR] Products prefetched for brand:', productsData?.data?.length || 0, 'items');
+    // console.log('[SSR] Products prefetched for brand:', productsData?.data?.length || 0, 'items');
     
     return {
       props: {
@@ -371,7 +371,7 @@ export async function getServerSideProps(context) {
       }
     };
   } catch (error) {
-    console.error('[SSR] Error fetching brand data:', error);
+    // console.error('[SSR] Error fetching brand data:', error);
     return { notFound: true };
   }
 }

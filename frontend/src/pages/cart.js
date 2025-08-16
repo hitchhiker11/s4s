@@ -99,7 +99,7 @@ const CartPage = () => {
           const orders = JSON.parse(ordersRaw);
           if (Array.isArray(orders) && orders.length > 0) {
             const lastOrder = orders[0]; // Первый = последний добавленный
-            console.log('🔄 [Cart] Загружаем последний заказ из localStorage:', lastOrder);
+            // console.log('🔄 [Cart] Загружаем последний заказ из localStorage:', lastOrder);
             setOrderId(lastOrder.order_id);
             setOrderNumber(lastOrder.order_number);
             setOrderTotal(Number(lastOrder.total_amount));
@@ -118,7 +118,7 @@ const CartPage = () => {
           }
         }
       } catch (error) {
-        console.warn('⚠️ [Cart] Ошибка загрузки заказа из localStorage:', error);
+        // console.warn('⚠️ [Cart] Ошибка загрузки заказа из localStorage:', error);
       }
     }
   }, [activeTab, orderId, orderNumber, orderTotal, hasBasketItems]);
@@ -129,7 +129,7 @@ const CartPage = () => {
       
       setIsOrderStatusLoading(true);
       try {
-        console.log('🔍 [Cart] Проверка статуса существующего заказа:', order_id);
+        // console.log('🔍 [Cart] Проверка статуса существующего заказа:', order_id);
         
         const orderStatus = await getOrderStatus(order_id);
         
@@ -138,12 +138,12 @@ const CartPage = () => {
           
           if (is_paid) {
             // Заказ уже оплачен - редирект на страницу успеха
-            console.log('✅ [Cart] Заказ уже оплачен, редирект на payment-success');
+            // console.log('✅ [Cart] Заказ уже оплачен, редирект на payment-success');
             router.push(`/payment-success?order_id=${order_id}&order_number=${order_number}`);
             return;
           } else {
             // Заказ не оплачен - показать страницу payment
-            console.log('💳 [Cart] Заказ не оплачен, переход к оплате');
+            // console.log('💳 [Cart] Заказ не оплачен, переход к оплате');
             setOrderId(order_id);
             setOrderNumber(order_number);
             setIsExistingOrder(true);
@@ -151,12 +151,12 @@ const CartPage = () => {
           }
         } else {
           // Ошибка получения статуса заказа
-          console.error('❌ [Cart] Ошибка получения статуса заказа:', orderStatus.error);
+          // console.error('❌ [Cart] Ошибка получения статуса заказа:', orderStatus.error);
           showErrorToast('Заказ не найден или произошла ошибка');
           router.push('/cart');
         }
       } catch (error) {
-        console.error('❌ [Cart] Исключение при проверке статуса заказа:', error);
+        // console.error('❌ [Cart] Исключение при проверке статуса заказа:', error);
         showErrorToast('Ошибка при проверке статуса заказа');
         router.push('/cart');
       } finally {
@@ -171,13 +171,13 @@ const CartPage = () => {
   useEffect(() => {
     const checkStockForCurrentBasketItems = async () => {
       if (!basketItems || basketItems.length === 0) {
-        console.log('🔍 [Cart] No basket items to check stock for');
+        // console.log('🔍 [Cart] No basket items to check stock for');
         return;
       }
 
       // Only check stock if fuser_id is initialized and we're not currently loading
       if (!isFuserIdInitialized || isBasketLoading) {
-        console.log('🔍 [Cart] Skipping stock check - fuser_id not initialized or basket loading:', {
+        // console.log('🔍 [Cart] Skipping stock check - fuser_id not initialized or basket loading:', {
           isFuserIdInitialized,
           isBasketLoading
         });
@@ -189,11 +189,11 @@ const CartPage = () => {
       
       // If we've already checked this exact basket state, skip
       if (checkedBasketItemsRef.current.has(currentBasketSignature)) {
-        console.log('🔄 [Cart] Skipping stock check - already checked this basket state:', currentBasketSignature);
+        // console.log('🔄 [Cart] Skipping stock check - already checked this basket state:', currentBasketSignature);
         return;
       }
 
-      console.log('🔍 [Cart] Starting stock check for basket items:', {
+      // console.log('🔍 [Cart] Starting stock check for basket items:', {
         itemCount: basketItems.length,
         basketSignature: currentBasketSignature,
         items: basketItems.map(item => ({
@@ -211,7 +211,7 @@ const CartPage = () => {
         try {
           // Validate item data before stock check
           if (!item.product_id || !item.quantity || !item.id) {
-            console.warn(`⚠️ [Cart] Skipping item with missing data:`, {
+            // console.warn(`⚠️ [Cart] Skipping item with missing data:`, {
               id: item.id,
               product_id: item.product_id,
               quantity: item.quantity,
@@ -224,7 +224,7 @@ const CartPage = () => {
           const currentQuantity = parseInt(item.quantity, 10);
           const basketItemId = item.id;
 
-          console.log(`🔍 [Cart] Checking stock for item:`, {
+          // console.log(`🔍 [Cart] Checking stock for item:`, {
             basketItemId,
             productId,
             currentQuantity,
@@ -233,7 +233,7 @@ const CartPage = () => {
           
           const stockResponse = await basketCheckStock(productId, currentQuantity);
           
-          console.log(`📋 [Cart] Stock check response for item ${basketItemId}:`, stockResponse);
+          // console.log(`📋 [Cart] Stock check response for item ${basketItemId}:`, stockResponse);
           
           if (stockResponse && stockResponse.success !== undefined) {
             const availableQuantity = parseInt(stockResponse.available_quantity, 10) || 0;
@@ -241,28 +241,28 @@ const CartPage = () => {
             if (!stockResponse.success && stockResponse.available === false) {
               if (availableQuantity === 0) {
                 // Remove item completely if no stock available
-                console.log(`❌ [Cart] Removing item ${basketItemId}: ${item.name} (no stock available)`);
+                // console.log(`❌ [Cart] Removing item ${basketItemId}: ${item.name} (no stock available)`);
                 await removeFromBasket(basketItemId);
                 showErrorToast(`Товар "${item.name}" больше не доступен и был удален из корзины`);
                 stockUpdatesMade = true;
               } else if (availableQuantity > 0 && availableQuantity < currentQuantity) {
                 // Update quantity to available amount
-                console.log(`🔄 [Cart] Updating item ${basketItemId} quantity from ${currentQuantity} to ${availableQuantity}`);
+                // console.log(`🔄 [Cart] Updating item ${basketItemId} quantity from ${currentQuantity} to ${availableQuantity}`);
                 await updateBasketItem(basketItemId, availableQuantity);
                 showErrorToast(`Количество товара "${item.name}" было изменено на ${availableQuantity} (недостаточно на складе)`);
                 stockUpdatesMade = true;
               }
             } else if (stockResponse.success && stockResponse.available === true) {
               // Item is available in requested quantity - no action needed
-              console.log(`✅ [Cart] Item ${basketItemId} is available in requested quantity (${currentQuantity})`);
+              // console.log(`✅ [Cart] Item ${basketItemId} is available in requested quantity (${currentQuantity})`);
             }
           } else if (stockResponse && stockResponse.error) {
             // Handle API error responses
-            console.error(`❌ [Cart] Stock check error for item ${basketItemId}:`, stockResponse.error);
+            // console.error(`❌ [Cart] Stock check error for item ${basketItemId}:`, stockResponse.error);
             showErrorToast(`Ошибка при проверке товара "${item.name}": ${stockResponse.error}`);
           }
         } catch (error) {
-          console.error(`❌ [Cart] Exception during stock check for item ${item.id}:`, error);
+          // console.error(`❌ [Cart] Exception during stock check for item ${item.id}:`, error);
           showErrorToast(`Ошибка при проверке товара "${item.name}"`);
         }
       }
@@ -270,7 +270,7 @@ const CartPage = () => {
       // Mark this basket state as checked only if no updates were made
       // If updates were made, the useEffect will run again with new basket state
       if (!stockUpdatesMade) {
-        console.log('✅ [Cart] Stock check completed, marking basket state as checked:', currentBasketSignature);
+        // console.log('✅ [Cart] Stock check completed, marking basket state as checked:', currentBasketSignature);
         checkedBasketItemsRef.current.add(currentBasketSignature);
         
         // Clean up old signatures to prevent memory leaks (keep only last 5)
@@ -279,7 +279,7 @@ const CartPage = () => {
           checkedBasketItemsRef.current = new Set(signatures.slice(-5));
         }
       } else {
-        console.log('🔄 [Cart] Stock updates were made, will recheck with new basket state');
+        // console.log('🔄 [Cart] Stock updates were made, will recheck with new basket state');
       }
     };
 
@@ -292,7 +292,7 @@ const CartPage = () => {
   // Fetch basket data on component mount, but only after fuser_id is initialized
   useEffect(() => {
     if (isFuserIdInitialized) {
-      console.log('fuser_id initialized, fetching basket data on cart page');
+      // console.log('fuser_id initialized, fetching basket data on cart page');
       refetchBasket();
     }
   }, [refetchBasket, isFuserIdInitialized]);
@@ -309,7 +309,7 @@ const CartPage = () => {
 
   // Handle CDEK delivery selection
   const handleDeliverySelect = (deliveryData) => {
-    console.log('🚚 [Cart] CDEK delivery selected:', deliveryData);
+    // console.log('🚚 [Cart] CDEK delivery selected:', deliveryData);
     setSelectedDelivery(deliveryData);
   };
 
@@ -322,7 +322,7 @@ const CartPage = () => {
 
   // Handle quantity changes for cart items
   const handleQuantityChange = async (itemId, newQuantity) => {
-    console.log('🔄 [Cart] Handling quantity change:', {
+    // console.log('🔄 [Cart] Handling quantity change:', {
       itemId,
       newQuantity,
       newQuantityType: typeof newQuantity,
@@ -336,16 +336,16 @@ const CartPage = () => {
       // Ensure numeric value for API call
       const quantity = newQuantity === '' ? 1 : Math.max(1, parseInt(newQuantity, 10) || 1);
       
-      console.log('🔄 [Cart] Processed quantity:', {
+      // console.log('🔄 [Cart] Processed quantity:', {
         originalQuantity: newQuantity,
         processedQuantity: quantity,
         itemId: itemId
       });
       
       await updateBasketItem(itemId, quantity);
-      console.log('✅ [Cart] Basket item quantity updated successfully');
+      // console.log('✅ [Cart] Basket item quantity updated successfully');
     } catch (error) {
-      console.error('❌ [Cart] Failed to update basket item quantity:', error);
+      // console.error('❌ [Cart] Failed to update basket item quantity:', error);
       // Show error message from the thrown exception
       showErrorToast(error.message || 'Ошибка при обновлении количества');
     } finally {
@@ -366,7 +366,7 @@ const CartPage = () => {
     try {
       await removeFromBasket(itemId);
     } catch (error) {
-      console.error('Failed to remove basket item:', error);
+      // console.error('Failed to remove basket item:', error);
       showErrorToast(error.message || 'Ошибка при удалении товара');
     } finally {
       // Remove item from loading set
@@ -387,7 +387,7 @@ const CartPage = () => {
     
     setIsPaymentLoading(true);
     try {
-      console.log('💳 [Cart] Получение данных для оплаты заказа:', orderId);
+      // console.log('💳 [Cart] Получение данных для оплаты заказа:', orderId);
       
       const paymentResponse = await getPaymentForm(orderId);
       
@@ -396,10 +396,10 @@ const CartPage = () => {
         
         // Приоритет у прямой ссылки
         if (direct_payment_url && direct_payment_url.trim()) {
-          console.log('💳 [Cart] Редирект на прямую ссылку оплаты:', direct_payment_url);
+          // console.log('💳 [Cart] Редирект на прямую ссылку оплаты:', direct_payment_url);
           window.location.href = direct_payment_url;
         } else if (payment_form && payment_form.trim()) {
-          console.log('💳 [Cart] Отправка формы оплаты');
+          // console.log('💳 [Cart] Отправка формы оплаты');
           
           // Создаем временный контейнер для формы
           const formContainer = document.createElement('div');
@@ -429,7 +429,7 @@ const CartPage = () => {
         throw new Error(paymentResponse.error?.message || 'Ошибка при получении данных оплаты');
       }
     } catch (error) {
-      console.error('❌ [Cart] Ошибка при переходе к оплате:', error);
+      // console.error('❌ [Cart] Ошибка при переходе к оплате:', error);
       showErrorToast(error.message || 'Ошибка при переходе к оплате');
       setIsPaymentLoading(false);
     }
@@ -486,7 +486,7 @@ const CartPage = () => {
           comment: userFormData.comment || ''
         };
         
-        console.log('🛒 [Cart] Создание заказа с данными:', orderData);
+        // console.log('🛒 [Cart] Создание заказа с данными:', orderData);
         
         const response = await createOrder(orderData);
         
@@ -533,9 +533,9 @@ const CartPage = () => {
             existingOrders = existingOrders.slice(0, 2);
             
             localStorage.setItem('s4s_recent_orders', JSON.stringify(existingOrders));
-            console.log('💾 [Cart] Заказ сохранен в localStorage:', newOrder);
+            // console.log('💾 [Cart] Заказ сохранен в localStorage:', newOrder);
           } catch (error) {
-            console.warn('⚠️ [Cart] Не удалось сохранить заказ в localStorage:', error);
+            // console.warn('⚠️ [Cart] Не удалось сохранить заказ в localStorage:', error);
           }
           
           showSuccessToast(`Заказ №${orderNumber} успешно создан!`);
@@ -543,9 +543,9 @@ const CartPage = () => {
           // Очищаем корзину после успешного создания заказа
           try {
             await clearBasket(fuserId);
-            console.log('✅ [Cart] Корзина очищена после создания заказа');
+            // console.log('✅ [Cart] Корзина очищена после создания заказа');
           } catch (clearError) {
-            console.warn('⚠️ [Cart] Не удалось очистить корзину:', clearError);
+            // console.warn('⚠️ [Cart] Не удалось очистить корзину:', clearError);
             // Не показываем ошибку пользователю, так как заказ уже создан
           }
           
@@ -555,7 +555,7 @@ const CartPage = () => {
           throw new Error(apiMessage);
         }
       } catch (error) {
-        console.error('❌ [Cart] Ошибка создания заказа:', error);
+        // console.error('❌ [Cart] Ошибка создания заказа:', error);
         showErrorToast(error.message || 'Ошибка при создании заказа');
       } finally {
         setIsOrderLoading(false);
@@ -607,7 +607,7 @@ const CartPage = () => {
   // Format cart items for the CartItem component
   const formattedCartItems = basketItems?.map(item => {
     // Log the raw item structure to understand what IDs we have
-    console.log('🔍 [Cart] Raw basket item structure:', {
+    // console.log('🔍 [Cart] Raw basket item structure:', {
       rawItem: item,
       availableIds: {
         id: item.id,

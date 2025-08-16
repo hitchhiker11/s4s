@@ -114,7 +114,7 @@ export const CompleteCard = () => (
     style={{ width: '300px' }}
     hover={true}
     clickable={true}
-    onClick={() => console.log('Card clicked')}
+    // onClick={() => console.log('Card clicked')}
   >
     <Card.Media image="https://via.placeholder.com/300x150" />
     <Card.Header>

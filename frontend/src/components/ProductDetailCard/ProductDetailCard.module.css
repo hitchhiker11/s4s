@@ -124,6 +124,10 @@
     /* Specific styles if needed, currently inherits from metaInfo p */
 }
 
+.brandLink {
+    cursor: pointer;
+}
+
 .descriptionContainer {
     margin-top: 10px;
     width: 100%;

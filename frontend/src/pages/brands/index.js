@@ -339,7 +339,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
   const { data: brandsData, isLoading: brandsLoading, isError: brandsIsError } = useQuery(
     ['allBrands', currentPage],
     () => {
-      console.log('🏷️ [BrandsPage] Fetching brands for page:', currentPage, 'with limit:', BRANDS_PER_PAGE);
+      // console.log('🏷️ [BrandsPage] Fetching brands for page:', currentPage, 'with limit:', BRANDS_PER_PAGE);
       return getBrands({ 
         limit: BRANDS_PER_PAGE,
         page: currentPage,
@@ -353,10 +353,10 @@ const BrandsPage = ({ seo, initialBrands }) => {
       keepPreviousData: true, // Keep previous data while loading new page
       staleTime: 5 * 60 * 1000, // 5 minutes
       onSuccess: (data) => {
-        console.log('🏷️ [BrandsPage] Brands data received for page', currentPage, ':', data);
+        // console.log('🏷️ [BrandsPage] Brands data received for page', currentPage, ':', data);
       },
       onError: (error) => {
-        console.error('🏷️ [BrandsPage] Error fetching brands for page', currentPage, ':', error);
+        // console.error('🏷️ [BrandsPage] Error fetching brands for page', currentPage, ':', error);
       }
     }
   );
@@ -365,7 +365,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
   const { data: allBrandsData } = useQuery(
     ['allBrands', 'all'],
     () => {
-      console.log('🏷️ [BrandsPage] Fetching ALL brands for client-side pagination');
+      // console.log('🏷️ [BrandsPage] Fetching ALL brands for client-side pagination');
       return getBrands({ 
         limit: 200, // Get many brands
         with_products_count: 'Y',
@@ -394,7 +394,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Form submission logic here
-    console.log('Form submitted:', formInputs);
+    // console.log('Form submitted:', formInputs);
   };
   
   // Загружаем скрипты Bitrix при монтировании компонента
@@ -415,7 +415,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
     // Use allBrandsData for client pagination if available
     if (allBrandsData?.data && (!brandsData?.meta?.total_pages)) {
       dataToUse = allBrandsData.data;
-      console.log('🏷️ [BrandsPage] Using allBrandsData for client pagination');
+      // console.log('🏷️ [BrandsPage] Using allBrandsData for client pagination');
     } else if (!brandsIsError && brandsData?.data) {
       dataToUse = brandsData.data;
     } else if (Array.isArray(initialBrands) && initialBrands.length > 0) {
@@ -424,9 +424,9 @@ const BrandsPage = ({ seo, initialBrands }) => {
     
     const transformedBrands = transformBrands(Array.isArray(dataToUse) ? dataToUse : []);
     
-    console.log('🏷️ [BrandsPage] Raw dataToUse:', dataToUse);
-    console.log('🏷️ [BrandsPage] Transformed brands count:', transformedBrands.length);
-    console.log('🏷️ [BrandsPage] Current page:', currentPage);
+    // console.log('🏷️ [BrandsPage] Raw dataToUse:', dataToUse);
+    // console.log('🏷️ [BrandsPage] Transformed brands count:', transformedBrands.length);
+    // console.log('🏷️ [BrandsPage] Current page:', currentPage);
     
     const brandsWithStyles = transformedBrands.map(brand => ({
       ...brand,
@@ -439,7 +439,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
     const needsClientPagination = !hasServerPagination && brandsWithStyles.length > BRANDS_PER_PAGE;
     
     if (needsClientPagination) {
-      console.log('🏷️ [BrandsPage] Using client-side pagination');
+      // console.log('🏷️ [BrandsPage] Using client-side pagination');
       const startIndex = (currentPage - 1) * BRANDS_PER_PAGE;
       const endIndex = startIndex + BRANDS_PER_PAGE;
       return {
@@ -475,7 +475,7 @@ const BrandsPage = ({ seo, initialBrands }) => {
   }, [brandsData, allBrandsData, brands.length, isClientPagination]);
   
   // Debug pagination
-  console.log('🏷️ [BrandsPage] Pagination debug:', {
+  // console.log('🏷️ [BrandsPage] Pagination debug:', {
     currentPage,
     totalPages,
     totalBrands,
@@ -662,7 +662,7 @@ export async function getServerSideProps(context) {
   try {
     // Prefetch brands data for SSR using new API with pagination
     await queryClient.prefetchQuery(['allBrands', currentPage], () => {
-      console.log('[SSR] Prefetching brands for brands page with new API, page:', currentPage);
+      // console.log('[SSR] Prefetching brands for brands page with new API, page:', currentPage);
       return getBrands({ 
         limit: BRANDS_PER_PAGE,
         page: currentPage,
@@ -673,7 +673,7 @@ export async function getServerSideProps(context) {
     });
     
     const brandsResult = queryClient.getQueryData(['allBrands', currentPage]);
-    console.log('[SSR] Brands prefetched for brands page. Result:', brandsResult ? 'Success' : 'Failed');
+    // console.log('[SSR] Brands prefetched for brands page. Result:', brandsResult ? 'Success' : 'Failed');
     
     const initialBrandsVal = (brandsResult && !brandsResult.error && brandsResult.data) ? brandsResult.data : [];
     
@@ -689,7 +689,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
-    console.error('[SSR] Error prefetching brands:', error);
+    // console.error('[SSR] Error prefetching brands:', error);
     
     return {
       props: {

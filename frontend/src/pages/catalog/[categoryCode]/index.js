@@ -159,7 +159,7 @@ const mockRecentlyViewedProducts = [
 
   // Placeholder add to cart handler
   const handleAddToCartRecentlyViewed = (productId) => {
-    console.log(`Adding product ${productId} to cart (from HomePage)`);
+    // console.log(`Adding product ${productId} to cart (from HomePage)`);
     // Add actual cart logic here later
   };
 
@@ -312,9 +312,9 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
     const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
     try {
       await addToBasket({ product_id: productId, quantity: 1 });
-      console.log('Product added to cart:', productId);
+      // console.log('Product added to cart:', productId);
     } catch (error) {
-      console.error('Error adding product to cart:', error);
+      // console.error('Error adding product to cart:', error);
     }
   }
 
@@ -466,7 +466,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
-    console.error('Error in getServerSideProps:', error);
+    // console.error('Error in getServerSideProps:', error);
     
     // Используем мок-данные как fallback
     // const category = getCategoryDetails(categoryCode);

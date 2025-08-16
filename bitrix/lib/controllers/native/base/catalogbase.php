@@ -474,6 +474,144 @@ abstract class CatalogBase
         }
     }
 
+    /**
+     * Батчевая обработка URL изображений с кешированием (универсальный метод)
+     */
+    protected function processImageUrls(array $items, string $imageField = 'PICTURE', string $cachePrefix = 'batch_images'): array
+    {
+        if (empty($items)) {
+            return $items;
+        }
+
+        // Извлекаем все ID изображений из элементов
+        $pictureIds = [];
+        foreach ($items as $item) {
+            if (!empty($item[$imageField]) && is_numeric($item[$imageField])) {
+                $pictureIds[] = (int)$item[$imageField];
+            }
+        }
+
+        if (empty($pictureIds)) {
+            return $items;
+        }
+
+        // Создаем ключ кеша на основе ID изображений
+        $pictureIdsHash = md5(implode(',', array_unique($pictureIds)));
+        $cacheKey = "{$cachePrefix}_{$this->iBlockId}_{$pictureIdsHash}";
+        
+        $cache = \Bitrix\Main\Data\Cache::createInstance();
+        $cacheDir = '/artamonov/rest/batch_images/';
+        $cacheTtl = 3600; // 1 час
+
+        $imageUrls = [];
+
+        if ($cache->initCache($cacheTtl, $cacheKey, $cacheDir)) {
+            $imageUrls = $cache->getVars();
+        } else {
+            $cache->startDataCache();
+
+            // Получаем базовый URL для формирования полных ссылок
+            $baseUrl = 'https://' . $_SERVER['HTTP_HOST'];
+
+            // Батчевая обработка изображений
+            foreach (array_unique($pictureIds) as $pictureId) {
+                $imageUrls[$pictureId] = [
+                    'original' => '',
+                    'preview' => ''
+                ];
+
+                try {
+                    // Получаем путь к оригинальному изображению
+                    $originalPath = \CFile::GetPath($pictureId);
+                    if ($originalPath) {
+                        $imageUrls[$pictureId]['original'] = $baseUrl . $originalPath;
+                    }
+
+                    // Создаем превью 300x300 с сохранением пропорций
+                    $resizeResult = \CFile::ResizeImageGet(
+                        $pictureId,
+                        ['width' => 300, 'height' => 300],
+                        BX_RESIZE_IMAGE_PROPORTIONAL,
+                        true
+                    );
+
+                    if ($resizeResult && !empty($resizeResult['src'])) {
+                        $imageUrls[$pictureId]['preview'] = $baseUrl . $resizeResult['src'];
+                    }
+                } catch (\Exception $e) {
+                    // В случае ошибки оставляем пустые строки
+                    \Bitrix\Main\Diag\Debug::writeToFile(
+                        [
+                            'error' => 'Failed to process image',
+                            'picture_id' => $pictureId,
+                            'message' => $e->getMessage()
+                        ],
+                        'Batch Image Processing Error',
+                        '/local/logs/rest_api.log'
+                    );
+                }
+            }
+
+            $cache->endDataCache($imageUrls);
+        }
+
+        // Дополняем элементы новыми полями с URL изображений
+        foreach ($items as &$item) {
+            if (!empty($item[$imageField]) && is_numeric($item[$imageField])) {
+                $pictureId = (int)$item[$imageField];
+                
+                if (isset($imageUrls[$pictureId])) {
+                    $item[$imageField . '_SRC'] = $imageUrls[$pictureId]['original'];
+                    $item[$imageField . '_PREVIEW_SRC'] = $imageUrls[$pictureId]['preview'];
+                } else {
+                    $item[$imageField . '_SRC'] = '';
+                    $item[$imageField . '_PREVIEW_SRC'] = '';
+                }
+            } else {
+                $item[$imageField . '_SRC'] = '';
+                $item[$imageField . '_PREVIEW_SRC'] = '';
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Форматирование свойств элемента
+     */
+    protected function formatProperties(array $properties): array
+    {
+        $formatted = [];
+        
+        foreach ($properties as $code => $property) {
+            // Пропускаем исключенные свойства
+            if (in_array($code, $this->excludePropertiesList)) continue;
+            if ($this->excludeSystemProperties && str_starts_with($code, 'CML2_')) continue;
+
+            // Пропускаем пустые если включено исключение
+            if ($this->excludeEmptyProperties) {
+                $value = $property['~VALUE'];
+                if ($value === false || $value === '' || $value === null || 
+                    (is_array($value) && empty($value))) {
+                    continue;
+                }
+            }
+
+            // Паттерн исключения
+            if ($this->propertiesPatternExclude && preg_match('/' . $this->propertiesPatternExclude . '/i', $code)) continue;
+
+            $formatted[$code] = [
+                'NAME' => $property['~NAME'],
+                'CODE' => $property['CODE'],
+                'VALUE' => $property['~VALUE'],
+                'DESCRIPTION' => $property['~DESCRIPTION'] ?? null,
+                'PROPERTY_TYPE' => $property['PROPERTY_TYPE']
+            ];
+        }
+        
+        return $formatted;
+    }
+
     protected function errorResponse(int $code, string $message): void
     {
         response()

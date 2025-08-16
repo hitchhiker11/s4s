@@ -43,7 +43,7 @@ const brandImageMap = {
 export const getFullImageUrl = (imagePath) => {
   // Check if imagePath is null, undefined, or not a string
   if (!imagePath || typeof imagePath !== 'string') {
-    console.warn('🖼️ [Transformer] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
+    // console.warn('🖼️ [Transformer] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
     return '/images/placeholder.png';
   }
   
@@ -59,14 +59,14 @@ export const getFullImageUrl = (imagePath) => {
   if (imagePath.startsWith('/')) {
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     const fullUrl = `${cleanBaseUrl}${imagePath}`;
-    console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
+    // console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
     return fullUrl;
   }
   
   // For relative paths, add base URL with /
   const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   const fullUrl = `${cleanBaseUrl}${imagePath}`;
-  console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
+  // console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
   return fullUrl;
 };
 
