@@ -8,23 +8,40 @@ import { subscribeToNews } from '../../lib/api/bitrix';
 
 const SubscriptionContainer = styled.section`
   width: 100%;
-  /* Bottom border is visible on mobile/tablet only */
-  border-bottom: 2px solid ${COLORS.gray400};
+  position: relative;
+  /* Remove the regular bottom border since we'll use pseudo-element */
   border-top: none;
-
-  /* Hide bottom border from 992px and up */
-  ${mediaQueries.lg} {
-    border-bottom: none;
-  }
 
   /* Show top border only from 1264px and up (desktop wide) */
   @media (min-width: 1264px) {
     border-top: 4px solid ${COLORS.gray400};
   }
 
+  /* Fluid bottom border using pseudo-element */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw; /* Full viewport width */
+    height: 2px;
+    background-color: ${COLORS.gray400};
+    z-index: 1;
+  }
+
+  /* Hide bottom border on mobile (< 768px) */
+  @media (max-width: 767px) {
+    &::after {
+      display: none;
+    }
+  }
+
+  /* Bottom border becomes 4px thick from 992px and up */
   ${mediaQueries.lg} {
-    // padding: ${SPACING["2xl"]} 40px;
-    // padding-top: 10px;
+    &::after {
+      height: 4px;
+    }
   }
 
   ${mediaQueries.xxl} {
@@ -100,7 +117,7 @@ const InputsContainer = styled.div`
 
 const InputWrapper = styled.div`
   width: 100%;
-  max-width: 473px;
+  /* Remove max-width constraint on mobile/tablet (< 992px) */
   border-bottom: 2px solid ${COLORS.gray400};
   padding-bottom: ${SPACING.xs};
 
@@ -108,7 +125,8 @@ const InputWrapper = styled.div`
     max-width: none;
     border-bottom-width: 4px;
   }
-      @media (min-width: 1200px) {
+  
+  @media (min-width: 1200px) {
     max-width: 600px;
     padding: ${SPACING.lg} ${SPACING['3xl']} ${SPACING.sm} 0;
   }

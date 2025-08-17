@@ -64,7 +64,6 @@
   padding: 40px 0;
   background-color: #f9f9f9;
   border: 1px dashed #ddd;
-  border-radius: 4px;
 }
 
 .continueShoppingButton {
@@ -126,6 +125,20 @@
   
   .mainTitle {
     font-size: 24px;
+  }
+}
+
+/* Specific adjustment for tablet range: 768px to 992px */
+@media (min-width: 768px) and (max-width: 991px) {
+  .cartItemsSection {
+    width: 100%;
+  }
+}
+
+/* Button full width for range 480px to 992px */
+@media (min-width: 480px) and (max-width: 991px) {
+  .continueShoppingButton {
+    width: 100%;
   }
 }
 

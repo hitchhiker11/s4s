@@ -23,6 +23,7 @@ const ImageModal = ({
   const [currentIndex, setCurrentIndex] = React.useState(initialIndex || 0);
   const touchStartRef = React.useRef(null);
   const touchEndRef = React.useRef(null);
+  const navigationLockRef = React.useRef(false);
 
   // Do not early-return before hooks; guard rendering later
 
@@ -43,6 +44,8 @@ const ImageModal = ({
       onClose();
       return;
     }
+    // Ignore auto-repeat to prevent runaway navigation
+    if (e.repeat) return;
     if (e.key === 'ArrowRight') {
       goNext();
       return;
@@ -70,7 +73,8 @@ const ImageModal = ({
   React.useEffect(() => {
     if (!isOpen) return;
     const clampedIndex = Math.max(0, Math.min(initialIndex || 0, normalizedImages.length - 1));
-    setCurrentIndex(clampedIndex);
+    // Avoid redundant state updates to prevent feedback loops
+    setCurrentIndex((prev) => (prev !== clampedIndex ? clampedIndex : prev));
   }, [isOpen, initialIndex, normalizedImages.length]);
 
   // Emit index changes to parent if requested
@@ -86,11 +90,23 @@ const ImageModal = ({
   }
 
   const goPrev = () => {
+    if (navigationLockRef.current) return;
+    navigationLockRef.current = true;
     setCurrentIndex((prev) => (prev - 1 + normalizedImages.length) % normalizedImages.length);
+    // Release lock shortly after to avoid runaway loops
+    setTimeout(() => {
+      navigationLockRef.current = false;
+    }, 250);
   };
 
   const goNext = () => {
+    if (navigationLockRef.current) return;
+    navigationLockRef.current = true;
     setCurrentIndex((prev) => (prev + 1) % normalizedImages.length);
+    // Release lock shortly after to avoid runaway loops
+    setTimeout(() => {
+      navigationLockRef.current = false;
+    }, 250);
   };
 
   const onTouchStart = (e) => {
@@ -114,6 +130,9 @@ const ImageModal = ({
     } else if (isRightSwipe) {
       goPrev();
     }
+    // Reset refs to avoid stale values on subsequent taps
+    touchStartRef.current = null;
+    touchEndRef.current = null;
   };
 
   const modalContent = (

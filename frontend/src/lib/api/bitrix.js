@@ -689,38 +689,25 @@ export const createOrder = async (orderData) => {
 export const getOrderStatus = async (orderId) => {
   try {
     if (!orderId) throw new Error('Order ID is required');
-    
-    // Используем прямой запрос к удаленному API для заказов
-    const directApiUrl = `${API_BASE_URL}/order?action=get_status&order_id=${orderId}`;
-    console.log('Making direct API call to:', directApiUrl);
-    
-    const response = await fetch(directApiUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      mode: 'cors', // Explicitly set CORS mode
+    const trimmedId = String(orderId).trim();
+    console.log('🧾 [API] getOrderStatus for order_id:', trimmedId);
+    const response = await bitrixApi.get('/order', {
+      params: { action: 'get_status', order_id: trimmedId }
     });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API response error:', errorText);
-      throw new Error(`HTTP error! status: ${response.status}, response: ${errorText.substring(0, 200)}`);
+    let data = response?.data;
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        // Fallback: try to extract minimal fields if server returns text
+        console.warn('⚠️ [API] Non-JSON order status response, returning raw text');
+        return { success: false, error: { message: 'Invalid response format' }, raw: data };
+      }
     }
-    
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('Non-JSON response received:', text.substring(0, 500));
-      throw new Error(`Expected JSON response but got ${contentType}. Response: ${text.substring(0, 200)}`);
-    }
-    
-    const data = await response.json();
-    console.log('Order status retrieved:', data);
+    console.log('✅ [API] Order status retrieved:', data);
     return data;
   } catch (error) {
-    console.error('Error getting order status:', error);
+    console.error('❌ [API] Error getting order status:', error);
     return handleApiError(error, 'getOrderStatus');
   }
 };
@@ -733,38 +720,24 @@ export const getOrderStatus = async (orderId) => {
 export const getPaymentForm = async (orderId) => {
   try {
     if (!orderId) throw new Error('Order ID is required');
-    
-    // Используем прямой запрос к удаленному API для заказов
-    const directApiUrl = `${API_BASE_URL}/order?action=get_payment_form&order_id=${orderId}`;
-    console.log('Making direct API call to:', directApiUrl);
-    
-    const response = await fetch(directApiUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      mode: 'cors', // Explicitly set CORS mode
+    const trimmedId = String(orderId).trim();
+    console.log('💳 [API] getPaymentForm for order_id:', trimmedId);
+    const response = await bitrixApi.get('/order', {
+      params: { action: 'get_payment_form', order_id: trimmedId }
     });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API response error:', errorText);
-      throw new Error(`HTTP error! status: ${response.status}, response: ${errorText.substring(0, 200)}`);
+    let data = response?.data;
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        console.warn('⚠️ [API] Non-JSON payment form response, returning raw text');
+        return { success: false, error: { message: 'Invalid response format' }, raw: data };
+      }
     }
-    
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('Non-JSON response received:', text.substring(0, 500));
-      throw new Error(`Expected JSON response but got ${contentType}. Response: ${text.substring(0, 200)}`);
-    }
-    
-    const data = await response.json();
-    console.log('Payment form retrieved:', data);
+    console.log('✅ [API] Payment form retrieved:', data);
     return data;
   } catch (error) {
-    console.error('Error getting payment form:', error);
+    console.error('❌ [API] Error getting payment form:', error);
     return handleApiError(error, 'getPaymentForm');
   }
 };

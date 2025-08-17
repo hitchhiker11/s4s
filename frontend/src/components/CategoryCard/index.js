@@ -114,6 +114,13 @@ const CardImageContainer = styled.div`
   min-height: 0;
   padding: ${SPACING.xs} 0 0; /* Add small padding in mobile */
   
+  /* Center brand logos vertically inside the card */
+  ${props => props.isBrandLogo && css`
+    margin-top: auto;
+    margin-bottom: auto;
+    padding-top: 0; /* avoid top bias */
+  `}
+  
   ${mediaQueries.md} {
     flex-grow: 1;
     padding: ${SPACING.lg};

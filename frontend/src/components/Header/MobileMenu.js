@@ -58,7 +58,7 @@ const MobileMenuContainer = styled.div`
   top: 100%;
   left: 0;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.65);
+  background-color: rgba(255, 255, 255, 0.78); // уменьшили прозрачность (0.65 + 0.2*0.35 ≈ 0.78)
   z-index: 1002;
   box-shadow: 0px 4px 4px 0px rgba(129, 129, 129, 0.25);
   transform: translateY(-100%);

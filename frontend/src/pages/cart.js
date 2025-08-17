@@ -126,37 +126,62 @@ const CartPage = () => {
   useEffect(() => {
     const handleExistingOrder = async () => {
       if (!router.isReady || !order_id) return;
+      const trimmedOrderId = String(order_id).trim();
       
       setIsOrderStatusLoading(true);
       try {
-        console.log('🔍 [Cart] Проверка статуса существующего заказа:', order_id);
-        
-        const orderStatus = await getOrderStatus(order_id);
-        
+        console.log('🔍 [Cart] Проверка статуса существующего заказа:', trimmedOrderId);
+        const orderStatus = await getOrderStatus(trimmedOrderId);
+
         if (orderStatus.success && orderStatus.data) {
-          const { is_paid, order_number } = orderStatus.data;
-          
+          const { is_paid, order_number, total_amount, total_price } = orderStatus.data;
           if (is_paid) {
-            // Заказ уже оплачен - редирект на страницу успеха
             console.log('✅ [Cart] Заказ уже оплачен, редирект на payment-success');
-            router.push(`/payment-success?order_id=${order_id}&order_number=${order_number}`);
+            router.push(`/payment-success?order_id=${trimmedOrderId}&order_number=${order_number}`);
             return;
-          } else {
-            // Заказ не оплачен - показать страницу payment
-            console.log('💳 [Cart] Заказ не оплачен, переход к оплате');
-            setOrderId(order_id);
-            setOrderNumber(order_number);
+          }
+          console.log('💳 [Cart] Заказ не оплачен, переход к оплате');
+          setOrderId(trimmedOrderId);
+          setOrderNumber(order_number || trimmedOrderId);
+          if (total_amount != null) {
+            setOrderTotal(Number(total_amount));
+          } else if (total_price != null) {
+            setOrderTotal(Number(total_price));
+          }
+          setIsExistingOrder(true);
+          setActiveTab('payment');
+          return;
+        }
+
+        // Fallback: попытаться получить форму оплаты даже если статус не вернулся
+        console.warn('⚠️ [Cart] Статус заказа недоступен, пробуем получить форму оплаты');
+        const paymentProbe = await getPaymentForm(trimmedOrderId);
+        if (paymentProbe && paymentProbe.success && paymentProbe.data && (paymentProbe.data.direct_payment_url || paymentProbe.data.payment_form)) {
+          setOrderId(trimmedOrderId);
+          setOrderNumber(trimmedOrderId);
+          setIsExistingOrder(true);
+          setActiveTab('payment');
+          return;
+        }
+
+        console.error('❌ [Cart] Заказ не найден или произошла ошибка');
+        showErrorToast('Заказ не найден или произошла ошибка');
+        router.push('/cart');
+      } catch (error) {
+        console.error('❌ [Cart] Исключение при проверке статуса/оплаты заказа:', error);
+        // Попробуем последний шанс — перейти на вкладку оплаты, чтобы пользователь мог попытаться оплатить
+        try {
+          const paymentProbe = await getPaymentForm(trimmedOrderId);
+          if (paymentProbe && paymentProbe.success && paymentProbe.data && (paymentProbe.data.direct_payment_url || paymentProbe.data.payment_form)) {
+            setOrderId(trimmedOrderId);
+            setOrderNumber(trimmedOrderId);
             setIsExistingOrder(true);
             setActiveTab('payment');
+            return;
           }
-        } else {
-          // Ошибка получения статуса заказа
-          console.error('❌ [Cart] Ошибка получения статуса заказа:', orderStatus.error);
-          showErrorToast('Заказ не найден или произошла ошибка');
-          router.push('/cart');
+        } catch (e) {
+          // ignore
         }
-      } catch (error) {
-        console.error('❌ [Cart] Исключение при проверке статуса заказа:', error);
         showErrorToast('Ошибка при проверке статуса заказа');
         router.push('/cart');
       } finally {
@@ -600,7 +625,9 @@ const CartPage = () => {
   // Use order total for payment step, basket total for other steps
   // On payment: show last-order total only when basket is empty; otherwise 0
   const subtotal = activeTab === 'payment'
-    ? ((orderTotal && orderTotal > 0 && !hasBasketItems) ? Number(orderTotal) : 0)
+    ? (isExistingOrder
+        ? Number(orderTotal || 0)
+        : ((orderTotal && orderTotal > 0 && !hasBasketItems) ? Number(orderTotal) : 0))
     : (basketTotalPrice || 0);
   const total = subtotal + packagingCost; // + shippingCost; // Commented out shipping cost addition
 
