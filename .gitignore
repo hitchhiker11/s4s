@@ -5,8 +5,11 @@ frontend/.env
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
+.env
 bitrix_test/
 .cursor
+.next
+.vscode
 *storybook.log
 node_modules/
 storybook-static/

@@ -23,6 +23,7 @@ import { SIZES, COLORS, mediaQueries, SPACING } from '../../../styles/tokens';
 
 // Add import for useBasket hook
 import { useBasket } from '../../../hooks/useBasket';
+import { useRecentlyViewed } from '../../../hooks/useRecentlyViewed';
 
 // Styled components (can be reused or adapted from other catalog pages)
 const Container = styled.div`
@@ -53,50 +54,6 @@ const PageTitle = styled.h1`
 
 
 
-// Copied RecentlyViewed related styles from /catalog/index.js
-const RecentlyViewedSection = styled.div`
-  width: 100%;
-  margin-bottom: 40px;
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  border-bottom: 2px solid ${COLORS.gray400};
-  ${mediaQueries.lg} { border-bottom-width: 4px; }
-  margin-bottom: 22px;
-`;
-
-const SectionTitle = styled.h2`
-  font-family: 'Rubik', sans-serif;
-  font-weight: 700;
-  font-size: 30px;
-  line-height: 1.16em;
-  color: #1C1C1C;
-  padding: 15px 0;
-`;
-
-const ProductsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Default 2 columns for smallest screens */
-  gap: 9px;
-  width: 100%;
-  padding: 12px;
-  
-  ${mediaQueries.sm} {
-    grid-template-columns: repeat(3, 1fr);
-    padding: 16px;
-  }
-  
-  ${mediaQueries.md} {
-    grid-template-columns: repeat(4, 1fr);
-    padding: 22px;
-  }
-`;
-
-
 const EmptyState = styled.div`
   text-align: center;
   padding: 50px;
@@ -109,71 +66,6 @@ const LoadingState = styled.div`
   padding: 50px;
   color: #666;
 `;
-
-// Dummy recently viewed data for now - this should come from an API or context in a real app
-// Fetch this via API in getServerSideProps or useQuery
-const DUMMY_RECENTLY_VIEWED = [
-    // Example product structure needed by ProductCard
-    // { ID: 'rv1', NAME: 'Recently Viewed Item 1', BRAND_NAME: 'Brand RV', PRICE: 1500, PREVIEW_PICTURE_SRC: '/images/heats/aim.png', CATALOG_AVAILABLE: 'Y' }
-];
-
-const mockRecentlyViewedProducts = [
-  // Populate with product data similar to ProductGrid's expected format
-  {
-    id: 'rv1',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv1',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv2',
-    imageUrl: '/images/new-products/aim2.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv2',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv3',
-    imageUrl: '/images/new-products/aim3.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖЕ ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv3',
-    CATALOG_AVAILABLE: 'Y'
-  },
-  {
-    id: 'rv4',
-    imageUrl: '/images/new-products/aim.png',
-    brand: 'БРЕНД',
-    name: 'НАЗВАНИЕ ТОВАРА, МОЖЕТ БЫТЬ ОЧЕНЬ ДАЖE ДЛИННЫМ',
-    price: 2100,
-    productLink: '/product/rv4',
-    CATALOG_AVAILABLE: 'Y'
-  },
-];
-
-  // Placeholder add to cart handler
-  const handleAddToCartRecentlyViewed = (productId) => {
-    console.log(`Adding product ${productId} to cart (from HomePage)`);
-    // Add actual cart logic here later
-  };
-
-  // In the renderRecentlyViewedProductCard function, remove the onAddToCart prop since ProductCard will handle it internally
-  const renderRecentlyViewedProductCard = (product) => (
-    <ProductCard 
-      key={product.id} 
-      product={product}
-    />
-  );
-
-
-
-
 
 // Преобразуем данные из API в формат для наших компонентов
 const transformCategory = (apiCategory) => {
@@ -211,6 +103,9 @@ const transformSubcategories = (apiSubcategories, parentCategoryCode) => {
 const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewProducts, seo }) => {
   const router = useRouter();
   const { categoryCode } = router.query;
+  
+  // Recently viewed products hook
+  const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
   
   // Add the useBasket hook
   const { addToBasket, refetchBasket } = useBasket({
@@ -294,19 +189,6 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
     return [];
   }, [newProductsData, initialNewProducts]);
 
-  // Преобразуем товары для компонента ResponsiveProductSection
-  const formattedNewProducts = React.useMemo(() => {
-    return newProducts.map(product => ({
-      id: product.id,
-      imageUrl: product.image,
-      brand: product.brand,
-      name: product.name,
-      price: product.price,
-      productLink: product.detailUrl,
-      CATALOG_AVAILABLE: product.inStock ? 'Y' : 'N'
-    }));
-  }, [newProducts]);
-
   // Update the handleAddToCart function to use the useBasket hook
   const handleAddToCart = async (product) => {
     const productId = parseInt(product.ID || product.id, 10); // Convert ID to number
@@ -376,24 +258,18 @@ const CategoryDetailPage = ({ initialCategory, initialSubCategories, initialNewP
         )}
 
         {/* Recently Viewed Section - API data needed */} 
-        {newProductsIsLoading ? (
-          <LoadingState>Загрузка товаров...</LoadingState>
-        ) : formattedNewProducts && formattedNewProducts.length > 0 ? (
+        {hasRecentlyViewed && (
           <ResponsiveProductSection 
             title="Недавно просмотренные"
             subtitle=""
-            viewAllLink={`/catalog/${categoryCode}/all`}
-            showViewAllLink={true}
-            items={formattedNewProducts}
-            renderItem={renderRecentlyViewedProductCard}
+            viewAllLink="/catalog?filter=new"
+            showViewAllLink={false}
+            items={recentlyViewed}
             useSliderOnDesktop={true} // Use slider instead of grid on desktop
             showNavigationOnDesktop={true} // Show navigation arrows on hover
             alwaysSlider={true} // Always use slider regardless of screen width
-
             gridSectionStyles="padding-left: 0px !important; padding-right: 0px !important;"
           />
-        ) : (
-          <EmptyState>В этой категории пока нет товаров.</EmptyState>
         )}
 
         <SubscriptionForm />
@@ -480,4 +356,4 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default CategoryDetailPage; 
+export default CategoryDetailPage;

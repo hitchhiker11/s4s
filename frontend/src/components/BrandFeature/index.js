@@ -24,10 +24,11 @@ const FeatureContent = styled.div`
   flex-direction: row;
   gap: ${SPACING.sm};
   font-size: 6px;
+  align-items: stretch;
 
   ${mediaQueries.md} {
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     gap: ${SPACING["2xl"]};
     font-size: ${TYPOGRAPHY.size.md};
   }
@@ -40,17 +41,15 @@ const FeatureContent = styled.div`
 const ImageContainer = styled.div`
   display: none;
   width: 100%;
-  height: 300px;
+  position: relative;
 
   @media (min-width: 1264px) {
     display: block;
     width: 40%;
-    height: 600px;
   }
   
   @media (min-width: 1200px) {
     width: 50%;
-    height: 800px;
   }
 `;
 
@@ -58,6 +57,9 @@ const FeatureImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 const TextContainer = styled.div`
@@ -72,7 +74,7 @@ const TextContainer = styled.div`
     padding: ${SPACING["2xl"]};
   }
   
-  @media (min-width: 1200px) {
+  @media (min-width: 1264px) {
     width: 50%;
     padding: ${SPACING["3xl"]};
   }
@@ -161,4 +163,4 @@ const BrandFeature = ({ brandData }) => {
   );
 };
 
-export default BrandFeature; 
+export default BrandFeature;

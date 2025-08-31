@@ -60,7 +60,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
         </div>
       </div>
       <div className={styles.quantityAndActions} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
-      {item.stock && <p className={styles.stockInfo}>{`${item.stock} шт. в наличии`}</p>}
+      {item.stock !== null && <p className={styles.stockInfo}>{`${item.stock} шт. в наличии`}</p>}
         {/* Moved Price for mobile layout - will be visible due to CSS for .quantityAndActions .productPrice */}
         <p className={`${styles.productPrice} ${styles.mobilePrice}`}>{`₽${item.price.toLocaleString('ru-RU')}`}</p>
         
@@ -95,4 +95,4 @@ CartItem.propTypes = {
   onRemove: PropTypes.func.isRequired,
 };
 
-export default CartItem; 
+export default CartItem;

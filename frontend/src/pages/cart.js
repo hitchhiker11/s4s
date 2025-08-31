@@ -260,6 +260,12 @@ const CartPage = () => {
           
           console.log(`📋 [Cart] Stock check response for item ${basketItemId}:`, stockResponse);
           
+          // Store the available quantity in our ref for display in CartItem
+          if (stockResponse && stockResponse.available_quantity !== undefined) {
+            const availableQuantity = parseInt(stockResponse.available_quantity, 10) || 0;
+            stockInfoRef.current.set(basketItemId, availableQuantity);
+          }
+          
           if (stockResponse && stockResponse.success !== undefined) {
             const availableQuantity = parseInt(stockResponse.available_quantity, 10) || 0;
             
@@ -631,6 +637,9 @@ const CartPage = () => {
     : (basketTotalPrice || 0);
   const total = subtotal + packagingCost; // + shippingCost; // Commented out shipping cost addition
 
+  // Ref to store stock information from checkStock API calls
+  const stockInfoRef = useRef(new Map());
+  
   // Format cart items for the CartItem component
   const formattedCartItems = basketItems?.map(item => {
     // Log the raw item structure to understand what IDs we have
@@ -656,11 +665,11 @@ const CartPage = () => {
                      item.properties?.BREND?.value || item.properties?.BRAND_NAME?.value ||
                      'OTHER';
 
-    // If available_quantity is not provided by the API, we can show it as available
-    // since the item is in the basket (the stock check was done when adding)
-    const stockToShow = item.available_quantity !== undefined && item.available_quantity !== null 
-      ? item.available_quantity 
-      : (item.quantity || 1); // Show at least the quantity in basket
+    // Show actual warehouse stock from checkStock API call
+    // If we don't have stock info yet, don't show anything
+    const stockToShow = stockInfoRef.current.has(basketItemId) 
+      ? stockInfoRef.current.get(basketItemId) 
+      : null;
 
     return {
       id: basketItemId, // Use the correct basket item ID
@@ -670,7 +679,7 @@ const CartPage = () => {
       price: item.price,
       description: item.description || '',
       quantity: item.quantity,
-      stock: stockToShow, // Always show stock information
+      stock: stockToShow, // Show actual warehouse stock
       productLink: item.detail_page_url || `/product/${item.id}`,
       isLoading: loadingItems.has(basketItemId) // Add loading state for this item
     };

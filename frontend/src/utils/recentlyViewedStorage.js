@@ -62,6 +62,7 @@ export const getRecentlyViewedProducts = () => {
  * @param {number} product.price - Product price
  * @param {string} product.productLink - Product link
  * @param {string} product.CATALOG_AVAILABLE - Availability status
+ * @param {number} product.CATALOG_QUANTITY - Available quantity
  */
 export const addRecentlyViewedProduct = (product) => {
   if (!isLocalStorageAvailable()) {
@@ -147,6 +148,7 @@ export const transformProductForRecentlyViewed = (productData) => {
   const price = productData.price || productData.PRICE || productData.CATALOG_PRICE || 0;
   const imageUrl = productData.imageUrl || productData.image || productData.PICTURE_SRC || productData.images?.[0]?.url || '/images/placeholder.png';
   const availability = productData.CATALOG_AVAILABLE || productData.available || 'Y';
+  const quantity = productData.CATALOG_QUANTITY !== undefined ? productData.CATALOG_QUANTITY : productData.quantity;
   
   // Generate product link
   const productCode = productData.code || productData.CODE || productData.productCode || id;
@@ -159,7 +161,8 @@ export const transformProductForRecentlyViewed = (productData) => {
     name,
     price: Number(price),
     productLink,
-    CATALOG_AVAILABLE: availability
+    CATALOG_AVAILABLE: availability,
+    CATALOG_QUANTITY: quantity
   };
 };
 
@@ -169,4 +172,4 @@ export default {
   clearRecentlyViewedProducts,
   removeRecentlyViewedProduct,
   transformProductForRecentlyViewed
-}; 
+};

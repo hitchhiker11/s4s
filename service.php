@@ -4,13 +4,49 @@ header("Access-Control-Allow-Origin: *"); // Allow access from any source (devel
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Authorized methods
 header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allowed headers
 
-$service = new service(/**
- * Put your account for integration here
- */ 'LLDYTHsFxCbTVljAWekQLtDhhWR7rgy3',
+// Функция для загрузки переменных из .env файла
+function loadEnv($filePath) {
+    if (!file_exists($filePath)) {
+        return false; // Файл не существует, но это не критическая ошибка
+    }
+    
+    $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        // Пропускаем комментарии и пустые строки
+        $line = trim($line);
+        if (empty($line) || strpos($line, '#') === 0) {
+            continue;
+        }
+        
+        // Разбираем строку на имя и значение
+        if (strpos($line, '=') !== false) {
+            list($name, $value) = explode('=', $line, 2);
+            $name = trim($name);
+            $value = trim($value);
+            
+            // Убираем кавычки если есть
+            if (preg_match('/^([\'"])(.*)\1$/', $value, $matches)) {
+                $value = $matches[2];
+            }
+            
+            // Устанавливаем переменную окружения
+            putenv("$name=$value");
+            $_ENV[$name] = $value;
+            $_SERVER[$name] = $value;
+        }
+    }
+    return true;
+}
 
-    /**
-     * Put your password for integration here
-     */ 'Rr7Br5vZSeRMSBNkawSIKyJCA6qCSMMC');
+// Загружаем переменные из .env файла если он существует
+loadEnv(__DIR__ . '/.env');
+
+// Получаем значения из переменных окружения или используем значения по умолчанию
+$login = getenv('NEXT_PUBLIC_CDEK_ACCOUNT');
+$secret = getenv('NEXT_PUBLIC_CDEK_SECURE_PASSWORD');
+
+$service = new service($login, $secret);
+
 $service->process($_GET, file_get_contents('php://input'));
 
 class service

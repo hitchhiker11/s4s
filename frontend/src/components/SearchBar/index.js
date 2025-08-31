@@ -6,8 +6,8 @@ import { SearchIcon } from '../icons';
 import SearchResults from './SearchResults';
 // Import searchData utility
 import { searchData } from '../../lib/searchUtils';
-// Import ContactsModal
-import ContactsModal from '../../components/modals/ContactsModal';
+// Import RequestModal instead of ContactsModal
+import RequestModal from '../../components/modals/RequestModal';
 
 const SearchSection = styled.section`
   width: 100%;
@@ -190,7 +190,7 @@ const SearchBar = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false); // Changed from isContactsModalOpen
   const inputRef = useRef(null);
   const componentRef = useRef(null); // Ref for the entire component including the mobile link
 
@@ -286,15 +286,15 @@ const SearchBar = () => {
     };
   }, []); // Empty dependency array means this runs once on mount
 
-  // Handler for opening ContactsModal
-  const handleContactsLinkClick = (e) => {
+  // Handler for opening RequestModal (changed from ContactsModal)
+  const handleRequestLinkClick = (e) => {
     e.preventDefault();
-    setIsContactsModalOpen(true);
+    setIsRequestModalOpen(true);
   };
 
-  // Handler for closing ContactsModal
-  const handleContactsModalClose = () => {
-    setIsContactsModalOpen(false);
+  // Handler for closing RequestModal (changed from ContactsModal)
+  const handleRequestModalClose = () => {
+    setIsRequestModalOpen(false);
   };
 
   return (
@@ -325,7 +325,7 @@ const SearchBar = () => {
 
           {/* Link displayed INSIDE SearchWrapper on DESKTOP only */}
           <DesktopLinkContainer>
-            <StyledLink href="#" onClick={handleContactsLinkClick}>Нет нужного товара?</StyledLink>
+            <StyledLink href="#" onClick={handleRequestLinkClick}>Нет нужного товара?</StyledLink>
           </DesktopLinkContainer>
 
         </SearchWrapper>
@@ -348,11 +348,11 @@ const SearchBar = () => {
 
       {/* Link displayed BELOW SearchSection on MOBILE only */}
       <MobileLinkContainer>
-        <StyledLink href="#" onClick={handleContactsLinkClick}>Нет нужного товара?</StyledLink>
+        <StyledLink href="#" onClick={handleRequestLinkClick}>Нет нужного товара?</StyledLink>
       </MobileLinkContainer>
 
-      {/* ContactsModal */}
-      <ContactsModal isOpen={isContactsModalOpen} onClose={handleContactsModalClose} />
+      {/* RequestModal instead of ContactsModal */}
+      <RequestModal isOpen={isRequestModalOpen} onClose={handleRequestModalClose} />
     </div>
   );
 };

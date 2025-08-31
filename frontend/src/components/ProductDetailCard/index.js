@@ -219,9 +219,9 @@ const ProductDetailCard = ({
           <span className={styles.reviewCount}>({product.reviewCount || 0} отзывов)</span>
         </div> */}
 
-        <div className={styles.descriptionContainer}>
+        {/* <div className={styles.descriptionContainer}>
             <p className={styles.description}>{product.description}</p>
-        </div>
+        </div> */}
 
         <div className={styles.priceSection}>
           <p className={styles.currentPrice}>₽{currentPrice.toLocaleString('ru-RU')}</p>
