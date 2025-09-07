@@ -398,15 +398,15 @@ const Footer = ({ showMainSection = true, showDashedBorder = true }) => {
       
       <BottomFooter>
         <LegalLinks>
-          <Link href="/terms" passHref legacyBehavior>
-            <LegalLink>Пользовательское соглашение</LegalLink>
-          </Link>
-          <Link href="/copyright" passHref legacyBehavior>
-            <LegalLink>Информация о правообладателе</LegalLink>
-          </Link>
-          <Link href="/privacy" passHref legacyBehavior>
-            <LegalLink>Политика конфиденциальности</LegalLink>
-          </Link>
+          <LegalLink href="/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">
+            Пользовательское соглашение
+          </LegalLink>
+          <LegalLink href="/contact-info.pdf" target="_blank" rel="noopener noreferrer">
+            Информация о правообладателе
+          </LegalLink>
+          <LegalLink href="/polzovatelskoe-soglashenie.pdf" target="_blank" rel="noopener noreferrer">
+            Политика конфиденциальности
+          </LegalLink>
         </LegalLinks>
         
         <Copyright>
@@ -425,4 +425,4 @@ const Footer = ({ showMainSection = true, showDashedBorder = true }) => {
   );
 };
 
-export default Footer; 
+export default Footer;
