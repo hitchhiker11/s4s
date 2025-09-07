@@ -114,6 +114,11 @@ const mapProduct = (item) => {
     imageUrl = `${BITRIX_HOST}${imageUrl}`;
   }
 
+  // Use placeholder if no image available
+  if (!imageUrl) {
+    imageUrl = '/images/placeholder.png';
+  }
+
   return {
     id: item.id || fields.ID,
     name: item.name || fields.NAME,
@@ -189,33 +194,47 @@ const mapCategory = async (item) => {
 
 /**
  * Search utility function that queries real Bitrix API and returns formatted results.
- * 
+ *
  * @param {string} query - The search query string
  * @param {string} source - 'mobile' or 'desktop' for logging purposes
- * @returns {Object} Object containing brands, categories and products arrays
+ * @param {Object} options - Additional options for search
+ * @param {number} options.page - Page number for pagination (default: 1)
+ * @param {number} options.limit - Number of items per page (default: 5 for popup, 24 for full page)
+ * @returns {Object} Object containing brands, categories, products arrays and pagination info
  */
-export const searchData = async (query, source = 'unknown') => {
-  console.log(`[${source}] searchData (API) called with query:`, query);
+export const searchData = async (query, source = 'unknown', options = {}) => {
+  const { page = 1, limit = 5 } = options;
+
+  console.log(`[${source}] searchData (API) called with query:`, query, { page, limit });
 
   // Return empty if query is too short
   if (!query || query.trim().length < 2) {
-    return { brands: [], categories: [], products: [] };
+    return {
+      brands: [],
+      categories: [],
+      products: [],
+      pagination: {
+        totalPages: 1,
+        currentPage: 1,
+        totalItems: 0
+      }
+    };
   }
 
   try {
     // Perform API requests in parallel for max performance
     const [productsResp, brandsResp, categoriesResp] = await Promise.all([
-      // Products from main catalog (iblock 21)
-      getCatalogItems({ name: query, limit: 5, page: 1 }),
-      // Brands using new brands API
-      getCatalogItems({ 
+      // Products from main catalog (iblock 21) with pagination
+      getCatalogItems({ name: query, limit, page }),
+      // Brands using new brands API (only for popup search, limit to 5)
+      getCatalogItems({
         action: 'brands',
         iblock_id: process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21',
         brands_iblock_id: BRANDS_IBLOCK_ID,
-        search: query, 
-        limit: 5 
+        search: query,
+        limit: 5
       }),
-      // Categories / sections search: use flat mode for direct matches
+      // Categories / sections search: use flat mode for direct matches (only for popup search, limit to 5)
       getCatalogSections({ name: query, tree_mode: 'flat', depth: 3, limit: 5, page: 1 }),
     ]);
 
@@ -224,18 +243,40 @@ export const searchData = async (query, source = 'unknown') => {
     const rawBrands = brandsResp?.data || [];
     const rawCategories = categoriesResp?.data || [];
 
-    // Map to UI shape and slice to max 5 items
-    const products = rawProducts.map(mapProduct).slice(0, 5);
+    // Map to UI shape
+    const products = rawProducts.map(mapProduct);
     const brands = rawBrands.map(mapBrand).slice(0, 5);
     const categories = await Promise.all(rawCategories.slice(0, 5).map(mapCategory));
 
-    const results = { brands, categories, products };
+    // Calculate pagination info for products
+    const totalItems = productsResp?.meta?.total_count || products.length;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const results = {
+      brands,
+      categories,
+      products,
+      pagination: {
+        totalPages,
+        currentPage: page,
+        totalItems
+      }
+    };
 
     console.debug(`[${source}] API search results:`, results);
     return results;
   } catch (error) {
     console.error(`[${source}] searchData failed:`, error);
     // Fallback to empty results on error
-    return { brands: [], categories: [], products: [] };
+    return {
+      brands: [],
+      categories: [],
+      products: [],
+      pagination: {
+        totalPages: 1,
+        currentPage: 1,
+        totalItems: 0
+      }
+    };
   }
-}; 
+};
