@@ -2,7 +2,7 @@
  * Image utilities for proper URL formation
  */
 
-const BASE_URL = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com/';
+const BASE_URL = process.env.NEXT_PUBLIC_PICTURES_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://old.shop4shoot.com/';
 
 /**
  * Get full image URL by adding BASE_URL to relative paths
@@ -115,4 +115,4 @@ export const getBasketItemImageUrl = (item) => {
 export default {
   getFullImageUrl,
   getBasketItemImageUrl
-}; 
+};

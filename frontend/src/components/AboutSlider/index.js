@@ -171,8 +171,9 @@ const AboutSlider = () => {
       .filter((item) => item?.images?.detail?.src)
       .map((item) => {
         const relativeSrc = item.images.detail.src;
-        // Если путь относительный, добавляем домен сайта
-        const fullSrc = relativeSrc.startsWith('http') ? relativeSrc : `https://shop4shoot.com${relativeSrc}`;
+        // Если путь относительный, добавляем домен сайта из переменной окружения
+        const baseUrl = process.env.NEXT_PUBLIC_PICTURES_BASE_URL || 'https://old.shop4shoot.com/';
+        const fullSrc = relativeSrc.startsWith('http') ? relativeSrc : `${baseUrl}${relativeSrc.startsWith('/') ? relativeSrc.slice(1) : relativeSrc}`;
 
         return {
           id: item.id || item.ID,
@@ -268,4 +269,4 @@ const AboutSlider = () => {
   );
 };
 
-export default AboutSlider; 
+export default AboutSlider;

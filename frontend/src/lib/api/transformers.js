@@ -46,15 +46,16 @@ export const getFullImageUrl = (imagePath) => {
     console.warn('🖼️ [Transformer] Invalid imagePath provided:', { imagePath, type: typeof imagePath });
     return '/images/placeholder.png';
   }
-  
-  // If it's already a full URL, return as is
+
+  // If it's already a full URL, return as is (don't modify API-provided URLs)
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    console.log('🖼️ [Transformer] Keeping original URL:', imagePath);
     return imagePath;
   }
-  
-  // Get base URL from environment
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com/';
-  
+
+  // Get pictures base URL from environment (for local images)
+  const baseUrl = process.env.NEXT_PUBLIC_PICTURES_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://old.shop4shoot.com/';
+
   // If path starts with /, add base URL
   if (imagePath.startsWith('/')) {
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
@@ -62,7 +63,7 @@ export const getFullImageUrl = (imagePath) => {
     console.log('🖼️ [Transformer] Image URL formed:', { imagePath, baseUrl, fullUrl });
     return fullUrl;
   }
-  
+
   // For relative paths, add base URL with /
   const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   const fullUrl = `${cleanBaseUrl}${imagePath}`;
@@ -97,8 +98,8 @@ export const transformCatalogItem = (apiItem) => {
   let imagesList = [];
   
   // Get the BASE_URL from environment variables
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com';
-  
+  const BASE_URL = process.env.NEXT_PUBLIC_PICTURES_BASE_URL || 'https://old.shop4shoot.com/';
+
   // Helper function to prepend the base URL if needed
   const getFullImageUrl = (path) => {
     // Check if path is null, undefined, or not a string
@@ -106,12 +107,13 @@ export const transformCatalogItem = (apiItem) => {
       console.warn('🖼️ [Transformer-Local] Invalid path provided:', { path, type: typeof path });
       return '/images/placeholder.png';
     }
-    
-    // If already a full URL, return as is
+
+    // If already a full URL, return as is (don't modify API-provided URLs)
     if (path.startsWith('http://') || path.startsWith('https://')) {
+      console.log('🖼️ [Transformer-Local] Keeping original URL:', path);
       return path;
     }
-    
+
     // If starts with /upload or any absolute path, prepend the BASE_URL
     if (path.startsWith('/')) {
       const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
@@ -119,7 +121,7 @@ export const transformCatalogItem = (apiItem) => {
       console.log('🖼️ [Transformer-Local] Image URL formed:', { path, baseUrl: BASE_URL, fullUrl });
       return fullUrl;
     }
-    
+
     // For relative paths, add base URL with /
     const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
     const fullUrl = `${cleanBaseUrl}${path}`;
@@ -334,7 +336,7 @@ export const transformBrand = (apiBrand) => {
     
     // Ensure full URL
     if (imageUrl && !imageUrl.startsWith('http')) {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop4shoot.com';
+      const baseUrl = process.env.NEXT_PUBLIC_PICTURES_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://old.shop4shoot.com/';
       const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
       imageUrl = imageUrl.startsWith('/') ? `${cleanBaseUrl}${imageUrl}` : `${cleanBaseUrl}/${imageUrl}`;
     }
@@ -409,4 +411,4 @@ export default {
   transformBrand,
   transformBrands,
   extractMetadata,
-}; 
+};

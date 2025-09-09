@@ -6,12 +6,12 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['shop4shoot.com'],
+    domains: ['shop4shoot.com', 'old.shop4shoot.com'],
   },
   env: {
-    NEXT_PUBLIC_BITRIX_URL: "https://shop4shoot.com/api",
+    NEXT_PUBLIC_BITRIX_URL: "https://old.shop4shoot.com/api",
     NEXT_PUBLIC_CATALOG_IBLOCK_ID: "21",
-    NEXT_PUBLIC_BRANDS_IBLOCK_ID: "22", 
+    NEXT_PUBLIC_BRANDS_IBLOCK_ID: "22",
     NEXT_PUBLIC_SLIDER_IBLOCK_ID: "27",
     NEXT_PUBLIC_YANDEX_MAPS_API_KEY: process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY
   },
@@ -33,4 +33,4 @@ if (process.env.NODE_ENV !== 'development') {
   globalThis.console.log = () => {};
 }
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

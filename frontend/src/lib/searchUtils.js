@@ -1,7 +1,7 @@
 import { getCatalogItems, getCatalogSections, getCatalogSectionById } from './api/bitrix';
 
 // Add Bitrix host constant near top after imports
-const BITRIX_HOST = (process.env.NEXT_PUBLIC_BITRIX_HOST || 'https://shop4shoot.com').replace(/\/$/, '');
+const BITRIX_HOST = (process.env.NEXT_PUBLIC_PICTURES_BASE_URL || 'https://old.shop4shoot.com/').replace(/\/$/, '');
 
 // Helper to safely extract slug from URL or code
 const extractSlug = (urlOrCode = '') => {

@@ -190,14 +190,15 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
       staleTime: 5 * 60 * 1000, // 5 minutes
     }
   ); 
-  const { data: newArrivalsData, isError: newArrivalsIsError } = useQuery('homeNewArrivals', 
-    () => getCatalogItems({ 
-      iblock_id: catalogIblockId, 
-      limit: 8, 
+  const { data: newArrivalsData, isError: newArrivalsIsError } = useQuery('homeNewArrivals',
+    () => getCatalogItems({
+      iblock_id: catalogIblockId,
+      limit: 8,
       sort: 'date_create:desc',
       active: 'Y',
       in_stock: 'Y',
-      has_price: 'Y'
+      has_price: 'Y',
+      with_properties: 'Y' // Include properties to get brand information
     }),
     {
       initialData: initialNewArrivals && initialNewArrivals.length > 0 ? { data: initialNewArrivals } : undefined,
@@ -263,7 +264,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     
     console.log('Main categories for display:', mappedCategories);
     
-    return mappedCategories.length > 0 ? mappedCategories : mockCategories;
+    return mappedCategories.length > 0 ? mappedCategories : [];
   }, [categoriesData, categoriesIsError, initialCategories]);
 
   const displayNewArrivals = useMemo(() => {
@@ -491,13 +492,14 @@ export async function getServerSideProps() {
     console.log('[SSR] Prefetching homeNewArrivals...');
     await queryClient.prefetchQuery('homeNewArrivals', () => {
       console.log('[SSR] Executing getCatalogItems (New Arrivals) query function');
-      return getCatalogItems({ 
-        iblock_id: catalogIblockId, 
-        limit: 8, 
+      return getCatalogItems({
+        iblock_id: catalogIblockId,
+        limit: 8,
         sort: 'date_create:desc',
         active: 'Y',
         in_stock: 'Y',
-        has_price: 'Y'
+        has_price: 'Y',
+        with_properties: 'Y' // Include properties to get brand information
       });
     });
     const newArrivalsResult = queryClient.getQueryData('homeNewArrivals');
@@ -573,4 +575,4 @@ export async function getServerSideProps() {
   }
 }
 
-export default HomePage; 
+export default HomePage;

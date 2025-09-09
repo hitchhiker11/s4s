@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base API URL from environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_BITRIX_URL || 'https://shop4shoot.com/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BITRIX_URL || 'https://old.shop4shoot.com/api';
 console.log('SHOP4SHOOT DEBUG: API_BASE_URL in bitrix.js initialized to:', API_BASE_URL);
 const CATALOG_IBLOCK_ID = process.env.NEXT_PUBLIC_CATALOG_IBLOCK_ID || '21';
 const BRANDS_IBLOCK_ID = process.env.NEXT_PUBLIC_BRANDS_IBLOCK_ID || '22'; // Assuming brands might be in the same iblock or a different one
@@ -1063,4 +1063,4 @@ export default {
   submitCallbackForm,
   submitPreOrderForm,
   subscribeToNews
-}; 
+};

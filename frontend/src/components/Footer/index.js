@@ -398,13 +398,13 @@ const Footer = ({ showMainSection = true, showDashedBorder = true }) => {
       
       <BottomFooter>
         <LegalLinks>
-          <LegalLink href="/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">
+          <LegalLink href="/polzovatelskoe-soglashenie.pdf" target="_blank" rel="noopener noreferrer">
             Пользовательское соглашение
           </LegalLink>
           <LegalLink href="/contact-info.pdf" target="_blank" rel="noopener noreferrer">
             Информация о правообладателе
           </LegalLink>
-          <LegalLink href="/polzovatelskoe-soglashenie.pdf" target="_blank" rel="noopener noreferrer">
+          <LegalLink href="/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">
             Политика конфиденциальности
           </LegalLink>
         </LegalLinks>
