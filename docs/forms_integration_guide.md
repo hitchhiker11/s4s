@@ -12,7 +12,7 @@
 
 ### Базовый endpoint
 ```
-POST https://shop4shoot.com/api/form/?iblock_id={iblock_id}
+POST https://old.shop4shoot.com/api/form/?iblock_id={iblock_id}
 ```
 
 ### Структура запроса
@@ -240,5 +240,5 @@ try {
 Убедитесь что в `.env` настроен правильный URL API:
 
 ```
-NEXT_PUBLIC_BITRIX_URL=https://shop4shoot.com/api
+NEXT_PUBLIC_BITRIX_URL=https://old.shop4shoot.com/api
 ``` 

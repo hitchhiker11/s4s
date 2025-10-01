@@ -49,9 +49,9 @@ export const TYPOGRAPHY = {
     xl: "24px",
     "2xl": "30px",
     "3xl": "35px",
-    "4xl": "40px",
-    "5xl": "54px",
-    "6xl": "107px"
+    "4xl": "clamp(35px, 2.5vw, 40px)",  // Fluid для больших экранов
+    "5xl": "clamp(40px, 3vw, 54px)",     // Fluid
+    "6xl": "clamp(54px, 4vw, 80px)"      // Fluid, уменьшен максимум
   }
 };
 
@@ -63,24 +63,26 @@ export const SPACING = {
   lg: "16px",
   xl: "24px",
   "2xl": "32px",
-  "3xl": "40px",
-  "4xl": "60px"
+  "3xl": "clamp(32px, 2.5vw, 40px)",    // Fluid для больших экранов
+  "4xl": "clamp(40px, 3vw, 60px)"       // Fluid
 };
 
 // Размеры
 export const SIZES = {
   headerHeight: "84px",
+  headerHeightLarge: "72px",      // Новый размер для xxl+
   headerHeightScrolled: "64px",
   containerMaxWidth: "1920px",
-  
+
   // Иконки
   iconSize: "24px",
   iconSizeSmall: "20px",
-  
+
   // Логотип
   logoHeight: "44px",
+  logoHeightLarge: "36px",        // Новый размер для xxl+
   logoHeightScrolled: "32px",
-  
+
   // Радиусы
   borderRadius: {
     sm: "4px",
@@ -125,4 +127,4 @@ export const mediaQueries = {
   xxl: `@media (min-width: ${BREAKPOINTS.xxl})`,
   xxxl: `@media (min-width: ${BREAKPOINTS.xxxl})`,
   hover: `@media (hover: hover)`
-}; 
+};

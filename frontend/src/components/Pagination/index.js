@@ -100,6 +100,27 @@ const PageButton = styled.button`
     height: 50px;
     font-size: 16px;
   }
+
+  ${mediaQueries.xl} {
+    min-width: 45px;
+    width: 45px;
+    height: 45px;
+    font-size: 15px;
+  }
+
+  ${mediaQueries.xxl} {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  ${mediaQueries.xxxl} {
+    min-width: 35px;
+    width: 35px;
+    height: 35px;
+    font-size: 13px;
+  }
 `;
 
 const NavigationButton = styled(PageButton)`
@@ -351,4 +372,4 @@ const Pagination = ({ currentPage, totalPages, totalItems, onPageChange }) => {
   );
 };
 
-export default Pagination; 
+export default Pagination;

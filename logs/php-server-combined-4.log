@@ -1,0 +1,113 @@
+2025-09-25T00:00:04: [Thu Sep 25 00:00:04 2025] PHP 8.3.6 Development Server (http://localhost:8000) started
+2025-09-25T00:02:39: [Thu Sep 25 00:02:39 2025] PHP 8.3.6 Development Server (http://localhost:8000) started
+2025-09-25T00:03:37: [Thu Sep 25 00:03:37 2025] 127.0.0.1:42426 Accepted
+2025-09-25T00:03:37: [Thu Sep 25 00:03:37 2025] 127.0.0.1:42426 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:03:37: [Thu Sep 25 00:03:37 2025] 127.0.0.1:42426 Closing
+2025-09-25T00:05:54: [Thu Sep 25 00:05:54 2025] 127.0.0.1:36792 Accepted
+2025-09-25T00:05:55: [Thu Sep 25 00:05:55 2025] 127.0.0.1:36792 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:05:55: [Thu Sep 25 00:05:55 2025] 127.0.0.1:36792 Closing
+2025-09-25T00:05:55: [Thu Sep 25 00:05:55 2025] 127.0.0.1:36806 Accepted
+2025-09-25T00:05:55: [Thu Sep 25 00:05:55 2025] 127.0.0.1:36806 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:05:55: [Thu Sep 25 00:05:55 2025] 127.0.0.1:36806 Closing
+2025-09-25T00:05:55: [Thu Sep 25 00:05:55 2025] 127.0.0.1:36810 Accepted
+2025-09-25T00:05:57: [Thu Sep 25 00:05:57 2025] 127.0.0.1:36810 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T00:05:57: [Thu Sep 25 00:05:57 2025] 127.0.0.1:36810 Closing
+2025-09-25T00:05:58: [Thu Sep 25 00:05:58 2025] 127.0.0.1:36816 Accepted
+2025-09-25T00:05:58: [Thu Sep 25 00:05:58 2025] 127.0.0.1:36816 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:05:58: [Thu Sep 25 00:05:58 2025] 127.0.0.1:36816 Closing
+2025-09-25T00:05:58: [Thu Sep 25 00:05:58 2025] 127.0.0.1:36818 Accepted
+2025-09-25T00:06:00: [Thu Sep 25 00:06:00 2025] 127.0.0.1:36818 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T00:06:00: [Thu Sep 25 00:06:00 2025] 127.0.0.1:36818 Closing
+2025-09-25T00:08:28: [Thu Sep 25 00:08:28 2025] 127.0.0.1:59538 Accepted
+2025-09-25T00:08:28: [Thu Sep 25 00:08:28 2025] 127.0.0.1:59538 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:08:28: [Thu Sep 25 00:08:28 2025] 127.0.0.1:59538 Closing
+2025-09-25T00:08:28: [Thu Sep 25 00:08:28 2025] 127.0.0.1:59554 Accepted
+2025-09-25T00:08:41: [Thu Sep 25 00:08:41 2025] 127.0.0.1:59554 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:08:41: [Thu Sep 25 00:08:41 2025] 127.0.0.1:59554 Closing
+2025-09-25T00:08:42: [Thu Sep 25 00:08:42 2025] 127.0.0.1:57556 Accepted
+2025-09-25T00:08:44: [Thu Sep 25 00:08:44 2025] 127.0.0.1:57556 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T00:08:44: [Thu Sep 25 00:08:44 2025] 127.0.0.1:57556 Closing
+2025-09-25T00:08:44: [Thu Sep 25 00:08:44 2025] 127.0.0.1:57564 Accepted
+2025-09-25T00:14:29: [Thu Sep 25 00:14:29 2025] 127.0.0.1:33034 Accepted
+2025-09-25T00:14:29: [Thu Sep 25 00:14:29 2025] 127.0.0.1:33034 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T00:14:29: [Thu Sep 25 00:14:29 2025] 127.0.0.1:33034 Closing
+2025-09-25T00:14:29: [Thu Sep 25 00:14:29 2025] 127.0.0.1:33036 Accepted
+2025-09-25T00:14:31: [Thu Sep 25 00:14:31 2025] 127.0.0.1:33036 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T00:14:31: [Thu Sep 25 00:14:31 2025] 127.0.0.1:33036 Closing
+2025-09-25T00:30:51: [Thu Sep 25 00:30:51 2025] 127.0.0.1:57564 Closed without sending a request; it was probably just an unused speculative preconnection
+2025-09-25T00:30:51: [Thu Sep 25 00:30:51 2025] 127.0.0.1:57564 Closing
+2025-09-25T12:13:16: [Thu Sep 25 12:13:16 2025] 127.0.0.1:40998 Accepted
+2025-09-25T12:13:16: [Thu Sep 25 12:13:16 2025] 127.0.0.1:40998 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:13:16: [Thu Sep 25 12:13:16 2025] 127.0.0.1:40998 Closing
+2025-09-25T12:13:16: [Thu Sep 25 12:13:16 2025] 127.0.0.1:41002 Accepted
+2025-09-25T12:13:18: [Thu Sep 25 12:13:18 2025] 127.0.0.1:41002 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:13:18: [Thu Sep 25 12:13:18 2025] 127.0.0.1:41002 Closing
+2025-09-25T12:13:18: [Thu Sep 25 12:13:18 2025] 127.0.0.1:41016 Accepted
+2025-09-25T12:13:18: [Thu Sep 25 12:13:18 2025] 127.0.0.1:41016 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:13:18: [Thu Sep 25 12:13:18 2025] 127.0.0.1:41016 Closing
+2025-09-25T12:13:19: [Thu Sep 25 12:13:19 2025] 127.0.0.1:41024 Accepted
+2025-09-25T12:13:19: [Thu Sep 25 12:13:19 2025] 127.0.0.1:41024 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:13:19: [Thu Sep 25 12:13:19 2025] 127.0.0.1:41024 Closing
+2025-09-25T12:13:20: [Thu Sep 25 12:13:20 2025] 127.0.0.1:41026 Accepted
+2025-09-25T12:13:22: [Thu Sep 25 12:13:22 2025] 127.0.0.1:41026 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:13:22: [Thu Sep 25 12:13:22 2025] 127.0.0.1:41026 Closing
+2025-09-25T12:13:22: [Thu Sep 25 12:13:22 2025] 127.0.0.1:41030 Accepted
+2025-09-25T12:13:24: [Thu Sep 25 12:13:24 2025] 127.0.0.1:41030 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:13:24: [Thu Sep 25 12:13:24 2025] 127.0.0.1:41030 Closing
+2025-09-25T12:19:36: [Thu Sep 25 12:19:36 2025] 127.0.0.1:43808 Accepted
+2025-09-25T12:19:36: [Thu Sep 25 12:19:36 2025] 127.0.0.1:43808 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:19:36: [Thu Sep 25 12:19:36 2025] 127.0.0.1:43808 Closing
+2025-09-25T12:19:36: [Thu Sep 25 12:19:36 2025] 127.0.0.1:43820 Accepted
+2025-09-25T12:19:39: [Thu Sep 25 12:19:39 2025] 127.0.0.1:43820 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:19:39: [Thu Sep 25 12:19:39 2025] 127.0.0.1:43820 Closing
+2025-09-25T12:20:10: [Thu Sep 25 12:20:10 2025] 127.0.0.1:49780 Accepted
+2025-09-25T12:20:11: [Thu Sep 25 12:20:11 2025] 127.0.0.1:49780 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:20:11: [Thu Sep 25 12:20:11 2025] 127.0.0.1:49780 Closing
+2025-09-25T12:20:11: [Thu Sep 25 12:20:11 2025] 127.0.0.1:49794 Accepted
+2025-09-25T12:20:13: [Thu Sep 25 12:20:13 2025] 127.0.0.1:49794 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:20:13: [Thu Sep 25 12:20:13 2025] 127.0.0.1:49794 Closing
+2025-09-25T12:20:46: [Thu Sep 25 12:20:46 2025] 127.0.0.1:55260 Accepted
+2025-09-25T12:20:46: [Thu Sep 25 12:20:46 2025] 127.0.0.1:55260 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:20:46: [Thu Sep 25 12:20:46 2025] 127.0.0.1:55260 Closing
+2025-09-25T12:20:46: [Thu Sep 25 12:20:46 2025] 127.0.0.1:55266 Accepted
+2025-09-25T12:20:48: [Thu Sep 25 12:20:48 2025] 127.0.0.1:55266 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:20:48: [Thu Sep 25 12:20:48 2025] 127.0.0.1:55266 Closing
+2025-09-25T12:23:11: [Thu Sep 25 12:23:11 2025] 127.0.0.1:54816 Accepted
+2025-09-25T12:23:11: [Thu Sep 25 12:23:11 2025] 127.0.0.1:54816 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:23:11: [Thu Sep 25 12:23:11 2025] 127.0.0.1:54816 Closing
+2025-09-25T12:23:11: [Thu Sep 25 12:23:11 2025] 127.0.0.1:54824 Accepted
+2025-09-25T12:23:22: [Thu Sep 25 12:23:22 2025] 127.0.0.1:54824 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:23:22: [Thu Sep 25 12:23:22 2025] 127.0.0.1:54824 Closing
+2025-09-25T12:23:22: [Thu Sep 25 12:23:22 2025] 127.0.0.1:34768 Accepted
+2025-09-25T12:23:23: [Thu Sep 25 12:23:23 2025] 127.0.0.1:34768 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:23:23: [Thu Sep 25 12:23:23 2025] 127.0.0.1:34768 Closing
+2025-09-25T12:23:28: [Thu Sep 25 12:23:28 2025] 127.0.0.1:41486 Accepted
+2025-09-25T12:23:28: [Thu Sep 25 12:23:28 2025] 127.0.0.1:41486 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:23:28: [Thu Sep 25 12:23:28 2025] 127.0.0.1:41486 Closing
+2025-09-25T12:23:28: [Thu Sep 25 12:23:28 2025] 127.0.0.1:41502 Accepted
+2025-09-25T12:23:31: [Thu Sep 25 12:23:31 2025] 127.0.0.1:41502 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:23:31: [Thu Sep 25 12:23:31 2025] 127.0.0.1:41502 Closing
+2025-09-25T12:26:54: [Thu Sep 25 12:26:54 2025] 127.0.0.1:51386 Accepted
+2025-09-25T12:26:54: [Thu Sep 25 12:26:54 2025] 127.0.0.1:51386 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:26:54: [Thu Sep 25 12:26:54 2025] 127.0.0.1:51386 Closing
+2025-09-25T12:26:54: [Thu Sep 25 12:26:54 2025] 127.0.0.1:54312 Accepted
+2025-09-25T12:27:06: [Thu Sep 25 12:27:06 2025] 127.0.0.1:54312 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:27:06: [Thu Sep 25 12:27:06 2025] 127.0.0.1:54312 Closing
+2025-09-25T12:27:06: [Thu Sep 25 12:27:06 2025] 127.0.0.1:54328 Accepted
+2025-09-25T12:27:06: [Thu Sep 25 12:27:06 2025] 127.0.0.1:54328 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T12:27:06: [Thu Sep 25 12:27:06 2025] 127.0.0.1:54328 Closing
+2025-09-25T12:27:10: [Thu Sep 25 12:27:10 2025] 127.0.0.1:38592 Accepted
+2025-09-25T12:27:12: [Thu Sep 25 12:27:12 2025] 127.0.0.1:38592 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T12:27:12: [Thu Sep 25 12:27:12 2025] 127.0.0.1:38592 Closing
+2025-09-25T15:28:27: [Thu Sep 25 15:28:27 2025] 127.0.0.1:58938 Accepted
+2025-09-25T15:28:27: [Thu Sep 25 15:28:27 2025] 127.0.0.1:58938 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T15:28:27: [Thu Sep 25 15:28:27 2025] 127.0.0.1:58938 Closing
+2025-09-25T15:28:27: [Thu Sep 25 15:28:27 2025] 127.0.0.1:58946 Accepted
+2025-09-25T15:28:30: [Thu Sep 25 15:28:30 2025] 127.0.0.1:58946 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T15:28:30: [Thu Sep 25 15:28:30 2025] 127.0.0.1:58946 Closing
+2025-09-25T19:50:44: [Thu Sep 25 19:50:44 2025] 127.0.0.1:55558 Accepted
+2025-09-25T19:50:44: [Thu Sep 25 19:50:44 2025] 127.0.0.1:55568 Accepted
+2025-09-25T19:50:45: [Thu Sep 25 19:50:45 2025] 127.0.0.1:55568 [200]: GET /service.php?is_handout=true&action=offices&page=1&size=1
+2025-09-25T19:50:45: [Thu Sep 25 19:50:45 2025] 127.0.0.1:55568 Closing
+2025-09-25T19:50:48: [Thu Sep 25 19:50:48 2025] 127.0.0.1:55558 [200]: GET /service.php?is_handout=true&action=offices&page=0
+2025-09-25T19:50:48: [Thu Sep 25 19:50:48 2025] 127.0.0.1:55558 Closing

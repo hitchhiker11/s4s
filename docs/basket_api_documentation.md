@@ -5,7 +5,7 @@ The Basket API allows for retrieving and managing shopping cart contents for bot
 
 ## Base URL
 ```
-https://shop4shoot.com/api/basket
+https://old.shop4shoot.com/api/basket
 ```
 
 ## Authentication

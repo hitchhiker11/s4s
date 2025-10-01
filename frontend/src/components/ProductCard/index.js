@@ -366,6 +366,8 @@ const ProductCard = ({ product, onAddToCart }) => {
     badge
   } = product;
 
+  const shouldDisplayBrand = brand && brand.toUpperCase() !== 'OTHER';
+
   const formatPrice = (num) => {
     if (typeof num !== 'number') return 'Цена не указана';
     return `₽${num.toLocaleString('ru-RU')}`;
@@ -510,7 +512,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       <TextContent>
         <Link href={validProductLink} passHref legacyBehavior>
           <BrandLinkWrapper>
-            {brand && <Brand>{brand}</Brand>}
+            {shouldDisplayBrand && <Brand>{brand}</Brand>}
             <Name title={name}>{name}</Name>
           </BrandLinkWrapper>
         </Link>

@@ -232,6 +232,23 @@ const SwiperContainer = styled.div`
     }
   }
 
+  /* For very large screens - compact sizing */
+  ${mediaQueries.xxl} {
+    .swiper-slide {
+      width: 280px; /* Уменьшено с 300px */
+      min-width: 280px;
+      max-width: 280px;
+    }
+  }
+
+  ${mediaQueries.xxxl} {
+    .swiper-slide {
+      width: 260px; /* Еще компактнее */
+      min-width: 260px;
+      max-width: 260px;
+    }
+  }
+
   /* Removed forced edge positioning; rely on CategoryCard props to control image alignment */
 `;
 
@@ -294,11 +311,11 @@ const CategorySlider = ({
           )}
         </TitleRow>
         <HeaderDivider />
-        {subtitle ? (
+        {/* {subtitle ? (
           <SubtitleContainer>
             <Subtitle>{subtitle}</Subtitle>
           </SubtitleContainer>
-        ) : null}
+        ) : null} */}
       </HeaderContainer>
 
       {displayCategories.length > 0 ? (
@@ -376,4 +393,4 @@ CategorySlider.propTypes = {
   subtitle: PropTypes.string,
 };
 
-export default CategorySlider; 
+export default CategorySlider;

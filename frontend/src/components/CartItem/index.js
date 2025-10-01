@@ -46,7 +46,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
       <div className={styles.detailsContainer} onClick={navigateToProduct} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') navigateToProduct(); }}>
         <div className={styles.productInfo}>
           <h3 className={styles.productName}>{item.name}</h3>
-          <p className={styles.productBrand}>{item.brand}</p>
+          {item.brand && item.brand !== "OTHER" && <p className={styles.productBrand}>{item.brand}</p>}
           <p className={styles.productDescription}>{item.description}</p>
         </div>
         {/* Price is now moved to quantityAndActions for mobile, 

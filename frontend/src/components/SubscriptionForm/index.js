@@ -24,6 +24,7 @@ const SubscriptionContainer = styled.div`
   // max-width: ${SIZES.containerMaxWidth || '1254px'}; // Use token or fallback
   max-width: 1680px;
   margin: 0 auto;
+  
   gap: 35px;
   // padding: 0 ${SPACING.lg}; 
 
@@ -57,8 +58,8 @@ const SubscriptionImageContainer = styled.div`
   align-items: center;
   // max-height: 187px; 
   // max-width: 118px;  
-  width: 118px; 
-  height: 187px; 
+  width: 148px; 
+  height: 227px; 
   padding: ${SPACING.md}; // Padding around the image itself
 
   ${mediaQueries.md} {

@@ -202,6 +202,23 @@ const SwiperContainer = styled.div`
     }
   }
 
+  /* For very large screens - compact sizing */
+  ${mediaQueries.xxl} {
+    .swiper-slide {
+      width: 280px; /* Уменьшено с 300px */
+      min-width: 280px;
+      max-width: 280px;
+    }
+  }
+
+  ${mediaQueries.xxxl} {
+    .swiper-slide {
+      width: 260px; /* Еще компактнее */
+      min-width: 260px;
+      max-width: 260px;
+    }
+  }
+
   /* Navigation arrows styling - conditional */
   .swiper-button-prev,
   .swiper-button-next {
@@ -334,11 +351,11 @@ const ProductSlider = ({
           )}
         </TitleRow>
         <HeaderDivider />
-        {subtitle ? (
+        {/* {subtitle ? (
           <SubtitleContainer>
             <Subtitle>{subtitle}</Subtitle>
           </SubtitleContainer>
-        ) : null}
+        ) : null} */}
       </HeaderContainer>
 
       {displayProducts.length > 0 ? (
@@ -369,15 +386,23 @@ const ProductSlider = ({
               swiper.on('update', measureOverflow);
             }}
           >
-            {displayProducts.map((product) => (
-              <SwiperSlide key={product.id}>
-                <ProductCardWrapper>
-                  <ProductCard
-                    product={product}
-                  />
-                </ProductCardWrapper>
-              </SwiperSlide>
-            ))}
+            {displayProducts.map((product) => {
+              // Handle "OTHER" brand - don't display it
+              const productWithBrandHandling = {
+                ...product,
+                brand: product.brand === "OTHER" ? "" : product.brand
+              };
+              
+              return (
+                <SwiperSlide key={product.id}>
+                  <ProductCardWrapper>
+                    <ProductCard
+                      product={productWithBrandHandling}
+                    />
+                  </ProductCardWrapper>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
         </SwiperContainer>
       ) : (

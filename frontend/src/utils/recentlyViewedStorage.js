@@ -144,7 +144,7 @@ export const transformProductForRecentlyViewed = (productData) => {
   // Handle different possible data structures from API
   const id = productData.id || productData.ID || productData.productId;
   const name = productData.name || productData.NAME || productData.title;
-  const brand = productData.brand || productData.BRAND || productData.brandName || 'Other';
+  const brand = productData.brand || productData.BRAND || productData.brandName || 'OTHER';
   const price = productData.price || productData.PRICE || productData.CATALOG_PRICE || 0;
   const imageUrl = productData.imageUrl || productData.image || productData.PICTURE_SRC || productData.images?.[0]?.url || '/images/placeholder.png';
   const availability = productData.CATALOG_AVAILABLE || productData.available || 'Y';

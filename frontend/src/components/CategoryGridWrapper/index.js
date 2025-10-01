@@ -8,7 +8,7 @@ const GridContainer = styled.div`
   display: grid;
   width: 100%;
   gap: 12px; /* СТРОГО 12px везде */
-  margin-bottom: 24px;
+  // margin-bottom: 24px;
   grid-auto-rows: minmax(0, auto);
   grid-auto-flow: dense;
   max-width: ${SIZES.containerMaxWidth};
@@ -20,18 +20,26 @@ const GridContainer = styled.div`
 
   ${mediaQueries.sm} {
     gap: 16px; /* Сохраняем 16px */
-    margin-bottom: 32px;
+    // margin-bottom: 32px;
   }
 
   ${mediaQueries.lg} {
     /* ДЕСКТОПНАЯ версия: 4-колоночная система (как было изначально) */
     grid-template-columns: repeat(4, 1fr);
     gap: 16px; /* СТРОГО 16px */
-    margin-bottom: 40px;
+    // margin-bottom: 40px;
   }
 
   ${mediaQueries.xl} {
     gap: 16px; /* СТРОГО 16px */
+  }
+
+  ${mediaQueries.xxl} {
+    gap: 20px; /* Увеличен gap для 5 колонок */
+  }
+
+  ${mediaQueries.xxxl} {
+    gap: 24px; /* Еще больше gap */
   }
 `;
 
@@ -250,4 +258,4 @@ const CategoryGridWrapper = ({ categories = [], allProductsCard = null }) => {
   );
 };
 
-export default CategoryGridWrapper; 
+export default CategoryGridWrapper;

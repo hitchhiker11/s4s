@@ -12,12 +12,7 @@ import { COLORS, TYPOGRAPHY, mediaQueries } from '../../styles/tokens';
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  margin-bottom: 40px;
-  // min-height: 600px;
-  
-  ${mediaQueries.md} {
-    margin-bottom: 60px;
-  }
+  height: 100%;
   
   .swiper {
     will-change: transform;
@@ -25,6 +20,7 @@ const SliderContainer = styled.div`
     backface-visibility: hidden;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
+    height: 100%;
   }
 `;
 
@@ -32,7 +28,7 @@ const SliderContainer = styled.div`
 const SlideImageContainer = styled.div`
   position: relative;
   width: 100%;
-  min-height: 434px;
+  min-height: 310px;
   aspect-ratio: 16 / 9; // Стандартное соотношение сторон
   overflow: hidden;
   background-color: ${COLORS.black};
@@ -48,9 +44,21 @@ const SlideImageContainer = styled.div`
   }
   
   ${mediaQueries.lg} {
-    height: auto;
+    height: 100%;
     aspect-ratio: 21 / 9; // Широкоформатное соотношение для десктопов
     max-height: 856px; // Точное значение из Figma
+  }
+
+  ${mediaQueries.xl} {
+    max-height: 620px; /* Уменьшено для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    max-height: 400px; /* Компактный размер для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    max-height: 428px; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -67,6 +75,9 @@ const SlideImage = styled.img`
   backface-visibility: hidden;
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
+  
+  /* Ensure the image fills the container properly */
+  display: block;
 `;
 
 const SlideTitle = styled.h2`
@@ -236,7 +247,7 @@ const AboutSlider = () => {
         lazy={true}
       >
         {sliderData.map((slide) => (
-          <SwiperSlide key={slide.id}>
+          <SwiperSlide key={slide.id} style={{ height: '100%' }}>
             <SlideImageContainer>
               <SlideImage src={slide.image} alt={`slide-${slide.id}`} />
               {/* <SlideTitle className="slide-title">{slide.title}</SlideTitle> */}

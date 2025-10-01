@@ -344,12 +344,19 @@ const CartPage = () => {
     setSelectedDelivery(deliveryData);
   };
 
-  const renderRecentlyViewedProductCard = (product) => (
-    <ProductCard 
-      key={product.id} 
-      product={product}
-    />
-  );
+  const renderRecentlyViewedProductCard = (product) => {
+    // Handle "OTHER" brand - don't display it
+    const productWithBrandHandling = {
+              ...product,
+    };
+    
+    return (
+      <ProductCard 
+        key={product.id} 
+        product={productWithBrandHandling}
+      />
+    );
+  };
 
   // Handle quantity changes for cart items
   const handleQuantityChange = async (itemId, newQuantity) => {

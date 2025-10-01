@@ -20,50 +20,35 @@ import {
   SHADOWS
 } from './styles';
 import { NAV_LINKS_DESKTOP, NavLinkPropTypes } from './config';
-import { COLORS, TYPOGRAPHY } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SIZES, mediaQueries, SPACING } from '../../styles/tokens';
 import MobileSearchOverlay from '../SearchBar/MobileSearchOverlay';
 import SearchResults from '../SearchBar/SearchResults';
 import { searchData } from '../../lib/searchUtils';
 
 // --- Стили ---
 
-// Mixin for bottom/right line hover effect
+// Mixin for bottom underline hover effect
 const navLinesMixin = css`
   position: relative; // Needed for absolute positioning of pseudo-elements
 
   &::after {
     content: '';
     position: absolute;
-    bottom: 5px;
-    right: 0;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    height: 3px;
-    background: ${COLORS.gray400};
+    height: 2px;
+    background: ${COLORS.black};
     opacity: 0;
     transition: opacity ${ANIMATION.duration} ${ANIMATION.timing};
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 5px;
-    right: 0;
-    width: 3px;
-    height: 80%; // Adjust height as needed, maybe base on line-height or font-size?
-    background: ${COLORS.gray400};
-    opacity: 0;
-    transition: opacity ${ANIMATION.duration} ${ANIMATION.timing};
-  }
-
-  &:hover::before,
   &:hover::after,
-  &:focus-visible::before, // Apply on focus too
   &:focus-visible::after {
     opacity: 1;
   }
 
   // Ensure hover styles apply when link is active too, if desired
-  // &.active::before,
   // &.active::after {
   //   opacity: 1;
   // }
@@ -87,6 +72,17 @@ const MainHeaderWrapper = styled.div`
     min-height: 70px;
   }
 
+  ${mediaQuery.min.lg} {
+    height: 10vh;
+    min-height: auto;
+  }
+
+  /* For screens less than 992px, set height to 1/9 of viewport height */
+  ${mediaQuery.max.lg} {
+    height: calc(100vh / 12);
+    min-height: auto;
+  }
+
   &.sticky {
     /* sticky управляется верхним контейнером HeaderContainer */
     background-color: ${COLORS.white};
@@ -97,6 +93,17 @@ const MainHeaderWrapper = styled.div`
     /* sticky управляется верхним контейнером HeaderContainer */
     border-bottom: 2px solid ${HEADER_COLORS.lightGray};
     min-height: calc(${HEADER_SIZES.headerHeight} - 10px);
+    
+    ${mediaQuery.min.lg} {
+      height: 10vh;
+      min-height: auto;
+    }
+    
+    /* For screens less than 992px, set height to 1/12 of viewport height even when scrolled */
+    ${mediaQuery.max.lg} {
+      height: calc(100vh / 12);
+      min-height: auto;
+    }
   }
 
   &.hidden {
@@ -114,7 +121,7 @@ const MainHeaderContent = styled(Container)`
   width: 100%;
   
   @media (max-width: 600px) {
-    min-height: 70px;
+    min-height: 50px;
   }
   
   ${mediaQuery.min.lg} {
@@ -139,16 +146,35 @@ const LogoWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${COLORS.primary};
-  width: clamp(150px, 25vw, 390px); /* More responsive width */
-  height: clamp(70px, 12vw, 200px); /* More responsive height */
+  width: 300px; /* Fixed width to avoid clamp issues */
+  height: 168.75px; /* Fixed height for 16:9 aspect ratio (300px * 9/16) */
   min-width: 120px;
-  min-height: 60px;
+  min-height: 50px;
   max-width: 420px;
   max-height: 220px;
   flex-shrink: 0;
   cursor: pointer;
   transition: background-color ${ANIMATION.duration} ${ANIMATION.timing};
   box-shadow: 0 1px 1px #E7194A;
+  
+
+  ${mediaQuery.min.lg} {
+    height: 100%;
+    max-height: 10vh;
+    width: 300px;
+  }
+
+  ${mediaQueries.xxl} {
+    height: 100%;
+    max-height: 10vh;
+    width: 300px;
+  }
+
+  ${mediaQueries.xxxl} {
+    height: 100%;
+    max-height: 10vh;
+    width: 300px;
+  }
 
   a {
     display: flex;
@@ -159,14 +185,15 @@ const LogoWrapper = styled.div`
   }
 
   img, svg {
-    width: 90%;
-    height: 90%;
-    max-width: 350px;
-    max-height: 180px;
+    width: auto;
+    height: auto;
+    max-width: 83.33%; /* Reduced by 1.2 times (100% / 1.2 = 83.33%) */
+    max-height: 83.33%; /* Reduced by 1.2 times */
     min-width: 80px;
     min-height: 40px;
     transition: transform ${ANIMATION.duration} ${ANIMATION.timing};
     display: block;
+    object-fit: contain;
   }
 
   &:hover {
@@ -178,8 +205,8 @@ const LogoWrapper = styled.div`
   }
 
   ${mediaQuery.max.xl} {
-    width: clamp(120px, 20vw, 220px);
-    height: clamp(60px, 10vw, 120px);
+    width: 220px;
+    height: 123.75px; /* 16:9 aspect ratio */
 
     img, svg {
       max-width: 200px;
@@ -187,42 +214,54 @@ const LogoWrapper = styled.div`
     }
   }
 
-  @media (max-width: 900px) {
-    width: clamp(120px, 40vw, 220px);
-    height: clamp(48px, 12vw, 90px);
+  ${mediaQueries.xxl} {
+    width: 300px;
+    height: 168.75px; /* 16:9 aspect ratio */
 
     img, svg {
-      max-width: 180px;
+      max-width: 210px;
+      max-height: 95%;
+    }
+  }
+
+  ${mediaQueries.xxxl} {
+    width: 300px;
+    height: 168.75px; /* 16:9 aspect ratio */
+
+    img, svg {
+      max-width: 220px;
+      max-height: 95%;
+    }
+  }
+
+  @media (max-width: 900px) {
+    width: 200px;
+    height: 123.75px; /* 16:9 aspect ratio */
+
+    img, svg {
+      max-width: 160px;
       max-height: 80px;
       min-width: 48px;
       min-height: 24px;
     }
   }
 
-  @media (max-width: 600px) {
-    width: 147px;
-    height: 70px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-80%);
-    margin: 0 auto;
+  ${mediaQuery.max.lg} {
+    order: 2;
+    height: 100%;
+    aspect-ratio: 16 / 9;
 
     img, svg {
-      width: 80%;
-      height: 80%; /* Match container height better */
-      max-width: 118px;
-      max-height: 56px; /* 80% of 70px container height */
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
-  }
-
-  ${mediaQuery.max.lg} {
-    order: 3; /* Mobile order: [Menu(1)][Search(2)][Logo(3)][Cart(4)] */
   }
 `;
 
 const HeaderNavItem = styled.span`
   position: relative;
-  font-size: clamp(16px, 1.5vw, 24px); /* Responsive font size */
+  font-size: clamp(16px, 1.5vw, 20px); /* Responsive font size */
   font-weight: ${TYPOGRAPHY.weight.semiBold};
   color: ${COLORS.black};
   cursor: pointer;
@@ -236,24 +275,44 @@ const HeaderNavItem = styled.span`
 
   ${navLinesMixin} // Apply the shared line mixin
 
+  &::after {
+    bottom: 1.28em;
+  }
+
   ${mediaQuery.max.xl} {
     font-size: clamp(14px, 1.2vw, 20px);
     padding: 1.2em 0.4em;
+
+    &::after {
+      bottom: 1.2em;
+    }
   }
 
     @media (max-width: 1200px) {
-    font-size: 20px;
+    font-size: 18px;
     padding: 1em 0.3em;
+
+    &::after {
+      bottom: 1em;
+    }
   }
 
   @media (max-width: 900px) {
     font-size: 18px;
     padding: 1em 0.3em;
+
+    &::after {
+      bottom: 1em;
+    }
   }
 
   @media (max-width: 600px) {
     font-size: 15px;
     padding: 0.7em 0.3em;
+
+    &::after {
+      bottom: 0.7em;
+    }
   }
 `;
 
@@ -271,7 +330,7 @@ const HeaderActions = styled.div`
   }
 
   ${mediaQuery.max.lg} {
-    order: 4; /* Mobile order: [Menu(1)][Search(2)][Logo(3)][Cart(4)] */
+    order: 3;
   }
 
   @media (max-width: 600px) {
@@ -344,6 +403,9 @@ const CartLink = styled(ActionButton).attrs({ as: 'a' })`
     padding: 14px 10px;
     border-radius: 29px;
   }
+`;
+
+const MobileCartButton = styled(ActionButton)`
 `;
 
 const CartBadge = styled.span`
@@ -865,7 +927,7 @@ const MainHeader = ({
               </HeaderIconStyles>
             </MobileSearchButton>
 
-            <ActionButton 
+            <MobileCartButton 
               aria-label={getBasketAriaLabel()}
               as={Link} 
               href="/cart" 
@@ -882,7 +944,7 @@ const MainHeader = ({
                   {basketCount}
                 </CartBadge>
               )}
-            </ActionButton>
+            </MobileCartButton>
           </HeaderActions>
         </MainHeaderContent>
       </MainHeaderWrapper>

@@ -31,6 +31,31 @@
   }
 }
 
+/* Large desktop (1200px+) */
+@media (min-width: 1200px) {
+  .productGridContainer {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    row-gap: 30px;
+  }
+}
+
+/* Extra large desktop (1400px+) */
+@media (min-width: 1400px) {
+  .productGridContainer {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    row-gap: 30px;
+  }
+}
+
+/* XXL desktop (1920px+) */
+@media (min-width: 1920px) {
+  .productGridContainer {
+    gap: 32px;
+  }
+}
+
 /* Responsive pre-order wrapper */
 .preOrderWrapper {
   height: auto;
@@ -40,4 +65,4 @@
   max-width: 100%;
   min-width: 0; /* Allow shrinking below content size */
   overflow: hidden; /* Prevent content overflow */
-} 
+}

@@ -3,8 +3,17 @@ import styled from 'styled-components';
 import { COLORS, TYPOGRAPHY, SPACING, mediaQueries, SHADOWS } from '../../styles/tokens';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../Toast/ToastContainer';
+import BrandFeature from '../BrandFeature'; // Import brand feature component
 import { normalizePhoneNumber, isValidRussianPhone } from '../../lib/phone';
 import { subscribeToNews } from '../../lib/api/bitrix';
+
+const hardcodedFeaturedBrandData = {
+  id: 'eiger',
+  name: 'Eiger',
+  featureImage: '/images/brands/eiger_img_8048.jpg',
+  logoImage: '/images/brands/eiger_tac_logo.jpg',
+  description: "Компания EIGER основана в 1989 году индонезийцем Ронни Лукито и начала свое триумфальное шествие с производства бивачного снаряжения.\n\nВсего через десять лет продукция компании завоевала уверенную нишу в сетях туристических магазинов Вьетнама, Китая, Тайваня, Гонконга, Южной Кореи, Франции, Германии и США.\n\nEiger Adventure изначально ориентировалась на восхождения и горный туризм, однако с 2016 обратила свое внимание на хайкинг, треккинг и тропический климат, открыв линейку Tropical.\n\nВ 2020 применила свой многолетний опыт для входа на рынок тактического и спортивного снаряжения, создав линейки Eiger TAC и Eiger Practical – тем самым обеспечив потребности местных силовиков и практических стрелков.\n\nСегодня компания Eiger - это 35 лет экспертизы в проектировании одежды и снаряжения для различных климатических условий."
+};
 
 const SubscriptionContainer = styled.section`
   width: 100%;
@@ -100,6 +109,18 @@ const FormHeading = styled.h2`
     padding-top: 0;
     padding-bottom: 0;
   }
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size.xl}; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size["2xl"]}; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size["4xl"]}; /* Еще компактнее для 1920px+ */
+  }
 `;
 
 const InputsContainer = styled.div`
@@ -157,6 +178,18 @@ const Input = styled.input`
     padding: ${SPACING.sm} 0;
     line-height: 1.5;
   }
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size.xs}; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size.md}; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Еще компактнее для 1920px+ */
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -183,6 +216,21 @@ const SubmitButton = styled.button`
     max-width: 380px;
     font-size: ${TYPOGRAPHY.size.md}; /* -1 step from tokens */
     padding: ${SPACING.lg} ${SPACING.xl};
+  }
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size.md}; /* Уменьшен для xl */
+    max-width: 340px;
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Компактный для xxl */
+    max-width: 300px;
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Еще компактнее для 1920px+ */
+    max-width: 280px;
   }
 `;
 
@@ -258,7 +306,7 @@ const ClubSubscription = () => {
     <SubscriptionContainer>
       <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       <ContentWrapper>
-        <FormContainer>
+        {/* <FormContainer>
           <FormHeading>
             Вступайте в закрытое сообщество,<br />
             получайте эксклюзивные предложения и новости
@@ -297,7 +345,8 @@ const ClubSubscription = () => {
               вступить в клуб
             </SubmitButton>
           </form>
-        </FormContainer>
+        </FormContainer> */}
+        <BrandFeature brandData={hardcodedFeaturedBrandData} showFeatureImage={false} />
         <ImageContainer>
           <Image src="/images/club/shooter_form.jpg" alt="Член клуба стрелков" />
         </ImageContainer>
@@ -306,4 +355,4 @@ const ClubSubscription = () => {
   );
 };
 
-export default ClubSubscription; 
+export default ClubSubscription;

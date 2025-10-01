@@ -6,7 +6,6 @@ import Link from 'next/link';
 const FeatureContainer = styled.section`
   width: 100%;
   // padding-right: ${SPACING.lg};
-
   ${mediaQueries.md} {
     padding-top: ${SPACING['2xl']};
   }
@@ -25,14 +24,12 @@ const FeatureContent = styled.div`
   gap: ${SPACING.sm};
   font-size: 6px;
   align-items: stretch;
-
   ${mediaQueries.md} {
     flex-direction: row;
     align-items: stretch;
     gap: ${SPACING["2xl"]};
     font-size: ${TYPOGRAPHY.size.md};
   }
-
   ${mediaQueries.lg} {
     gap: 52px;
   }
@@ -42,14 +39,13 @@ const ImageContainer = styled.div`
   display: none;
   width: 100%;
   position: relative;
-
   @media (min-width: 1264px) {
-    display: block;
+    display: ${props => props.$showFeatureImage ? 'block' : 'none'};
     width: 40%;
   }
   
   @media (min-width: 1200px) {
-    width: 50%;
+    width: ${props => props.$showFeatureImage ? '50%' : '0'};
   }
 `;
 
@@ -70,12 +66,12 @@ const TextContainer = styled.div`
   gap: ${SPACING.sm};
   
   @media (min-width: 1264px) {
-    width: 60%;
+    width: ${props => props.$showFeatureImage ? '60%' : '100%'};
     padding: ${SPACING["2xl"]};
   }
   
   @media (min-width: 1264px) {
-    width: 50%;
+    width: ${props => props.$showFeatureImage ? '50%' : '100%'};
     padding: ${SPACING["3xl"]};
   }
 `;
@@ -92,6 +88,16 @@ const BrandLogo = styled.img`
   height: 80px;
   object-fit: contain;
   align-self: flex-start;
+  display: ${props => props.$showBrandLogo ? 'block' : 'none'};
+  ${mediaQueries.xl} {
+    height: 70px; /* Уменьшен для xl */
+  }
+  ${mediaQueries.xxl} {
+    height: 60px; /* Компактный для xxl */
+  }
+  ${mediaQueries.xxxl} {
+    height: 50px; /* Еще компактнее для 1920px+ */
+  }
 `;
 
 const BrandDescription = styled.div`
@@ -101,29 +107,36 @@ const BrandDescription = styled.div`
   line-height: 1.5;
   color: ${COLORS.black};
   margin: 0;
-  
   ${mediaQueries.md} {
     font-size: 20px;
   }
-  
   ${mediaQueries.lg} {
     font-size: 25px;
     line-height: 1.18;
   }
+  ${mediaQueries.xl} {
+    font-size: 22px; /* Уменьшен для xl */
+  }
+  ${mediaQueries.xxl} {
+    font-size: 20px; /* Компактный для xxl */
+  }
+  ${mediaQueries.xxxl} {
+    font-size: 18px; /* Еще компактнее для 1920px+ */
+  }
 `;
 
-const BrandFeature = ({ brandData }) => {
+const BrandFeature = ({ brandData, showFeatureImage = true, showBrandLogo = true }) => {
   if (!brandData) {
     console.error('BrandFeature: brandData is undefined');
     return null;
   }
-
+  
   const {
     featureImage,
     logoImage,
     description
   } = brandData;
-
+  
   // Convert description to a stable format regardless of environment
   const processedDescription = React.useMemo(() => {
     if (typeof description !== 'string') return [];
@@ -137,15 +150,23 @@ const BrandFeature = ({ brandData }) => {
     // This creates an array where empty strings represent blank lines
     return description.split('\n');
   }, [description]);
-
+  
   return (
     <FeatureContainer>
       <FeatureContent>
-        <ImageContainer>
-          <FeatureImage src={featureImage} alt="Brand feature" />
-        </ImageContainer>
-        <TextContainer>
-          <BrandLogo src={logoImage} alt="Brand logo" />
+        {showFeatureImage && (
+          <ImageContainer $showFeatureImage={showFeatureImage}>
+            <FeatureImage src={featureImage} alt="Brand feature" />
+          </ImageContainer>
+        )}
+        <TextContainer $showFeatureImage={showFeatureImage}>
+          {showBrandLogo && (
+            <BrandLogo 
+              src={logoImage} 
+              alt="Brand logo" 
+              $showBrandLogo={showBrandLogo}
+            />
+          )}
           <BrandDescription>
             {/* Render HTML content if that's what we have */}
             {typeof processedDescription === 'object' && '__html' in processedDescription ? (

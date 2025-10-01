@@ -82,7 +82,19 @@ const Title = styled.h2`
   ${mediaQueries.md} {
     font-size: ${TYPOGRAPHY.size["2xl"]};
   }
-  
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size.xl}; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size.xl}; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size.xl}; /* Еще компактнее для 1920px+ */
+  }
+
   ${props => props.useGradient && `
     background: linear-gradient(91.3deg, #E7194A 1.11%, #FFAA00 138.8%);
     -webkit-background-clip: text;
@@ -123,6 +135,18 @@ const Subtitle = styled.p`
   ${mediaQueries.md} {
     font-size: ${TYPOGRAPHY.size["2xl"]};
   }
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size.xl}; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size.md}; /* Еще компактнее для 1920px+ */
+  }
 `;
 
 const ViewAllLink = styled.a`
@@ -141,6 +165,18 @@ const ViewAllLink = styled.a`
 
   ${mediaQueries.md} {
     font-size: ${TYPOGRAPHY.size["2xl"]};
+  }
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -271,4 +307,4 @@ ItemGrid.propTypes = {
   useCategoryGridWrapper: PropTypes.bool
 };
 
-export default ItemGrid; 
+export default ItemGrid;

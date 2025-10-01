@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 import ContactsModal from '../modals/ContactsModal';
-import { COLORS, TYPOGRAPHY, SPACING, mediaQueries } from '../../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, mediaQueries, SIZES } from '../../styles/tokens';
 
 const FooterContainer = styled.footer`
   width: 100%;
@@ -59,7 +59,7 @@ const MainFooter = styled.div`
 
 const LogoContainer = styled.div`
   width: 100%;
-  max-width: 320px;
+  max-width: 230px;
   display: none;
   position: relative;
   overflow: hidden; /* prevent image overflow */
@@ -210,7 +210,7 @@ const NavLink = styled.a`
 
 const BrandsContainer = styled.div`
   grid-area: brands;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: ${SPACING.md};
   align-self: start;
@@ -254,6 +254,18 @@ const BrandLogo = styled.img`
     max-width: 160px;
     margin-right: 0;
     margin-bottom: ${SPACING.sm};
+  }
+
+  ${mediaQueries.xl} {
+    max-width: 140px; /* Уменьшено для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    max-width: 120px; /* Компактный размер для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    max-width: 100px; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -341,7 +353,7 @@ const Footer = ({ showMainSection = true, showDashedBorder = true }) => {
           <LogoContainer>
             <Link href="/" passHref legacyBehavior>
               <Logo>
-                <img src="/images/footer/logo.svg" alt="Shop4Shoot" />
+                <img src="/images/footer/logo-small.svg" alt="Shop4Shoot" />
               </Logo>
             </Link>
           </LogoContainer>

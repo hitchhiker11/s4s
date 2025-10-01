@@ -7,7 +7,7 @@ import { useToast } from '../hooks/useToast';
 import QuantityControl from './QuantityControl';
 import ToastContainer from './Toast/ToastContainer';
 import PreOrderModal from './modals/PreOrderModal';
-import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, ANIMATION, mediaQueries } from '../styles/tokens';
+import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, ANIMATION, mediaQueries, SIZES } from '../styles/tokens';
 
 const Card = styled.div`
   display: flex;
@@ -35,6 +35,8 @@ const Card = styled.div`
     border-right-width: 4px;
     border-bottom-width: 4px;
   }
+
+
 `;
 
 const ImageContainer = styled.div`
@@ -48,7 +50,19 @@ const ImageContainer = styled.div`
   flex-shrink: 0; /* Prevent container from shrinking */
 
   @media (min-width: 768px) {
-    height: 250px; /* Reduced from 330px for more consistent sizing */
+    height: 220px; /* Уменьшено с 250px для более компактного вида */
+  }
+
+  ${mediaQueries.xl} {
+    height: 200px; /* Дополнительное уменьшение для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    height: 190px; /* Более плавный переход для очень больших экранов */
+  }
+
+  ${mediaQueries.xxxl} {
+    height: 180px; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -79,9 +93,19 @@ const Content = styled.div`
   box-sizing: border-box;
 
   @media (min-width: 500px) {
-    height: 180px; /* Slightly taller on larger screens */
+    height: 160px; /* Уменьшено с 180px */
     padding: ${SPACING.md} ${SPACING.lg};
     gap: ${SPACING.md};
+  }
+
+  ${mediaQueries.xl} {
+    height: 140px; /* Компактнее на больших экранах */
+    padding: ${SPACING.sm} ${SPACING.md};
+  }
+
+  ${mediaQueries.xxl} {
+    height: 130px; /* Более плавный переход */
+    padding: ${SPACING.sm} ${SPACING.md};
   }
 `;
 
@@ -103,6 +127,18 @@ const BrandTitle = styled.span`
   @media (min-width: 1024px) {
     font-size: 18px;
   }
+
+  ${mediaQueries.xl} {
+    font-size: 16px; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: 15px; /* Более плавный переход для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: 14px; /* Компактный для 1920px+ */
+  }
 `;
 
 const ProductTitle = styled.h3`
@@ -114,7 +150,7 @@ const ProductTitle = styled.h3`
   margin: 0;
   text-align: center;
   width: 100%;
-  
+
   /* Fixed height for exactly 2 lines to ensure consistency */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -126,6 +162,18 @@ const ProductTitle = styled.h3`
 
   @media (min-width: 1024px) {
     font-size: 18px;
+  }
+
+  ${mediaQueries.xl} {
+    font-size: 16px; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: 18px; /* Более плавный переход для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: 20px; /* Компактный для 1920px+ */
   }
 `;
 
@@ -141,6 +189,18 @@ const Price = styled.div`
 
   @media (min-width: 1024px) {
     font-size: ${TYPOGRAPHY.size["3xl"]};
+  }
+
+  ${mediaQueries.xl} {
+    font-size: ${TYPOGRAPHY.size["2xl"]}; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: ${TYPOGRAPHY.size.xl}; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: ${TYPOGRAPHY.size.lg}; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -196,6 +256,18 @@ const AddToCartText = styled.span`
 
   @media (min-width: 1024px) {
     font-size: 18px;
+  }
+
+  ${mediaQueries.xl} {
+    font-size: 16px; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: 16px; /* Более плавный переход для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: 18px; /* Компактный для 1920px+ */
   }
 `;
 
@@ -403,7 +475,8 @@ const ProductCard = ({ product, onAddToCart }) => {
     }
   };
 
-  const brandName = product.BRAND_NAME || product.brand || product.BREND || "OTHER";
+  const brandName = product.BRAND_NAME || product.brand || product.BREND;
+  const shouldDisplayBrand = brandName && brandName.toUpperCase() !== 'OTHER';
   const productName = product.NAME || product.name || "Product Name";
   const priceValue = product.PRICE || product.price || 0;
   
@@ -447,7 +520,7 @@ const ProductCard = ({ product, onAddToCart }) => {
             />
           </ImageContainer>
           <Content>
-            <BrandTitle>{brandName}</BrandTitle> 
+            {shouldDisplayBrand && <BrandTitle>{brandName}</BrandTitle>}
             <ProductTitle>{productName}</ProductTitle>
             <Price>{formattedPrice}</Price>
           </Content>
@@ -482,4 +555,4 @@ const ProductCard = ({ product, onAddToCart }) => {
   );
 };
 
-export default ProductCard; 
+export default ProductCard;

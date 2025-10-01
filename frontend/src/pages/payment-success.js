@@ -42,12 +42,19 @@ const PaymentSuccessPage = () => {
   // Recently viewed products hook
   const { recentlyViewed, hasRecentlyViewed } = useRecentlyViewed();
 
-  const renderRecentlyViewedProductCard = (product) => (
-    <ProductCard 
-      key={product.id} 
-      product={product}
-    />
-  );
+  const renderRecentlyViewedProductCard = (product) => {
+    // Handle "OTHER" brand - don't display it
+    const productWithBrandHandling = {
+      ...product,
+    };
+    
+    return (
+      <ProductCard 
+        key={product.id} 
+        product={productWithBrandHandling}
+      />
+    );
+  };
 
   const handleContinueShopping = () => {
     router.push('/catalog');
@@ -107,4 +114,4 @@ const PaymentSuccessPage = () => {
   );
 };
 
-export default PaymentSuccessPage; 
+export default PaymentSuccessPage;

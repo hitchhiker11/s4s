@@ -30,10 +30,16 @@ const ResponsiveProductSection = ({
     console.log(`${props.title || 'Product Section'} - Mobile?: ${isMobile} - Items:`, items?.length ?? 0, items);
   }
 
+  // Handle "OTHER" brand - don't display it
+  const itemsWithBrandHandling = items.map(item => ({
+    ...item,
+    brand: item.brand === "OTHER" ? "" : item.brand
+  }));
+
   // Props for ProductSlider (expects 'products')
   const productSliderProps = {
     ...props,
-    products: items, // Pass items as products to the slider
+    products: itemsWithBrandHandling, // Pass items as products to the slider
     showNavigation: (useSliderOnDesktop || alwaysSlider) ? showNavigationOnDesktop : false, // Show navigation when using slider on desktop or when always slider
     sliderSectionStyles: props.sliderSectionStyles || props.gridSectionStyles, // Pass sliderSectionStyles if provided, otherwise use gridSectionStyles for compatibility
   };
@@ -42,7 +48,7 @@ const ResponsiveProductSection = ({
   // NOTE: ProductGrid doesn't use renderItem, it maps internally using ProductCard
   const productGridProps = {
     ...props,
-    products: items, // Pass items as products
+    products: itemsWithBrandHandling, // Pass items as products
     gridContainerClassName: productGridStyles.productGridContainer, // Add responsive grid class
     preOrderWrapperProps: { className: productGridStyles.preOrderWrapper } // Add responsive wrapper class
   };
@@ -106,4 +112,4 @@ ResponsiveProductSection.defaultProps = {
   showViewAllLink: true, // Default to true for backward compatibility
 };
 
-export default ResponsiveProductSection; 
+export default ResponsiveProductSection;

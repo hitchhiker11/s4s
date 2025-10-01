@@ -9,11 +9,35 @@ import { searchData } from '../../lib/searchUtils';
 // Import RequestModal instead of ContactsModal
 import RequestModal from '../../components/modals/RequestModal';
 
-const SearchSection = styled.section`
+const SearchTitle = styled.h1`
+  font-family: ${TYPOGRAPHY.additionalFonts.montserrat};
+  font-style: normal;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.22;
+  letter-spacing: -5%;
+  color: ${COLORS.black};
+  margin: 0 0 ${SPACING.lg} 0;
+
+  ${mediaQueries.lg} {
+    /* Scale font from 18px at 992px to 28px at 1920px */
+    font-size: clamp(26px, calc(7.32px + 1.077vw), 32px);
+  }
+`;
+
+const SearchWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
-  background-color: ${COLORS.white};
-  position: relative; /* Needed for ResultsContainer positioning */
+  max-width: 100%;
+  position: relative;
+  background-color: #f2f2f2;
+  padding: ${SPACING['3xl']};
+  
+  @media (min-width: 100px) and (max-width: 992px) {
+    background-color:  #f2f2f2;
+    padding: ${SPACING.lg} ${SPACING.md} ${SPACING.lg} ${SPACING.md};
+  }
 
   ${mediaQueries.sm} {
     padding: ${SPACING.xl} ${SPACING.lg} ${SPACING.lg} ${SPACING.lg};
@@ -24,27 +48,54 @@ const SearchSection = styled.section`
   }
 
   ${mediaQueries.lg} {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
     padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
   }
 `;
 
-const SearchWrapper = styled.div`
+const SearchElementsContainer = styled.div`
+  ${mediaQueries.lg} {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+`;
+
+const SearchLabel = styled.p`
+  font-family: ${TYPOGRAPHY.fontFamily};
+  font-weight: ${TYPOGRAPHY.weight.medium};
+  font-size: 14px;
+  color: ${COLORS.gray400};
+  margin: 0 0 ${SPACING.sm} 0;
+
+  ${mediaQueries.lg} {
+    /* Scale from 14px at 992px to 18px at 1920px */
+    font-size: clamp(14px, calc(11.73px + 0.431vw), 22px);
+  }
+`;
+
+const SearchInputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: ${SIZES.containerMaxWidth};
-  margin: 0 auto;
-  border-top: 2px solid ${COLORS.gray400};
-  border-bottom: 2px solid ${COLORS.gray400};
+  // border-top: 2px solid ${COLORS.gray400};
+  // border-bottom: 2px solid ${COLORS.gray400};
+  background-color: ${COLORS.white};
   padding: 5px 0;
-  min-height: 48px;
-
+  min-height: 45px;
   ${mediaQueries.lg} {
     padding: 7px 0;
-    min-height: 66px;
-    border-top: 4px solid ${COLORS.gray400};
-    border-bottom: 4px solid ${COLORS.gray400};
+    min-height: 45px;
+    background-color: ${COLORS.white};
+    // border-top: 4px solid ${COLORS.gray400};
+    // border-bottom: 4px solid ${COLORS.gray400};
+  }
+
+  @media (min-width: 100px) and (max-width: 992px) {
+    background-color: ${COLORS.white};
   }
 `;
 
@@ -75,7 +126,7 @@ const StyledInput = styled.input`
   flex-grow: 1;
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(14px, 3vw, ${TYPOGRAPHY.size.xl});
+  font-size: 14px;
   color: ${COLORS.black};
   padding: 5px 0;
   width: 100%;
@@ -89,8 +140,9 @@ const StyledInput = styled.input`
     font-weight: ${TYPOGRAPHY.weight.medium};
   }
 
-  @media (max-width: ${BREAKPOINTS.sm - 1}px) {
-    font-size: 14px !important;
+  ${mediaQueries.lg} {
+    /* Scale from 14px at 992px to 18px at 1920px */
+    font-size: clamp(14px, calc(9.73px + 0.431vw), 18px);
   }
 `;
 
@@ -114,30 +166,9 @@ const IconWrapper = styled.span`
   }
 `;
 
-// Container for the link, displayed BELOW SearchSection on MOBILE only
-const MobileLinkContainer = styled.div`
-  display: flex; /* Use flex to center content */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically if needed */
-  max-width: ${SIZES.containerMaxWidth};
-  margin: ${SPACING.small} auto 0; /* Add some top margin */
-  padding: 0 ${SPACING.md}; /* Match SearchSection horizontal padding */
-
-  ${mediaQueries.md} {
-    display: none; // Hide on desktop
-  }
-`;
-
-// Container for the link, displayed INSIDE SearchWrapper on DESKTOP only
-const DesktopLinkContainer = styled.div`
-  display: none; // Hide on mobile by default
-
-  ${mediaQueries.md} {
-    display: flex; // Show on desktop
-    align-items: center; // Align vertically with search input
-    flex-shrink: 0; // Prevent shrinking when input grows
-    padding-left: ${SPACING.large}; // Space between search form and link
-  }
+const LinkContainer = styled.div`
+  margin-top: ${SPACING.sm};
+  text-align: left;
 `;
 
 // Common style for the link itself
@@ -145,7 +176,7 @@ const StyledLink = styled.a`
   color: ${COLORS.primary};
   font-family: ${TYPOGRAPHY.fontFamily};
   font-weight: ${TYPOGRAPHY.weight.medium};
-  font-size: clamp(0.9rem, 4vw, ${TYPOGRAPHY.size.lg});
+  font-size: 14px;
   text-decoration: none;
   white-space: nowrap;
   display: block; // Ensure it behaves predictably
@@ -154,30 +185,22 @@ const StyledLink = styled.a`
     color: ${COLORS.primaryHover};
     text-decoration: underline;
   }
+
+  ${mediaQueries.lg} {
+    /* Scale from 12px at 992px to 16px at 1920px */
+    // font-size: clamp(12px, calc(7.73px + 0.431vw), 16px);
+    font-size: clamp(14px, calc(11.73px + 0.431vw), 22px);
+
+  }
 `;
 
 const ResultsContainer = styled.div`
   position: absolute;
-  top: 100%; /* Position below the SearchSection */
+  top: 100%;
   left: 0;
   right: 0;
-  max-width: ${SIZES.containerMaxWidth};
-  margin: 0 auto; /* Center it */
   z-index: 1000;
-  /* Match SearchSection horizontal padding for alignment */
-  padding: 0 ${SPACING.md};
-
-  ${mediaQueries.sm} {
-    padding: 0 ${SPACING.lg};
-  }
-
-  ${mediaQueries.md} {
-    padding: 0 ${SPACING['2xl']};
-  }
-
-  ${mediaQueries.lg} {
-    padding: 0 ${SPACING['3xl']};
-  }
+  padding: 0;
 `;
 
 const SearchBar = () => {
@@ -192,7 +215,7 @@ const SearchBar = () => {
   const [showResults, setShowResults] = useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false); // Changed from isContactsModalOpen
   const inputRef = useRef(null);
-  const componentRef = useRef(null); // Ref for the entire component including the mobile link
+  const componentRef = useRef(null);
 
   // Debounced search effect
   useEffect(() => {
@@ -270,10 +293,9 @@ const SearchBar = () => {
     }
   };
 
-  // Handle clicks outside the search component (input + results + mobile link)
+  // Handle clicks outside the search component
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if the click is outside the entire component wrapper
       if (componentRef.current && !componentRef.current.contains(event.target)) {
         setShowResults(false);
       }
@@ -284,7 +306,7 @@ const SearchBar = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   // Handler for opening RequestModal (changed from ContactsModal)
   const handleRequestLinkClick = (e) => {
@@ -298,62 +320,57 @@ const SearchBar = () => {
   };
 
   return (
-    // Use a wrapper div with the ref for outside click detection
-    <div ref={componentRef}>
-      <SearchSection>
-        <SearchWrapper>
+    <SearchWrapper ref={componentRef}>
+      <SearchTitle>
+        МАГАЗИН, СОЗДАННЫЙ<br />
+        СТРЕЛКАМИ ДЛЯ<br />
+        СТРЕЛКОВ
+      </SearchTitle>
+      <SearchElementsContainer>
+        <SearchLabel>Ищете что-нибудь конкретное?</SearchLabel>
+        <SearchInputWrapper>
           <FormContainer onSubmit={handleSubmit}>
             <InputContainer>
               <StyledInput
                 type="text"
-                placeholder="Ищете что-нибудь конкретное?"
                 value={searchQuery}
                 onChange={handleInputChange}
-                onFocus={() => searchQuery.length >= 2 && setShowResults(true)} // Show results on focus if query is long enough
+                onFocus={() => searchQuery.length >= 2 && setShowResults(true)}
                 ref={inputRef}
-                aria-haspopup="listbox" // Indicate results dropdown
-                aria-expanded={showResults} // State of the dropdown
-                aria-controls="search-results-list" // ID of the results list
-                autoComplete="off" // Prevent browser autocomplete interference
+                aria-haspopup="listbox"
+                aria-expanded={showResults}
+                aria-controls="search-results-list"
+                autoComplete="off"
               />
               <IconWrapper>
-                {/* Consider making the icon clickable to submit form */}
                 <SearchIcon width="24px" height="24px" />
               </IconWrapper>
             </InputContainer>
           </FormContainer>
+        </SearchInputWrapper>
 
-          {/* Link displayed INSIDE SearchWrapper on DESKTOP only */}
-          <DesktopLinkContainer>
-            <StyledLink href="#" onClick={handleRequestLinkClick}>Нет нужного товара?</StyledLink>
-          </DesktopLinkContainer>
+        <LinkContainer>
+          <StyledLink href="#" onClick={handleRequestLinkClick}>
+            Нет нужного товара?
+          </StyledLink>
+        </LinkContainer>
+      </SearchElementsContainer>
 
-        </SearchWrapper>
+      {showResults && (
+        <ResultsContainer>
+          <SearchResults
+            id="search-results-list"
+            isVisible={showResults}
+            query={searchQuery}
+            results={searchResults}
+            onResultClick={handleResultClick}
+            isLoading={isLoading}
+          />
+        </ResultsContainer>
+      )}
 
-        {/* Results container positioned absolutely relative to SearchSection */}
-        {/* Conditionally render ResultsContainer only when needed */}
-        {showResults && (
-          <ResultsContainer>
-            <SearchResults
-              id="search-results-list" // Add ID for aria-controls
-              isVisible={showResults} // Pass visibility (might be redundant now)
-              query={searchQuery}
-              results={searchResults}
-              onResultClick={handleResultClick}
-              isLoading={isLoading} // Pass loading state
-            />
-          </ResultsContainer>
-        )}
-      </SearchSection>
-
-      {/* Link displayed BELOW SearchSection on MOBILE only */}
-      <MobileLinkContainer>
-        <StyledLink href="#" onClick={handleRequestLinkClick}>Нет нужного товара?</StyledLink>
-      </MobileLinkContainer>
-
-      {/* RequestModal instead of ContactsModal */}
       <RequestModal isOpen={isRequestModalOpen} onClose={handleRequestModalClose} />
-    </div>
+    </SearchWrapper>
   );
 };
 

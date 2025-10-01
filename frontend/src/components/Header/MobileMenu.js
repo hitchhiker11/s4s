@@ -68,6 +68,10 @@ const MobileMenuContainer = styled.div`
   flex-direction: column;
   overflow: hidden;
   backdrop-filter: blur(25px);
+  
+  ${mediaQuery.max.lg} {
+    height: calc(100vh / 12);
+  }
 `;
 
 const MobileMenuHeader = styled.header`

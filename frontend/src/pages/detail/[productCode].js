@@ -153,9 +153,17 @@ const ProductDetailPage = ({ productData = mockProductData, breadcrumbs = [] }) 
     setIsPreOrderModalOpen(false);
   };
 
-  const renderRecentlyViewedCard = (p) => (
-    <ProductCard key={p.id} product={p} />
-  );
+  const renderRecentlyViewedCard = (p) => {
+    // Handle "OTHER" brand - don't display it
+    const productWithBrandHandling = {
+      ...p,
+      brand: p.brand === "OTHER" ? "" : p.brand
+    };
+    
+    return (
+      <ProductCard key={p.id} product={productWithBrandHandling} />
+    );
+  };
 
   // Use breadcrumbs passed from getServerSideProps if available, otherwise fallback to a minimal chain
   const breadcrumbItems = breadcrumbs.length
@@ -357,4 +365,4 @@ export async function getServerSideProps({ params }) {
   }
 }
 
-export default ProductDetailPage; 
+export default ProductDetailPage;

@@ -23,58 +23,64 @@ import { COLORS, SPACING, TYPOGRAPHY, mediaQueries, SIZES, BREAKPOINTS } from '.
 const hardcodedFeaturedBrandData = {
   id: 'eiger',
   name: 'Eiger',
-  featureImage: '/images/brands/eiger_img_8048.jpg',
+  featureImage: '/images/brands/shop4shoot-about.jpg',
   logoImage: '/images/brands/eiger_tac_logo.jpg',
-  description: "Компания EIGER основана в 1989 году индонезийцем Ронни Лукито и начала свое триумфальное шествие с производства бивачного снаряжения.\n\nВсего через десять лет продукция компании завоевала уверенную нишу в сетях туристических магазинов Вьетнама, Китая, Тайваня, Гонконга, Южной Кореи, Франции, Германии и США.\n\nEiger Adventure изначально ориентировалась на восхождения и горный туризм, однако с 2016 обратила свое внимание на хайкинг, треккинг и тропический климат, открыв линейку Tropical.\n\nВ 2020 применила свой многолетний опыт для входа на рынок тактического и спортивного снаряжения, создав линейки Eiger TAC и Eiger Practical – тем самым обеспечив потребности местных силовиков и практических стрелков.\n\nСегодня компания Eiger - это 35 лет экспертизы в проектировании одежды и снаряжения для различных климатических условий."
+  description: "Shop4Shoot — специализированный магазин высококачественного снаряжения для стрельбы, охоты и активного отдыха. Мы являемся официальными поставщиками продукции ведущих мировых производителей и предлагаем проверенные товары, соответствующие современным стандартам надежности и безопасности.\n\nНаша компания ориентирована на формирование полноценного ассортимента для стрелков и профессионалов, а также для тех, кто ценит активный образ жизни. В каталоге представлены тактическая экипировка, одежда, аксессуары и комплектующие, которые прошли проверку временем и практикой.\n\nМы выстраиваем долгосрочные отношения с клиентами и партнёрами, обеспечивая:\n- широкий выбор товаров от мировых брендов;\n- гарантию качества на всю продукцию;\n- оперативную доставку по всей России;\n- профессиональные консультации экспертов;\n\nShop4Shoot — это надежный партнёр для тех, кто ценит качество, безопасность и профессиональный подход."
 };
 
 // Стилизованные компоненты для главной страницы
 const HomePageContainer = styled.div`
   width: 100%;
   overflow-x: hidden; // Предотвращение горизонтального скролла
+  height: 100%;
 `;
 
-const HeroSection = styled.section`
-  width: 100%;
-  min-height: 150px;
-  background-color: ${COLORS.white};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;
+// const HeroSection = styled.section`
+//   width: 100%;
+//   min-height: 150px;
+//   background-color: ${COLORS.white};
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   padding: 0 16px;
 
-  ${mediaQueries.sm} {
-    padding: 0px;
-  }
+//   ${mediaQueries.sm} {
+//     padding: 0px;
+//   }
 
-  ${mediaQueries.md} {
-    padding: 0px;
-  }
+//   ${mediaQueries.md} {
+//     padding: 0px;
+//   }
 
-  ${mediaQueries.lg} {
-    padding: 0px;
-  }
+//   ${mediaQueries.lg} {
+//     padding: 0px;
+//   }
 
-  ${mediaQueries.xl} {
-    padding: 0px;
-  }
+//   ${mediaQueries.xl} {
+//     padding: 0px;
+//   }
 
-  ${mediaQueries.xxl} {
-    max-width: 1920px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-`;
+//   ${mediaQueries.xxl} {
+//     max-width: 1920px;
+//     margin-left: auto;
+//     margin-right: auto;
+//   }
+// `;
 
 const HeroContent = styled.div`
   width: 100%;
   max-width: var(--container-width, 1920px);
   margin: 0 auto;
   text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
   gap: ${SPACING.md};
+
+  ${mediaQueries.lg} {
+    grid-template-columns: 1fr auto;
+    gap: ${SPACING.xl};
+  }
 `;
 
 const Highlight = styled.span`
@@ -107,25 +113,34 @@ const HeroTitle = styled.h1`
   }
 
   ${mediaQueries.lg} {
-    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+    padding: ${SPACING.xl} 0;
   }
   ${mediaQueries.xl} {
-    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+    padding: ${SPACING.xl} 0;
   }
   ${mediaQueries.xxxl} {
-    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} 0;
+    padding: ${SPACING.xl} 0;
   }
 
   /* Restore padding between 1920px and 2000px */
   @media (min-width: 1920px) and (max-width: 2000px) {
-    padding: ${SPACING.xl} ${SPACING['3xl']} ${SPACING['3xl']} ${SPACING['3xl']};
+    padding: ${SPACING.xl} 0;
   }
 
   ${mediaQueries.sm} {
-    font-size: clamp(60px, 8vw, 107px);
+    font-size: clamp(60px, 8vw, 90px); /* Уменьшен максимум с 107px */
   }
   ${mediaQueries.lg} {
-    font-size: clamp(40px, 8vw, 107px);
+    font-size: clamp(40px, 8vw, 90px); /* Уменьшен максимум с 107px */
+  }
+  ${mediaQueries.xl} {
+    font-size: clamp(50px, 6vw, 80px); /* Дополнительное уменьшение для xl */
+  }
+  ${mediaQueries.xxl} {
+    font-size: clamp(45px, 5vw, 75px); /* Еще компактнее для xxl */
+  }
+  ${mediaQueries.xxxl} {
+    font-size: clamp(40px, 4vw, 70px); /* Компактный размер для 1920px+ */
   }
 `;
 
@@ -145,13 +160,31 @@ const AboutSection = styled.section`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 0;
-  max-width: ${SIZES.containerMaxWidth};
-  margin: 0 auto;
-  max-height: 434px;
+  padding: 0;
+  width: 100%;
+  min-width: 0; /* Fix for swiper in grid */
+  height: 100%;
     
   ${mediaQueries.md} {
-    max-height: 850px;
+    height: 100%;
+  }
+  
+  ${mediaQueries.lg} {
+    height: 100%;
+  }
+`;
+
+const MainGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  height: 100%;
+  
+  margin-bottom: 24px;
+  
+  ${mediaQueries.lg} {
+    grid-template-columns: 3fr 1.1fr; /* AboutSlider takes 3 parts, SearchBar takes 1 */
+    gap: 0;
   }
 `;
 
@@ -369,39 +402,52 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
     );
   };
 
-  const renderProductCard = (product, cardStyle) => (
-    <ProductCard 
-      key={product.id} 
-      product={{
-        ...product,
-        imageUrl: product.imageUrl || product.image, // Ensure imageUrl exists
-        productLink: product.productLink || product.detailUrl, // Ensure productLink exists
-        CATALOG_AVAILABLE: product.CATALOG_AVAILABLE || (product.inStock ? 'Y' : 'N'), // Ensure CATALOG_AVAILABLE exists
-      }}
-      // Remove onAddToCart to let ProductCard handle it with toasts
-      // onAddToCart={handleAddToCart}
-      additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
-    />
-  );
+  const renderProductCard = (product, cardStyle) => {
+    // Handle "OTHER" brand - don't display it
+    const productWithBrandHandling = {
+      ...product,
+      imageUrl: product.imageUrl || product.image, // Ensure imageUrl exists
+      productLink: product.productLink || product.detailUrl, // Ensure productLink exists
+      CATALOG_AVAILABLE: product.CATALOG_AVAILABLE || (product.inStock ? 'Y' : 'N'), // Ensure CATALOG_AVAILABLE exists
+    };
+    
+    return (
+      <ProductCard 
+        key={product.id} 
+        product={productWithBrandHandling}
+        // Remove onAddToCart to let ProductCard handle it with toasts
+        // onAddToCart={handleAddToCart}
+        additionalStyles={cardStyle} // Pass cardStyle as additionalStyles
+      />
+    );
+  };
 
   return (
     <Layout mockBasketCount={basketCount || 0} showDashedBorderFooter={false}>
       <HomePageContainer>
-        <AboutSection>
-          {/* <SectionTitle>О нас</SectionTitle> */}
-          <AboutSlider />
-        </AboutSection>
-        <HeroSection>
-          <HeroContent>
-            <HeroTitle>
-              МАГАЗИН, СОЗДАННЫЙ<br />
-              СТРЕЛКАМИ ДЛЯ<br />
-              СТРЕЛКОВ - <Highlight>SHOP4SHOOT</Highlight>
-            </HeroTitle>
-          </HeroContent>
-        </HeroSection>
-        
-        <SearchBar />
+        <MainGrid>
+          <AboutSection>
+            <AboutSlider />
+          </AboutSection>
+          <div style={{ height: '100%' }}>
+            <SearchBar />
+          </div>
+        </MainGrid>
+
+        {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}
+        <ResponsiveProductSection 
+          title="Хиты продаж 🔥"
+          subtitle="посмотрите самые популярные продукты"
+          viewAllLink="/catalog?filter=bestsellers"
+          items={displayBestsellers} // Use 'items' prop name
+          renderItem={renderProductCard} // Pass the render function
+          useGradientTitle={true}
+          useSliderOnDesktop={true} // Use slider instead of grid on desktop
+          showNavigationOnDesktop={true} // Show navigation arrows on hover
+          alwaysSlider={true} // Always use slider regardless of screen width
+          // Remove onAddToCart to let ProductCard handle it with toasts
+          // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
+        />
         
         {/* Categories Section using Responsive Wrapper */}
         <ResponsiveCategorySection 
@@ -432,7 +478,7 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
           // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
         />
         {/* Our Brands Section using Responsive Wrapper with Slider on Desktop */}
-        <ResponsiveCategorySection 
+        <ResponsiveCategorySection
           title="Наши бренды"
           subtitle="если хотите пополнить коллекцию"
           viewAllLink="/brands"
@@ -443,24 +489,28 @@ const HomePage = ({ initialCategories, initialNewArrivals, initialBrands, initia
           alwaysSlider={true} // Always use slider for brands regardless of screen width
           // cardStyle={{ maxWidth: '280px' }}
           edgeImagePositioningMode="disabled"
+          // Дополнительные стили для больших экранов
+          sectionStyle={`
+            @media (min-width: 1400px) {
+              .swiper-slide {
+                width: 260px !important;
+                min-width: 260px !important;
+                max-width: 260px !important;
+              }
+            }
+            @media (min-width: 1920px) {
+              .swiper-slide {
+                width: 240px !important;
+                min-width: 240px !important;
+                max-width: 240px !important;
+              }
+            }
+          `}
         />
         
-        {/* Bestsellers Section (Top Sales) using Responsive Wrapper */}
-        <ResponsiveProductSection 
-          title="Хиты продаж 🔥"
-          subtitle="посмотрите самые популярные продукты"
-          viewAllLink="/catalog?filter=bestsellers"
-          items={displayBestsellers} // Use 'items' prop name
-          renderItem={renderProductCard} // Pass the render function
-          useGradientTitle={true}
-          useSliderOnDesktop={true} // Use slider instead of grid on desktop
-          showNavigationOnDesktop={true} // Show navigation arrows on hover
-          alwaysSlider={true} // Always use slider regardless of screen width
-          // Remove onAddToCart to let ProductCard handle it with toasts
-          // onAddToCart={handleAddToCart} // Still needed for ProductCard via renderItem
-        />
+
         {/* Featured Brand Section */}
-        <BrandFeature brandData={hardcodedFeaturedBrandData} />
+        <BrandFeature brandData={hardcodedFeaturedBrandData} showBrandLogo={false}/>
 
         {/* Club Subscription Section */}
         <ClubSubscription />

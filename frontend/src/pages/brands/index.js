@@ -51,11 +51,23 @@ const Title = styled.h1`
   color: #1C1C1C;
   margin-top: 24px;
   margin-bottom: 24px;
-  
+
   ${mediaQueries.md} {
     font-size: 36px;
     margin-top: 40px;
     margin-bottom: 40px;
+  }
+
+  ${mediaQueries.xl} {
+    font-size: 32px; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: 28px; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: 24px; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -563,9 +575,16 @@ const BrandsPage = ({ seo, initialBrands }) => {
             </SectionHeader>
             
             <ProductsGrid className={productGridStyles.productGridContainer}>
-              {recentlyViewed.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {recentlyViewed.map(product => {
+                // Handle "OTHER" brand - don't display it
+                const productWithBrandHandling = {
+                  ...product,
+                };
+                
+                return (
+                  <ProductCard key={product.id} product={productWithBrandHandling} />
+                );
+              })}
             </ProductsGrid>
           </RecentlyViewedSection>
         )} */}
@@ -704,4 +723,4 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default BrandsPage; 
+export default BrandsPage;

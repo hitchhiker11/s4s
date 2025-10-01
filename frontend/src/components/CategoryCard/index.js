@@ -100,6 +100,15 @@ const CardTitle = styled.h3`
   @media (min-width: 1600px) {
     font-size: clamp(20px, calc(1vw + 1rem), 36px);
   }
+
+  /* Very large screens - compact sizing */
+  ${mediaQueries.xxl} {
+    font-size: clamp(18px, calc(0.8vw + 0.8rem), 32px); /* Уменьшен */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: clamp(16px, calc(0.6vw + 0.6rem), 28px); /* Еще компактнее */
+  }
 `;
 
 const CardImageContainer = styled.div`

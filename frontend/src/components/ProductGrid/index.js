@@ -167,8 +167,12 @@ const GridContainer = styled.div`
   }
 
   ${mediaQueries.xxl} {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr); /* 5 колонок на очень больших экранах */
+    gap: 24px; /* Увеличен gap для лучшего распределения */
+  }
+
+  ${mediaQueries.xxxl} {
+    gap: 32px; /* Еще больше gap */
   }
 
   ${props => props.customStyles}
@@ -283,23 +287,30 @@ const ProductGrid = ({
           style={gridContainerStyle}
           customStyles={gridContainerStyles}
         >
-          {productItems.map((product, index) => (
-            <PreOrderWrapper 
-              key={product.id || index} 
-              customStyles={preOrderWrapperStyles}
-              {...preOrderWrapperProps}
-            >
-              {product.preOrder && (
-                <PreOrderBadge customStyles={preOrderBadgeStyles}>ПРЕДЗАКАЗ</PreOrderBadge>
-              )}
-              <ProductCardWrapper>
-                <ProductCard
-                  product={product}
-                  {...productCardProps}
-                />
-              </ProductCardWrapper>
-            </PreOrderWrapper>
-          ))}
+          {productItems.map((product, index) => {
+            // Handle "OTHER" brand - don't display it
+            const productWithBrandHandling = {
+              ...product,
+            };
+            
+            return (
+              <PreOrderWrapper 
+                key={product.id || index} 
+                customStyles={preOrderWrapperStyles}
+                {...preOrderWrapperProps}
+              >
+                {product.preOrder && (
+                  <PreOrderBadge customStyles={preOrderBadgeStyles}>ПРЕДЗАКАЗ</PreOrderBadge>
+                )}
+                <ProductCardWrapper>
+                  <ProductCard
+                    product={productWithBrandHandling}
+                    {...productCardProps}
+                  />
+                </ProductCardWrapper>
+              </PreOrderWrapper>
+            );
+          })}
         </GridContainer>
       ) : (
         <EmptyMessage customStyles={emptyMessageStyles}>Нет доступных товаров</EmptyMessage>

@@ -44,11 +44,23 @@ const Title = styled.h1`
   color: #1C1C1C;
   margin-top: 24px;
   margin-bottom: 24px;
-  
+
   ${mediaQueries.md} {
     font-size: 36px;
     margin-top: 40px;
     margin-bottom: 40px;
+  }
+
+  ${mediaQueries.xl} {
+    font-size: 32px; /* Уменьшен для xl */
+  }
+
+  ${mediaQueries.xxl} {
+    font-size: 28px; /* Компактный для xxl */
+  }
+
+  ${mediaQueries.xxxl} {
+    font-size: 24px; /* Еще компактнее для 1920px+ */
   }
 `;
 
@@ -183,7 +195,7 @@ const CatalogPage = ({ seo, initialCategories }) => {
           />
         )}
 
-        <SubscriptionForm noOuterMargin={true} />
+        <SubscriptionForm noOuterMargin={false} />
 
       </Container>
       
@@ -233,4 +245,4 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default CatalogPage; 
+export default CatalogPage;
